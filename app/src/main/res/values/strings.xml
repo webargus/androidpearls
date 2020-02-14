@@ -9,4 +9,8 @@
     <string name="tab_text_areas">Knowledge areas</string>
     <string name="tab_text_domains">Domains</string>
     <string name="tab_text_languages">Languages</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="search_area_domain_label"><![CDATA[area > domain]]></string>
+    <string name="languages_label">Languages label</string>
 </resources>

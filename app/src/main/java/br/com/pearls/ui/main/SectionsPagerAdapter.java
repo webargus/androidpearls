@@ -1,6 +1,7 @@
 package br.com.pearls.ui.main;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -15,6 +16,8 @@ import br.com.pearls.R;
  * one of the sections/tabs/pages.
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+    private static final String TAG = "SectionsPagerAdapter";
 
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.tab_text_search,
@@ -44,4 +47,5 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         // Show 2 total pages.
         return TAB_TITLES.length;
     }
+
 }

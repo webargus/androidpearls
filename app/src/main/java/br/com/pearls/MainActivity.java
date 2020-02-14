@@ -162,9 +162,9 @@ public class MainActivity extends AppCompatActivity {
                 performNoCacheDeepReload(true);
                 break;
             case R.id.action_search:
-                Intent myIntent = new Intent(MainActivity.this, SearchActivity.class);
-                myIntent.putExtra("key", "value"); //Optional parameters
-                MainActivity.this.startActivity(myIntent);
+                Intent searchIntent = new Intent(MainActivity.this, SearchActivity.class);
+                searchIntent.putExtra("key", "value"); //Optional parameters
+                MainActivity.this.startActivity(searchIntent);
             case R.id.action_close:
                 finish();   // this calls onPause(); (festgestellt!)
                 break;

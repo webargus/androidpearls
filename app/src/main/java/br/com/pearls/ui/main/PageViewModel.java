@@ -6,14 +6,26 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class PageViewModel extends ViewModel {
 
     private final String[] PAGE_NAMES = {"Search", "Languages"};
     private MutableLiveData<Integer> mIndex = new MutableLiveData<>();
-    private LiveData<String> mText = Transformations.map(mIndex, new Function<Integer, String>() {
+    private LiveData<JSONArray> mJson = Transformations.map(mIndex, new Function<Integer, JSONArray>() {
         @Override
-        public String apply(Integer input) {
-            return "This is section: " + PAGE_NAMES[input];
+        public JSONArray apply(Integer input) {
+            JSONObject object = new JSONObject();
+            try {
+                object.put("section", PAGE_NAMES[input]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.put(object);
+            return jsonArray;
         }
     });
 
@@ -21,7 +33,11 @@ public class PageViewModel extends ViewModel {
         mIndex.setValue(index);
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public Integer getIndex() {
+        return mIndex.getValue();
+    }
+
+    public LiveData<JSONArray> getJson() {
+        return mJson;
     }
 }

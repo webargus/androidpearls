@@ -12,6 +12,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import br.com.pearls.R;
 
 /**
@@ -46,12 +49,23 @@ public class PlaceholderFragment extends Fragment {
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_search, container, false);
-        final TextView textView = root.findViewById(R.id.section_label);
-        pageViewModel.getText().observe(this, new Observer<String>() {
+        View root;
+        final TextView textView;
+        if(pageViewModel.getIndex() == 1) {
+            root = inflater.inflate(R.layout.fragment_tab_languages, container, false);
+            textView = root.findViewById(R.id.languages_text_view);
+        } else {
+            root = inflater.inflate(R.layout.fragment_tab_search, container, false);
+            textView = root.findViewById(R.id.search_text_view);
+        }
+        pageViewModel.getJson().observe(this, new Observer<JSONArray>() {
             @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
+            public void onChanged(@Nullable JSONArray s) {
+                try {
+                    textView.setText(s.getJSONObject(0).getString("section"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
         return root;
