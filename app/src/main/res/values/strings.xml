@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Pearls</string>
+    <string name="net_connect_msg">No internet connection</string>
+    <string name="menu_refresh_label">Refresh</string>
+    <string name="menu_close_label">Close</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="tab_text_search">Search</string>
+    <string name="tab_text_edit">Edit + Insert</string>
+    <string name="tab_text_areas">Knowledge areas</string>
+    <string name="tab_text_domains">Domains</string>
+    <string name="tab_text_languages">Languages</string>
+</resources>

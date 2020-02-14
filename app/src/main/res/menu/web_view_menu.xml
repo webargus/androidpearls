@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--
+        Trick to display an overflow-like menu: declare main menu items as
+        submenu items of an empty, icon-guarded menu item.
+    -->
+    <item
+        android:id="@+id/menu_overflow"
+        android:icon="@drawable/ic_menu_overlay"
+        android:orderInCategory="11111"
+        app:showAsAction="ifRoom"
+        android:title="">
+        <menu>
+            <item
+                android:id="@+id/action_reload"
+                app:showAsAction="always"
+                android:title="@string/menu_refresh_label"/>
+            <item
+                android:id="@+id/action_search"
+                app:showAsAction="always"
+                android:title="Search"/>
+            <item
+                android:id="@+id/action_close"
+                app:showAsAction="always"
+                android:title="@string/menu_close_label"/>
+        </menu>
+    </item>
+
+</menu>
+
+
+
+
