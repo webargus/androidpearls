@@ -17,23 +17,32 @@ import br.com.pearls.R;
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-    private static final String TAG = "SectionsPagerAdapter";
+    private static final String TAG = SectionsPagerAdapter.class.getName();
 
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.tab_text_search,
                                                       R.string.tab_text_languages};
+
+    private SearchTabFragment searchTabFragment;
+    private LanguagesTabFragment languagesTabFragment;
+
     private final Context mContext;
 
     public SectionsPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
+        searchTabFragment = new SearchTabFragment();
+        languagesTabFragment = new LanguagesTabFragment();
     }
 
     @Override
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
         // Return a PlaceholderFragment (defined as a static inner class below).
-        return PlaceholderFragment.newInstance(position + 1);
+        if(position == 0) {
+            return searchTabFragment;
+        }
+        return languagesTabFragment;
     }
 
     @Nullable

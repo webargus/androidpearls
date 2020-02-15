@@ -12,5 +12,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="search_area_domain_label"><![CDATA[area > domain]]></string>
-    <string name="languages_label">Languages label</string>
+    <string name="language_hint">Language name</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

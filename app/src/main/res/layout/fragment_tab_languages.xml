@@ -6,12 +6,26 @@
     android:orientation="vertical"
     tools:context=".SearchActivity" >
 
-    <TextView
-        android:id="@+id/languages_text_view"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/languages_label"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/language"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/language_hint"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/btn_save_language"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/languages_list_view"

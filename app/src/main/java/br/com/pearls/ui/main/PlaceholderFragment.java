@@ -1,10 +1,10 @@
 package br.com.pearls.ui.main;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -16,15 +16,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import br.com.pearls.R;
+import br.com.pearls.SearchActivity;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class PlaceholderFragment extends Fragment {
 
+    private static final String TAG = PlaceholderFragment.class.getName();
+
     private static final String ARG_SECTION_STRING = "section_string";
 
     private PageViewModel pageViewModel;
+
+    private SearchTabFragment searchTabFragment;
+    private LanguagesTabFragment languagesTabFragment;
 
     public static PlaceholderFragment newInstance(int index) {
         PlaceholderFragment fragment = new PlaceholderFragment();
@@ -37,6 +43,8 @@ public class PlaceholderFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        searchTabFragment = new SearchTabFragment();
+        languagesTabFragment = new LanguagesTabFragment();
         pageViewModel = ViewModelProviders.of(this).get(PageViewModel.class);
         int index = 1;
         if (getArguments() != null) {
@@ -50,19 +58,16 @@ public class PlaceholderFragment extends Fragment {
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View root;
-        final TextView textView;
         if(pageViewModel.getIndex() == 1) {
-            root = inflater.inflate(R.layout.fragment_tab_languages, container, false);
-            textView = root.findViewById(R.id.languages_text_view);
+            root = languagesTabFragment.getView();
         } else {
-            root = inflater.inflate(R.layout.fragment_tab_search, container, false);
-            textView = root.findViewById(R.id.search_text_view);
+            root = searchTabFragment.getView();
         }
         pageViewModel.getJson().observe(this, new Observer<JSONArray>() {
             @Override
             public void onChanged(@Nullable JSONArray s) {
                 try {
-                    textView.setText(s.getJSONObject(0).getString("section"));
+                    Log.v(TAG, s.getJSONObject(0).getString("section"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
