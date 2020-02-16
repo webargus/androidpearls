@@ -6,41 +6,40 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.text.Normalizer;
-import java.util.regex.Pattern;
+import br.com.pearls.R;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
-    public static final Pattern DIACRITICS_AND_FRIENDS
-            = Pattern.compile("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");
-
     //Constants for Database name, table name, and column names
     public static final String DB_NAME = "pearls";
-    public static final String TABLE_NAME = "languages";
+    public static final String TABLE_LANGUAGES = "languages";
     public static final String COLUMN_ID = "_id";
+    public static final String COLUMN_COUNTRY_CODE = "country_code";
     public static final String COLUMN_LANGUAGE = "language";
-    public static final String COLUMN_NO_DIACRITICS = "no_diacritics";
     public static final String COLUMN_ACTIVE = "active";
     public static final String COLUMN_STATUS = "status";
 
     //database version
     private static final int DB_VERSION = 1;
+    private Context cntxt;
 
     //Constructor
     public DataBaseHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
+        cntxt = context;
     }
 
     //creating the database
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "CREATE TABLE " + TABLE_NAME +" (" +
+        String sql = "CREATE TABLE " + TABLE_LANGUAGES +" (" +
                       COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                      COLUMN_COUNTRY_CODE + " TEXT," +
                       COLUMN_LANGUAGE + " VARCHAR, " +
-                      COLUMN_NO_DIACRITICS + "VARCHAR, " +
                       COLUMN_ACTIVE + " TINYINT, " +
                       COLUMN_STATUS + " TINYINT);";
         db.execSQL(sql);
+        setInitialLanguages();
     }
 
     //upgrading the database
@@ -59,16 +58,15 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * 0 means the language has already been synced with the server
      * 1 means the language has to be synced with the server yet
      * */
-    public boolean addLanguage(String lang, int active,  int status) {
+    public boolean addLanguage(String country, String lang, int active,  int status) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-
+        contentValues.put(COLUMN_COUNTRY_CODE, country);
         contentValues.put(COLUMN_LANGUAGE, lang);
-        contentValues.put(COLUMN_NO_DIACRITICS, stripDiacritics(lang));
         contentValues.put(COLUMN_ACTIVE, active);
         contentValues.put(COLUMN_STATUS, status);
 
-        db.insert(TABLE_NAME, null, contentValues);
+        db.insert(TABLE_LANGUAGES, null, contentValues);
         db.close();
         return true;
     }
@@ -83,7 +81,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_STATUS, status);
-        db.update(TABLE_NAME, contentValues, COLUMN_ID + "=" + id, null);
+        db.update(TABLE_LANGUAGES, contentValues, COLUMN_ID + "=" + id, null);
         db.close();
         return true;
     }
@@ -91,10 +89,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     /*
      * Fetch all DB stored languages
      * */
-    public Cursor getLanguages() {
+    public Cursor getLanguages(String where, String[] selectionArgs, String orderBy) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_NAME + " ORDER BY " + COLUMN_LANGUAGE + " ASC;";
-        Cursor c = db.rawQuery(sql, null);
+        Cursor c = db.query(TABLE_LANGUAGES, null, where, selectionArgs, null, null, orderBy);
         return c;
     }
 
@@ -103,14 +100,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * */
     public Cursor getLanguagesToSync() {
         SQLiteDatabase db = this.getReadableDatabase();
-        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE " + COLUMN_STATUS + " = 0;";
+        String sql = "SELECT * FROM " + TABLE_LANGUAGES + " WHERE " + COLUMN_STATUS + " = 0;";
         Cursor c = db.rawQuery(sql, null);
         return c;
     }
 
-    private static String stripDiacritics(String str) {
-        str = Normalizer.normalize(str, Normalizer.Form.NFD);
-        str = DIACRITICS_AND_FRIENDS.matcher(str).replaceAll("");
-        return str;
+    // TODO: download flag imgs files + langs from server; change table 'languages'
+    // TODO: and include blob column to save img bitmap; stop using R.drawable for flags
+    // TODO: and r.array for language country codes and names; do corresponding changes in
+    // TODO: LanguagesListAdapter class;
+    private void setInitialLanguages() {
+        String[] languages = cntxt.getResources().getStringArray(R.array.language_codes);
+        String[] code_lang;
+        for(Integer ix = 0; ix < languages.length; ix++) {
+            code_lang = languages[ix].split(";");
+            addLanguage(code_lang[0], code_lang[1], 1, 1);
+        }
+
     }
+
 }
