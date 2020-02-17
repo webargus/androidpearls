@@ -28,15 +28,13 @@
                                     end of the day, there's gotta be one or the other, without
                                     which a crash occurs
         -->
-        <MultiSelectListPreference
+        <br.com.pearls.Settings.LanguageMultiSelect
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:entries="@array/language_entries"
-            app:entryValues="@array/language_values"
             app:defaultValue="@array/language_defaults"
-            app:key=""
-            app:summary="Enable/disable languages"
-            app:title="Active languages" />
+            app:key="@string/languages_key"
+            app:summary="@string/languages_summary"
+            app:title="@string/languages_title" />
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/messages_header">

@@ -4,11 +4,20 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceFragmentCompat;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.pearls.DB.Language;
+import br.com.pearls.DB.PearlsViewModel;
 import br.com.pearls.R;
 
 public class SettingsActivity extends AppCompatActivity {
+
+    private PearlsViewModel mPearlsViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +31,19 @@ public class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        mPearlsViewModel = new ViewModelProvider(this).get(PearlsViewModel.class);
+
+        mPearlsViewModel.getmAllLanguages().observe(this, new Observer<List<Language>>() {
+            @Override
+            public void onChanged(List<Language> languages) {
+                List<CharSequence> entries = new ArrayList<>();
+                List<CharSequence> entriesValues = new ArrayList<>();
+
+
+                
+            }
+        });
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
