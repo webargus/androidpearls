@@ -27,6 +27,7 @@ public class Language {
 
     public void setId(int id) {
         // do nothing, just created this method for compiling to work
+        this.id = id;
     }
 
     public void setLanguage(String language) {

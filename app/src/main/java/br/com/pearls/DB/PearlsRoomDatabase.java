@@ -27,18 +27,24 @@ public abstract class PearlsRoomDatabase extends RoomDatabase {
                 Language language = new Language();
                 language.setLanguage("English");
                 dao.insert(language);
+                language = new Language();
                 language.setLanguage("Portuguese");
                 dao.insert(language);
+                language = new Language();
                 language.setLanguage("Spanish");
+                dao.insert(language);
             });
         }
+
     };
 
     static PearlsRoomDatabase getDatabase(final Context context) {
         if(INSTANCE == null) {
             INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                        PearlsRoomDatabase.class,
-                      "pearls").addCallback(sRoomDatabaseCallback).build();
+                      "pearls").fallbackToDestructiveMigration()
+                                    .addCallback(sRoomDatabaseCallback)
+                                    .build();
         }
         return INSTANCE;
     }

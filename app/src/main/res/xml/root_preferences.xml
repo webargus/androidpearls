@@ -26,15 +26,15 @@
                 app:key = any string, including empty string, but there's got be a string!
                 app:defaultValue = a string in strings.xml or an array in arrays.xml; in the
                                     end of the day, there's gotta be one or the other, without
-                                    which a crash occurs
+                                    which app crashes
         -->
         <br.com.pearls.Settings.LanguageMultiSelect
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:defaultValue="@array/language_defaults"
             app:key="@string/languages_key"
             app:summary="@string/languages_summary"
             app:title="@string/languages_title" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/messages_header">
