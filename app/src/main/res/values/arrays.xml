@@ -1,24 +1,5 @@
 <resources>
 
-    <!-- Languages Preferences -->
-    <string-array name="language_entries">
-        <item>Portuguese</item>
-        <item>English</item>
-        <item>Spanish</item>
-        <item>French</item>
-        <item>Italian</item>
-        <item>German</item>
-    </string-array>
-
-    <string-array name="language_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-    </string-array>
-
     <string-array name="reply_values">
         <item>reply</item>
         <item>reply_all</item>
