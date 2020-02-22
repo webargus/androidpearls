@@ -16,7 +16,7 @@
 
     <!-- Settings stuff -->
     <string name="title_activity_settings">Settings</string>
-    <string name="languages_summary">Enable/disable languages</string>
+    <string name="languages_summary">* You must keep at least one language active</string>
     <string name="languages_title">Active languages</string>
     <string name="languages_key">languages_key</string>
 

@@ -1,15 +1,10 @@
 package br.com.pearls.Settings;
 
-import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceFragmentCompat;
@@ -21,16 +16,21 @@ import br.com.pearls.DB.Language;
 import br.com.pearls.DB.PearlsViewModel;
 import br.com.pearls.R;
 
+import static java.lang.String.valueOf;
+
 public class SettingsActivity extends AppCompatActivity {
 
     private static final String TAG = SettingsActivity.class.getName();
 
     private PearlsViewModel mPearlsViewModel;
 
+    private SettingsFragment settingsFragment;
+
     private static Bundle LANGUAGE_ENTRIES;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 
@@ -38,18 +38,18 @@ public class SettingsActivity extends AppCompatActivity {
         mPearlsViewModel.getmAllLanguages().observe(this, new Observer<List<Language>>() {
             @Override
             public void onChanged(List<Language> languages) {
-                setLanguageEntries(languages);
+                setLanguageEntries(languages, savedInstanceState);
             }
         });
     }
 
-    private void setLanguageEntries(List<Language> languages) {
+    private void setLanguageEntries(List<Language> languages, Bundle savedInstanceState) {
         List<CharSequence> entries = new ArrayList<>();
         List<CharSequence> entryValues = new ArrayList<>();
 
         for(int ix = 0; ix < languages.size(); ix++) {
             entries.add(languages.get(ix).getLanguage());
-            entryValues.add(String.valueOf(languages.get(ix).getId()));
+            entryValues.add(valueOf(languages.get(ix).getId()));
         }
 
         LANGUAGE_ENTRIES = new Bundle();
@@ -59,14 +59,18 @@ public class SettingsActivity extends AppCompatActivity {
                 entryValues.toArray(new CharSequence[entryValues.size()]));
 
         // create settings fragment ONLY AFTER having gotten languages from db
-        createSettingsFragment();
+        createSettingsFragment(savedInstanceState);
     }
 
-    private void createSettingsFragment() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.settings, new SettingsFragment())
-                .commit();
+    private void createSettingsFragment(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
+            settingsFragment = new SettingsFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.settings, settingsFragment)
+                    .commit();
+        }
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -78,13 +82,15 @@ public class SettingsActivity extends AppCompatActivity {
         return LANGUAGE_ENTRIES;
     }
 
-    public static class SettingsFragment extends PreferenceFragmentCompat {
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //          Subclass SettingsFragment
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
+    public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            setPreferencesFromResource(R.xml.root_preferences, rootKey);
+            addPreferencesFromResource(R.xml.root_preferences);
         }
 
     }
-
 }

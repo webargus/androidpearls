@@ -21,14 +21,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/tab_text_languages"
-        android:visibility="visible">
-        <!-- mandatory params in MultiSelectListPreference tag:
+        android:visibility="visible"
+        android:configChanges="orientation|screenSize|keyboardHidden">
+         mandatory params in MultiSelectListPreference tag:
                 app:key = any string, including empty string, but there's got be a string!
                 app:defaultValue = a string in strings.xml or an array in arrays.xml; in the
                                     end of the day, there's gotta be one or the other, without
                                     which app crashes
-        -->
+
         <br.com.pearls.Settings.LanguageMultiSelect
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:key="@string/languages_key"
@@ -37,9 +39,11 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/messages_header">
+    <PreferenceCategory
+        app:title="@string/messages_header">
 
         <EditTextPreference
+            android:configChanges="orientation|screenSize|keyboardHidden"
             app:key="signature"
             app:title="@string/signature_title"
             app:useSimpleSummaryProvider="true" />
