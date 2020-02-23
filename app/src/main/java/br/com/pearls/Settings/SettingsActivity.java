@@ -76,9 +76,9 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    // LanguageMultiSelect obj calls this method for setting entries and entry values
-    public static Bundle getLanguageEntries() {
-        return LANGUAGE_ENTRIES;
+    // LanguageMultiSelect obj implements this for setting entries and entry values
+    public interface multiSelectEntries {
+        static Bundle getEntries() { return LANGUAGE_ENTRIES; }
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

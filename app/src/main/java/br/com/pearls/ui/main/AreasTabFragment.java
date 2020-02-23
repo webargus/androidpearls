@@ -1,15 +1,14 @@
 package br.com.pearls.ui.main;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,16 +22,15 @@ import br.com.pearls.DB.AreasViewModel;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.R;
 
-import static android.app.Activity.RESULT_OK;
+public class AreasTabFragment extends AppCompatDialogFragment implements NewAreaDialog.OnNewAreaInput  {
 
-public class AreasTabFragment extends Fragment {
-
-    private static final String TAG = LanguagesTabFragment.class.getName();
+    private static final String TAG = AreasTabFragment.class.getName();
     private AreasViewModel mAreasViewModel;
-    public static final int NEW_AREA_ACTIVITY_REQUEST_CODE = 1;
 
-    public AreasTabFragment() {
-        // Required empty public constructor
+    @Override
+    public void sendAreaInput(String area) {
+        Log.v(TAG, "Got new area input: " + area);
+
     }
 
     @Nullable
@@ -52,8 +50,7 @@ public class AreasTabFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), NewAreaActivity.class);
-                startActivityForResult(intent, NEW_AREA_ACTIVITY_REQUEST_CODE);
+                openAreaCreateDialog();
             }
         });
 
@@ -67,20 +64,12 @@ public class AreasTabFragment extends Fragment {
         return root;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == NEW_AREA_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            KnowledgeArea area = new KnowledgeArea();
-            area.setArea(data.getStringExtra(NewAreaActivity.EXTRA_REPLY));
-            mAreasViewModel.insert(area);
-        } else {
-            Toast.makeText(getActivity().getApplicationContext(),
-                           R.string.area_empty_not_saved,
-                           Toast.LENGTH_LONG).show();
-        }
+    private void openAreaCreateDialog() {
+        NewAreaDialog dlg = new NewAreaDialog();
+        dlg.setTargetFragment(AreasTabFragment.this, 1);
+        dlg.show(getActivity().getSupportFragmentManager(), "AreasTabFragment");
     }
+
 }
 
 

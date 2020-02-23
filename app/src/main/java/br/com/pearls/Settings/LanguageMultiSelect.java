@@ -18,7 +18,8 @@ import java.util.Set;
 
 import br.com.pearls.R;
 
-public class LanguageMultiSelect extends MultiSelectListPreference {
+public class LanguageMultiSelect extends MultiSelectListPreference
+                                    implements SettingsActivity.multiSelectEntries{
 
     private static final String TAG = LanguageMultiSelect.class.getName();
 
@@ -26,15 +27,13 @@ public class LanguageMultiSelect extends MultiSelectListPreference {
         super(context, attributes);
 
         // get db language entries from SettingsActivity
-        Bundle bundle = SettingsActivity.getLanguageEntries();
+        Bundle bundle = SettingsActivity.multiSelectEntries.getEntries();
 
         // set entries, entry values and default values
         setEntries(bundle.getCharSequenceArray("entries"));
         CharSequence[] entryValues = bundle.getCharSequenceArray("entryValues");
         setEntryValues(entryValues);
-//        for(int ix = 0; ix < entryValues.length; ix++) {
-//            Log.v(TAG, "xxxxxxxxxxxxx ix = " + ix + "   ->    " + entryValues[ix]);
-//        }
+
         Set<String> defaults = new HashSet<>();
         if(entryValues.length > 0) {
             defaults.add(entryValues[0].toString());
@@ -100,6 +99,5 @@ public class LanguageMultiSelect extends MultiSelectListPreference {
             return false;
         }
     };
-
 
 }
