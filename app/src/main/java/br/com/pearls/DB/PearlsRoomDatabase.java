@@ -11,10 +11,11 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Language.class}, version = 1, exportSchema = false)
+@Database(entities = {Language.class, KnowledgeArea.class}, version = 2, exportSchema = false)
 public abstract class PearlsRoomDatabase extends RoomDatabase {
 
     public abstract LanguagesDao languagesDao();
+    public abstract AreasDao areasDao();
     private static volatile PearlsRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
     static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);

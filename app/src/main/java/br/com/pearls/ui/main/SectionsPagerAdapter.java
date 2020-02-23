@@ -1,7 +1,6 @@
 package br.com.pearls.ui.main;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -21,28 +20,26 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.tab_text_search,
-                                                      R.string.tab_text_languages};
+                                                      R.string.tab_text_areas};
 
     private SearchTabFragment searchTabFragment;
-    private LanguagesTabFragment languagesTabFragment;
-
+    private AreasTabFragment areasTabFragment;
     private final Context mContext;
 
     public SectionsPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
         searchTabFragment = new SearchTabFragment();
-        languagesTabFragment = new LanguagesTabFragment();
+        areasTabFragment = new AreasTabFragment();
     }
 
     @Override
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
         if(position == 0) {
             return searchTabFragment;
         }
-        return languagesTabFragment;
+        return areasTabFragment;
     }
 
     @Nullable

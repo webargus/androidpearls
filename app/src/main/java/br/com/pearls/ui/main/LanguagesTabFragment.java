@@ -14,7 +14,6 @@ import android.widget.ListView;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import br.com.pearls.DB.DataBaseHelper;
 import br.com.pearls.R;
 
 /**
@@ -31,7 +30,6 @@ public class LanguagesTabFragment extends Fragment {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -45,7 +43,6 @@ public class LanguagesTabFragment extends Fragment {
                         .setAction("Action", null).show();
             }
         });
-
 
         String[] langCodes = getResources().getStringArray(R.array.language_codes);
         ListView langListView = root.findViewById(R.id.languages_list_view);

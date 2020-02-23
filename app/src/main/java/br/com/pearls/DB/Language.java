@@ -1,6 +1,5 @@
 package br.com.pearls.DB;
 
-import androidx.annotation.BoolRes;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

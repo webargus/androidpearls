@@ -7,15 +7,15 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-public class PearlsViewModel extends AndroidViewModel {
+public class LanguagesViewModel extends AndroidViewModel {
 
-    private PearlsRepository mRepository;
+    private LanguagesRepository mRepository;
 
     private LiveData<List<Language>> mAllLanguages;
 
-    public PearlsViewModel(Application application) {
+    public LanguagesViewModel(Application application) {
         super(application);
-        mRepository = new PearlsRepository(application);
+        mRepository = new LanguagesRepository(application);
         mAllLanguages = mRepository.getmAllLanguages();
     }
 

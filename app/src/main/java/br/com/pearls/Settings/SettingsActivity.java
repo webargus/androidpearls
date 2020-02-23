@@ -1,7 +1,6 @@
 package br.com.pearls.Settings;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.pearls.DB.Language;
-import br.com.pearls.DB.PearlsViewModel;
+import br.com.pearls.DB.LanguagesViewModel;
 import br.com.pearls.R;
 
 import static java.lang.String.valueOf;
@@ -22,7 +21,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private static final String TAG = SettingsActivity.class.getName();
 
-    private PearlsViewModel mPearlsViewModel;
+    private LanguagesViewModel mLanguagesViewModel;
 
     private SettingsFragment settingsFragment;
 
@@ -34,8 +33,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 
-        mPearlsViewModel = new ViewModelProvider(this).get(PearlsViewModel.class);
-        mPearlsViewModel.getmAllLanguages().observe(this, new Observer<List<Language>>() {
+        mLanguagesViewModel = new ViewModelProvider(this).get(LanguagesViewModel.class);
+        mLanguagesViewModel.getmAllLanguages().observe(this, new Observer<List<Language>>() {
             @Override
             public void onChanged(List<Language> languages) {
                 setLanguageEntries(languages, savedInstanceState);
