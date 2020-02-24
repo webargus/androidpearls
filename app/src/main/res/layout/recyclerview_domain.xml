@@ -8,6 +8,6 @@
         android:id="@+id/itemTextView"
         style="@style/domain_item" />
     <View
-        style="@style/area_domain_divider" />
+        style="@style/divider" />
 </LinearLayout>
 

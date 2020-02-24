@@ -1,8 +1,6 @@
 package br.com.pearls.ui.main;
 
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,37 +27,12 @@ public class AreasDomainsTabSection extends Section {
                                   @NonNull final  OnHeaderClick clickListener) {
         // call constructor with layout resources for this Section header and items
         super(SectionParameters.builder()
-                .itemResourceId(R.layout.fragment_areas_domains_item)
-                .headerResourceId(R.layout.fragment_areas_domains_header)
+                .itemResourceId(R.layout.recyclerview_domain)
+                .headerResourceId(R.layout.recyclerview_areas)
                 .build());
         this.title = title;
         this.itemList = itemList;
         this.clickListener = clickListener;
-    }
-
-    class DomainsViewHolder extends RecyclerView.ViewHolder {
-
-        private final TextView tvItem;
-
-        public DomainsViewHolder(View itemView) {
-            super(itemView);
-
-            tvItem = itemView.findViewById(R.id.itemTextView);
-        }
-    }
-
-    class HeaderViewHolder extends RecyclerView.ViewHolder {
-
-        private final View headerView;
-        private final TextView tvHeader;
-        private final ImageView imgCaret;
-
-        public HeaderViewHolder(View headerView) {
-            super(headerView);
-            this.headerView = headerView;
-            tvHeader = headerView.findViewById(R.id.headerTextView);
-            imgCaret = headerView.findViewById(R.id.headerCaretImg);
-        }
     }
 
     boolean isExpanded() {
@@ -91,12 +64,12 @@ public class AreasDomainsTabSection extends Section {
 
     @Override
     public RecyclerView.ViewHolder getHeaderViewHolder(View view) {
-        return new HeaderViewHolder(view);
+        return new AreasViewHolder(view);
     }
 
     @Override
     public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder) {
-        final HeaderViewHolder viewHolder = (HeaderViewHolder) holder;
+        final AreasViewHolder viewHolder = (AreasViewHolder) holder;
         viewHolder.tvHeader.setText(title);
         viewHolder.imgCaret.setImageResource(
                 expanded ? R.drawable.ic_caret_up: R.drawable.ic_caret_down

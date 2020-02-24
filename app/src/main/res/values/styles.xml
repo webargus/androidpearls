@@ -22,7 +22,6 @@ The margin is a simple delimiter between the areas/domains. -->
     <style name="area_domain_title">
         <item name="android:layout_width">match_parent</item>
         <item name="android:padding">16dp</item>
-        <item name="android:background">@android:color/holo_blue_light</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">16dp</item>
     </style>
@@ -37,7 +36,7 @@ The margin is a simple delimiter between the areas/domains. -->
         <item name="android:textSize">14dp</item>
     </style>
 
-    <style name="area_domain_divider">
+    <style name="divider">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">1dp</item>
         <item name="android:background">?android:attr/listDivider</item>
