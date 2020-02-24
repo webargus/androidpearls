@@ -23,14 +23,14 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
                                                       R.string.tab_text_areas};
 
     private SearchTabFragment searchTabFragment;
-    private AreasTabFragment areasTabFragment;
+    private AreasDomainsTabFragment areasTabFragment;
     private final Context mContext;
 
     public SectionsPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
         searchTabFragment = new SearchTabFragment();
-        areasTabFragment = new AreasTabFragment();
+        areasTabFragment = new AreasDomainsTabFragment();
     }
 
     @Override
