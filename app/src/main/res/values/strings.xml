@@ -10,11 +10,6 @@
     <string name="tab_text_domains">Domains</string>
     <string name="tab_text_languages">Languages</string>
 
-    <!-- New area activity NewAreaActivity.java -->
-    <string name="area_hint">Knowledge area</string>
-    <string name="area_button_save">Save</string>
-    <string name="area_empty_not_saved">Area not saved because it is empty</string>
-
     <!-- TODO: Remove or change this placeholder text -->
     <string name="search_area_domain_label"><![CDATA[area > domain]]></string>
     <string name="language_hint">Language name</string>

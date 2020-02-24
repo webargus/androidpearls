@@ -11,7 +11,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.main.NewAreaActivity"></activity>
         <activity
             android:name=".Settings.SettingsActivity"
             android:label="@string/title_activity_settings"
