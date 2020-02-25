@@ -20,8 +20,8 @@ public class NewAreaDialog extends DialogFragment {
 
     private static final String TAG = "NewAreaDialog";
 
-    EditText mAreaNameEdit;
-    OnNewAreaInput onNewAreaInput;
+    private EditText mAreaNameEdit;
+    private OnNewAreaInput onNewAreaInput;
 
     public interface OnNewAreaInput {
         void sendAreaInput(String area);
@@ -34,7 +34,7 @@ public class NewAreaDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.areas_new_area_dlg, null);
+        View view = inflater.inflate(R.layout.new_area_dlg, null);
 
         builder.setView(view).setTitle("New Knowledge Area")
                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

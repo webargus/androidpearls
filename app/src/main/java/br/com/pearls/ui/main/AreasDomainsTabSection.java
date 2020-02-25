@@ -23,6 +23,7 @@ public class AreasDomainsTabSection extends Section {
 
     interface OnHeaderClick {
         void onHeaderClicked(@NonNull final AreasDomainsTabSection section);
+        boolean onHeaderLongClicked(@NonNull final KnowledgeArea area, @NonNull final AreasViewHolder viewHolder);
     }
 
     public AreasDomainsTabSection(@NonNull final AreasWithDomains areasWithDomains,
@@ -77,5 +78,6 @@ public class AreasDomainsTabSection extends Section {
                 expanded ? R.drawable.ic_caret_up: R.drawable.ic_caret_down
         );
         viewHolder.headerView.setOnClickListener(view -> clickListener.onHeaderClicked(this));
+        viewHolder.headerView.setOnLongClickListener(view -> clickListener.onHeaderLongClicked(area, viewHolder));
     }
 }
