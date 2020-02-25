@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
 public class Language {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
 
     @NonNull
     private String language;
@@ -20,11 +20,11 @@ public class Language {
     @ColumnInfo(defaultValue = "0")
     private int status;
 
-    public int getId() {
+    public long getId() {
         return this.id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         // do nothing, just created this method for compiling to work
         this.id = id;
     }

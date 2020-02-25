@@ -7,14 +7,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import br.com.pearls.DB.AreasWithDomains;
+import br.com.pearls.DB.Domain;
+import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.R;
 import io.github.luizgrp.sectionedrecyclerviewadapter.Section;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters;
 
 public class AreasDomainsTabSection extends Section {
 
-    private final String title;
-    private final List<String> itemList;
+    private final KnowledgeArea area;
+    private final List<Domain> domains;
     private final OnHeaderClick clickListener;
     private boolean expanded = true;
 
@@ -22,16 +25,15 @@ public class AreasDomainsTabSection extends Section {
         void onHeaderClicked(@NonNull final AreasDomainsTabSection section);
     }
 
-    public AreasDomainsTabSection(@NonNull final String title,
-                                  final List<String> itemList,
+    public AreasDomainsTabSection(@NonNull final AreasWithDomains areasWithDomains,
                                   @NonNull final  OnHeaderClick clickListener) {
         // call constructor with layout resources for this Section header and items
         super(SectionParameters.builder()
                 .itemResourceId(R.layout.recyclerview_domain)
                 .headerResourceId(R.layout.recyclerview_areas)
                 .build());
-        this.title = title;
-        this.itemList = itemList;
+        this.area = areasWithDomains.area;
+        this.domains = areasWithDomains.domains;
         this.clickListener = clickListener;
     }
 
@@ -45,10 +47,10 @@ public class AreasDomainsTabSection extends Section {
 
     @Override
     public int getContentItemsTotal() {
-        if((itemList == null) || !expanded) {
+        if((domains == null) || !expanded) {
             return 0;
         }
-        return itemList.size();
+        return domains.size();
     }
 
     @Override
@@ -59,7 +61,7 @@ public class AreasDomainsTabSection extends Section {
     @Override
     public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
         DomainsViewHolder itemViewHolder = (DomainsViewHolder) holder;
-        itemViewHolder.tvItem.setText(itemList.get(position));
+        itemViewHolder.tvItem.setText(domains.get(position).getDomain());
     }
 
     @Override
@@ -70,7 +72,7 @@ public class AreasDomainsTabSection extends Section {
     @Override
     public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder) {
         final AreasViewHolder viewHolder = (AreasViewHolder) holder;
-        viewHolder.tvHeader.setText(title);
+        viewHolder.tvHeader.setText(area.getArea());
         viewHolder.imgCaret.setImageResource(
                 expanded ? R.drawable.ic_caret_up: R.drawable.ic_caret_down
         );

@@ -2,6 +2,7 @@ package br.com.pearls.ui.main;
 
 import android.util.Log;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
@@ -34,10 +35,28 @@ class AreasViewHolder extends RecyclerView.ViewHolder {
                 PopupMenu menu = new PopupMenu(v.getContext(), v);
                 MenuInflater inflater = menu.getMenuInflater();
                 inflater.inflate(R.menu.area_menu, menu.getMenu());
+                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.domain_add:
+                                Log.v(TAG, "******************* menu add domain selected");
+                                return true;
+                            case R.id.area_edit:
+                                Log.v(TAG, "******************* menu edit area selected");
+                                return true;
+                            case R.id.area_delete:
+                                Log.v(TAG, "******************* menu area delete selected");
+                                return true;
+                        }
+                        return false;
+                    }
+                });
                 menu.show();
                 return true;
             }
         });
+
 
 //        headerView.setOnLongClickListener(new View.OnLongClickListener() {
 //            // Called when the user long-clicks on someView

@@ -25,7 +25,7 @@ public class AreasViewAdapter extends RecyclerView.Adapter<AreasViewAdapter.Area
     }
 
     private final LayoutInflater mInflater;
-    private List<KnowledgeArea> mAreas; // Cached copy of words
+    private List<KnowledgeArea> mAreas; // Cached copy of areas
 
     AreasViewAdapter(Context context) {
         mInflater = LayoutInflater.from(context);

@@ -8,12 +8,18 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import br.com.pearls.DB.AreasViewModel;
+import br.com.pearls.DB.AreasWithDomains;
 import br.com.pearls.R;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
@@ -22,6 +28,8 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
                         implements AreasDomainsTabSection.OnHeaderClick{
 
     SectionedRecyclerViewAdapter sectionAdapter;
+
+    private AreasViewModel areasViewModel;
 
     @Override
     public void onHeaderClicked(@NonNull AreasDomainsTabSection section) {
@@ -49,20 +57,26 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_areas_domains, container, false);
 
-        List<String> domains = new ArrayList<>();
-        domains.add("Cardiology");
-        domains.add("Pneumology");
-
         sectionAdapter = new SectionedRecyclerViewAdapter();
-        sectionAdapter.addSection(new AreasDomainsTabSection("Medicine", domains, this));
-        sectionAdapter.addSection(new AreasDomainsTabSection("Engineering", null, this));
 
         RecyclerView recyclerView = root.findViewById(R.id.areas_domains_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(sectionAdapter);
 
+        areasViewModel = new ViewModelProvider(this).get(AreasViewModel.class);
+        areasViewModel.getmAreasWithDomains().observe(this, new Observer<List<AreasWithDomains>>() {
+            @Override
+            public void onChanged(List<AreasWithDomains> areasWithDomains) {
+                sectionAdapter.removeAllSections();
+                for (AreasWithDomains awd : areasWithDomains) {
+                    sectionAdapter.addSection(new AreasDomainsTabSection(awd, AreasDomainsTabFragment.this));
+                }
+            }
+        });
+
         return root;
     }
+
 }
 
 

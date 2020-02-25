@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 
 import java.util.List;
 
@@ -18,5 +19,9 @@ public interface AreasDao {
 
     @Query("SELECT * FROM areas WHERE status = 1")
     LiveData<List<KnowledgeArea>> getSyncedAreas();
+
+    @Transaction
+    @Query("SELECT * FROM areas")
+    public LiveData<List<AreasWithDomains>> getAreasWithDomains();
 
 }

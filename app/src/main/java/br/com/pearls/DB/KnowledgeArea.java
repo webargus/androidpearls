@@ -2,14 +2,18 @@ package br.com.pearls.DB;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
+import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.Relation;
+
+import java.util.List;
 
 @Entity(tableName = "areas")
 public class KnowledgeArea {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private long id;
 
     @NonNull
     private String area;
@@ -18,11 +22,11 @@ public class KnowledgeArea {
     @ColumnInfo(defaultValue = "0")
     private int status;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -42,6 +46,22 @@ public class KnowledgeArea {
         this.status = status;
     }
 }
+
+//@Entity
+//class Area {
+//    @PrimaryKey public long id;
+//    public String area;
+//    public int status;
+//}
+//
+//@Entity
+//class AreaDomain {
+//    @PrimaryKey public long id;
+//    public String domain;
+//    public long area_ref;
+//    public int status;
+//}
+
 
 
 
