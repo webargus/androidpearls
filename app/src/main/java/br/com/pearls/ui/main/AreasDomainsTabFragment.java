@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,11 +48,16 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
 
     @Override
     public void sendDomainInput(String domainName) {
+        if(domainName.isEmpty()) {
+            return;
+        }
         Log.v(TAG, "Got new domain '" + domainName + "' to insert into: " + mSelectedArea.getArea());
+        // TODO: check if domain already exists!
         Domain domain = new Domain();
         domain.setDomain(domainName);
         domain.setArea_ref(mSelectedArea.getId());
         domainsViewModel.insert(domain);
+        Toast.makeText(getContext(), "Domain '" + domainName + "' created successfully", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -61,14 +67,36 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
 
     @Override
     public void sendAreaInput(String area) {
-        Log.v(TAG, "Got new area input: " + area);
         if(area.isEmpty()) {
             return;
         }
-        KnowledgeArea knowledgeArea = new KnowledgeArea();
-        knowledgeArea.setArea(area);
-        // TODO: check if area already exists!
-        areasViewModel.insert(knowledgeArea);
+        areasViewModel.getAreaByName(area).observe(this,
+                new Observer<KnowledgeArea[]>() {
+                    @Override
+                    public void onChanged(KnowledgeArea[] knowledgeAreas) {
+
+                        Log.v(TAG, "inside onChangeVVVVVVVVVVVVVVVVVVVVVVVVVV");
+                        Log.v(TAG, knowledgeAreas.toString());
+
+                        if(knowledgeAreas.length > 0) {
+                            for(KnowledgeArea ka : knowledgeAreas) {
+                                Log.v(TAG, "Area: '" + ka.getArea() + "'");
+                            }
+                            Log.v(TAG, "Area '" + area + "' already exists");
+                            return;
+                        }
+
+                        Log.v(TAG, "passed to insert");
+            //
+            //        KnowledgeArea knowledgeArea = new KnowledgeArea();
+            //        knowledgeArea.setArea(area);
+            //        // TODO: check if area already exists!
+            //        areasViewModel.insert(knowledgeArea);
+                        Toast.makeText(getContext(),
+                                "Area '" + area + "' created successfully",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override

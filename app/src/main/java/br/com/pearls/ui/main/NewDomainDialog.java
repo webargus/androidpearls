@@ -46,7 +46,7 @@ public class NewDomainDialog extends DialogFragment {
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String area = mDomainNameEdit.getText().toString();
+                        String area = mDomainNameEdit.getText().toString().trim();
                         onNewDomainInput.sendDomainInput(area);
                     }
                 });

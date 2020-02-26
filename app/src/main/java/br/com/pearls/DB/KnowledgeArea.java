@@ -47,22 +47,6 @@ public class KnowledgeArea {
     }
 }
 
-//@Entity
-//class Area {
-//    @PrimaryKey public long id;
-//    public String area;
-//    public int status;
-//}
-//
-//@Entity
-//class AreaDomain {
-//    @PrimaryKey public long id;
-//    public String domain;
-//    public long area_ref;
-//    public int status;
-//}
-
-
 
 
 

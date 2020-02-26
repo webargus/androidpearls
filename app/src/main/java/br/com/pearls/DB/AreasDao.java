@@ -1,5 +1,6 @@
 package br.com.pearls.DB;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
@@ -22,6 +23,9 @@ public interface AreasDao {
 
     @Transaction
     @Query("SELECT * FROM areas")
-    public LiveData<List<AreasWithDomains>> getAreasWithDomains();
+    LiveData<List<AreasWithDomains>> getAreasWithDomains();
+
+    @Query("SELECT * FROM areas WHERE area = :area")
+    LiveData<KnowledgeArea[]> getAreaByName(String area);
 
 }

@@ -46,7 +46,7 @@ public class NewAreaDialog extends DialogFragment {
                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
-                       String area = mAreaNameEdit.getText().toString();
+                       String area = mAreaNameEdit.getText().toString().trim();
                        onNewAreaInput.sendAreaInput(area);
                    }
                });
