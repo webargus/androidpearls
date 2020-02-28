@@ -2,7 +2,10 @@ package br.com.pearls.ui.main;
 
 import android.os.Bundle;
 import android.util.Log;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import android.view.LayoutInflater;
@@ -16,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.lifecycle.HasDefaultViewModelProviderFactory;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -120,7 +124,7 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
+    public View  onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_areas_domains, container, false);
