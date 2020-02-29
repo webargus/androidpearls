@@ -15,11 +15,14 @@ public class Domain {
     private String domain;
 
     @NonNull
+    private String domain_ascii;
+
+    @NonNull
     private long area_ref;
 
     @NonNull
     @ColumnInfo(defaultValue = "0")
-    private int status;
+    private int synced;
 
     public long getId() { return this.id; }
 
@@ -29,13 +32,17 @@ public class Domain {
 
     public void setDomain(String domain) { this.domain = domain; }
 
+    public String getDomain_ascii() { return this.domain_ascii; }
+
+    public void setDomain_ascii(String domain_ascii) { this.domain_ascii = domain_ascii; }
+
     public long getArea_ref() { return this.area_ref; }
 
     public void setArea_ref(long area_ref) { this.area_ref = area_ref; }
 
-    public int getStatus() { return this.status; }
+    public int getSynced() { return this.synced; }
 
-    public void setStatus(int status) { this.status = status; }
+    public void setSynced(int synced) { this.synced = synced; }
 
 }
 

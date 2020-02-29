@@ -20,6 +20,10 @@ public class DomainsRepository {
 
     LiveData<List<Domain>> getmAllDomains() { return mAllDomains; }
 
+    LiveData<Domain[]> getmDomainByName(String domain, long area_ref) {
+        return  mDomainsDao.getDomainByName(domain, area_ref);
+    }
+
     void insertDomain(Domain domain) {
         PearlsRoomDatabase.databaseWriteExecutor.execute(() -> {
             mDomainsDao.insert(domain);

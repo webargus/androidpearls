@@ -18,14 +18,14 @@ public interface AreasDao {
     @Query("SELECT * FROM areas")
     LiveData<List<KnowledgeArea>> getAllAreas();
 
-    @Query("SELECT * FROM areas WHERE status = 1")
+    @Query("SELECT * FROM areas WHERE synced = 1")
     LiveData<List<KnowledgeArea>> getSyncedAreas();
 
     @Transaction
     @Query("SELECT * FROM areas")
     LiveData<List<AreasWithDomains>> getAreasWithDomains();
 
-    @Query("SELECT * FROM areas WHERE area = :area")
+    @Query("SELECT * FROM areas WHERE area_ascii = :area")
     LiveData<KnowledgeArea[]> getAreaByName(String area);
 
 }

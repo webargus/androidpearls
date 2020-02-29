@@ -16,7 +16,10 @@ public interface DomainsDao {
     @Query("SELECT * FROM domains")
     LiveData<List<Domain>> getAllDomains();
 
-    @Query("SELECT * FROM domains WHERE status = 1")
+    @Query("SELECT * FROM domains WHERE synced = 1")
     LiveData<List<Domain>> getSyncedDomains();
+
+    @Query("SELECT * FROM domains WHERE domain_ascii = :domain AND area_ref = :area_ref")
+    LiveData<Domain[]> getDomainByName(String domain, long area_ref);
 
 }

@@ -46,6 +46,8 @@ public class RemoveDiacritics {
     private static final String map_Y = "Ý";
     private static final String map_g = "[ģğ]";
     private static final String map_G = "[ĢĞ]";
+    private static final String map_t = "[þťțţ]";
+    private static final String map_T = "[ÞŤȚŢ]";
 
     public RemoveDiacritics() {
         MAP.put("a", Pattern.compile(map_a));
@@ -83,6 +85,8 @@ public class RemoveDiacritics {
         MAP.put("Y", Pattern.compile(map_Y));
         MAP.put("g", Pattern.compile(map_g));
         MAP.put("G", Pattern.compile(map_G));
+        MAP.put("t", Pattern.compile(map_t));
+        MAP.put("T", Pattern.compile(map_T));
     }
 
     public static String removeDiacritics(String string) {

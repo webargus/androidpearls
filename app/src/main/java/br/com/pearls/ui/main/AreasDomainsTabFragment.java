@@ -3,9 +3,7 @@ package br.com.pearls.ui.main;
 import android.os.Bundle;
 import android.util.Log;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import android.view.LayoutInflater;
@@ -19,7 +17,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
-import androidx.lifecycle.HasDefaultViewModelProviderFactory;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,6 +30,8 @@ import br.com.pearls.DB.Domain;
 import br.com.pearls.DB.DomainsViewModel;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.R;
+import br.com.pearls.utils.LiveDataUtil;
+import br.com.pearls.utils.RemoveDiacritics;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
@@ -47,6 +46,8 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
 
     private AreasViewModel areasViewModel;
     private DomainsViewModel domainsViewModel;
+    private Observer<KnowledgeArea[]> areaObserver;
+    private Observer<Domain[]> domainObserver;
 
     private KnowledgeArea mSelectedArea;
 
@@ -55,13 +56,34 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
         if(domainName.isEmpty()) {
             return;
         }
+        String domain_ascii = RemoveDiacritics.removeDiacritics(domainName).toLowerCase();
         Log.v(TAG, "Got new domain '" + domainName + "' to insert into: " + mSelectedArea.getArea());
-        // TODO: check if domain already exists!
-        Domain domain = new Domain();
-        domain.setDomain(domainName);
-        domain.setArea_ref(mSelectedArea.getId());
-        domainsViewModel.insert(domain);
-        Toast.makeText(getContext(), "Domain '" + domainName + "' created successfully", Toast.LENGTH_SHORT).show();
+        Log.v(TAG, "domain_ascii = '" +domain_ascii + "' *************************");
+        Log.v(TAG, "area_ref = " + mSelectedArea.getId());
+        domainObserver = new Observer<Domain[]>() {
+            @Override
+            public void onChanged(Domain[] domains) {
+//                    domainsViewModel.getDomainByName(domain_ascii, mSelectedArea.getId())
+//                            .removeObservers(getViewLifecycleOwner());
+                if (domains.length > 0) {
+                    Toast.makeText(getContext(),
+                            "Domain '" + domains[0].getDomain() + "' already exists",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Log.v(TAG, "passed: will insert domain");
+                Domain domain = new Domain();
+                domain.setDomain(domainName);
+                domain.setDomain_ascii(domain_ascii);
+                domain.setArea_ref(mSelectedArea.getId());
+                domainsViewModel.insert(domain);
+                Toast.makeText(getContext(),
+                        "Domain '" + domainName + "' created successfully",
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+        LiveDataUtil.observeOnce(domainsViewModel.getDomainByName(domain_ascii, mSelectedArea.getId()),
+                                 domainObserver);
     }
 
     @Override
@@ -74,33 +96,29 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
         if(area.isEmpty()) {
             return;
         }
-        areasViewModel.getAreaByName(area).observe(this,
-                new Observer<KnowledgeArea[]>() {
-                    @Override
-                    public void onChanged(KnowledgeArea[] knowledgeAreas) {
+        String area_ascii = RemoveDiacritics.removeDiacritics(area).toLowerCase();
+        areaObserver = new Observer<KnowledgeArea[]>() {
+            @Override
+            public void onChanged(KnowledgeArea[] knowledgeAreas) {
+                if(knowledgeAreas.length > 0) {
+                    Toast.makeText(getContext(),
+                            "Area '" + knowledgeAreas[0].getArea() + "' already exists",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
 
-                        Log.v(TAG, "inside onChangeVVVVVVVVVVVVVVVVVVVVVVVVVV");
-                        Log.v(TAG, knowledgeAreas.toString());
+                Log.v(TAG, "passed to insert");
 
-                        if(knowledgeAreas.length > 0) {
-                            for(KnowledgeArea ka : knowledgeAreas) {
-                                Log.v(TAG, "Area: '" + ka.getArea() + "'");
-                            }
-                            Log.v(TAG, "Area '" + area + "' already exists");
-                            return;
-                        }
-
-                        Log.v(TAG, "passed to insert");
-            //
-            //        KnowledgeArea knowledgeArea = new KnowledgeArea();
-            //        knowledgeArea.setArea(area);
-            //        // TODO: check if area already exists!
-            //        areasViewModel.insert(knowledgeArea);
-                        Toast.makeText(getContext(),
-                                "Area '" + area + "' created successfully",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
+                KnowledgeArea knowledgeArea = new KnowledgeArea();
+                knowledgeArea.setArea(area);
+                knowledgeArea.setArea_ascii(area_ascii);
+                areasViewModel.insert(knowledgeArea);
+                Toast.makeText(getContext(),
+                        "Area '" + area + "' created successfully",
+                        Toast.LENGTH_LONG).show();
+            }
+        };
+        LiveDataUtil.observeOnce(areasViewModel.getAreaByName(area_ascii), areaObserver);
     }
 
     @Override

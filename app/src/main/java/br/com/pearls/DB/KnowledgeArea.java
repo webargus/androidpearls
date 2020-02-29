@@ -2,12 +2,8 @@ package br.com.pearls.DB;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
-import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.Relation;
-
-import java.util.List;
 
 @Entity(tableName = "areas")
 public class KnowledgeArea {
@@ -19,8 +15,11 @@ public class KnowledgeArea {
     private String area;
 
     @NonNull
+    private String area_ascii;
+
+    @NonNull
     @ColumnInfo(defaultValue = "0")
-    private int status;
+    private int synced;
 
     public long getId() {
         return id;
@@ -38,12 +37,16 @@ public class KnowledgeArea {
         this.area = area;
     }
 
-    public int getStatus() {
-        return this.status;
+    public String getArea_ascii() { return this.area_ascii; }
+
+    public void setArea_ascii(String area_ascii) { this.area_ascii = area_ascii; }
+
+    public int getSynced() {
+        return this.synced;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public void setSynced(int synced) {
+        this.synced = synced;
     }
 }
 

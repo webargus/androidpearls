@@ -11,7 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Language.class, KnowledgeArea.class, Domain.class}, version = 3, exportSchema = false)
+@Database(entities = {Language.class, KnowledgeArea.class, Domain.class}, version = 1, exportSchema = false)
 public abstract class PearlsRoomDatabase extends RoomDatabase {
 
     public abstract LanguagesDao languagesDao();
