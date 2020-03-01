@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import br.com.pearls.R;
+import br.com.pearls.SearchActivity;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -30,7 +31,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         super(fm);
         mContext = context;
         searchTabFragment = new SearchTabFragment();
-        areasTabFragment = new AreasDomainsTabFragment();
+        areasTabFragment = new AreasDomainsTabFragment((SearchActivity) context);
     }
 
     @Override

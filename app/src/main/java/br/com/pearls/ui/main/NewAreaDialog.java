@@ -24,7 +24,7 @@ public class NewAreaDialog extends DialogFragment {
     private OnNewAreaInput onNewAreaInput;
 
     public interface OnNewAreaInput {
-        void sendAreaInput(String area);
+        void onNewAreaInput(String area);
     }
 
     @NonNull
@@ -47,7 +47,7 @@ public class NewAreaDialog extends DialogFragment {
                    @Override
                    public void onClick(DialogInterface dialog, int which) {
                        String area = mAreaNameEdit.getText().toString().trim();
-                       onNewAreaInput.sendAreaInput(area);
+                       onNewAreaInput.onNewAreaInput(area);
                    }
                });
         mAreaNameEdit = view.findViewById(R.id.new_area_name);

@@ -24,7 +24,7 @@ public class NewDomainDialog extends DialogFragment {
     private OnNewDomainInput onNewDomainInput;
 
     public interface OnNewDomainInput {
-        void sendDomainInput(String area);
+        void onNewDomainInput(String area);
     }
 
     @NonNull
@@ -47,7 +47,7 @@ public class NewDomainDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String area = mDomainNameEdit.getText().toString().trim();
-                        onNewDomainInput.sendDomainInput(area);
+                        onNewDomainInput.onNewDomainInput(area);
                     }
                 });
         mDomainNameEdit = view.findViewById(R.id.new_domain_name);

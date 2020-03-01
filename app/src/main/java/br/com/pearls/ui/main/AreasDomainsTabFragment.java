@@ -36,7 +36,7 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.SectionAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
 public class AreasDomainsTabFragment extends AppCompatDialogFragment
-                        implements AreasDomainsTabSection.OnHeaderClick,
+                        implements AreasDomainsTabSection.OnAreasDomainsTabSectionClick,
                                    NewAreaDialog.OnNewAreaInput,
                                    NewDomainDialog.OnNewDomainInput {
 
@@ -50,9 +50,23 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
     private Observer<Domain[]> domainObserver;
 
     private KnowledgeArea mSelectedArea;
+    private OnDomainSelectedListener domainListener;
+
+    public AreasDomainsTabFragment(OnDomainSelectedListener domainListener) {
+        this.domainListener = domainListener;
+    }
+
+    public interface OnDomainSelectedListener {
+        void setSelectedDomain(KnowledgeArea area, Domain domain);
+    }
 
     @Override
-    public void sendDomainInput(String domainName) {
+    public void onDomainClicked(@NonNull KnowledgeArea area, @NonNull Domain domain) {
+        domainListener.setSelectedDomain(area, domain);
+    }
+
+    @Override
+    public void onNewDomainInput(String domainName) {
         if(domainName.isEmpty()) {
             return;
         }
@@ -63,12 +77,10 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
         domainObserver = new Observer<Domain[]>() {
             @Override
             public void onChanged(Domain[] domains) {
-//                    domainsViewModel.getDomainByName(domain_ascii, mSelectedArea.getId())
-//                            .removeObservers(getViewLifecycleOwner());
                 if (domains.length > 0) {
                     Toast.makeText(getContext(),
                             "Domain '" + domains[0].getDomain() + "' already exists",
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
                 Log.v(TAG, "passed: will insert domain");
@@ -92,7 +104,7 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
     }
 
     @Override
-    public void sendAreaInput(String area) {
+    public void onNewAreaInput(String area) {
         if(area.isEmpty()) {
             return;
         }
@@ -103,7 +115,7 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
                 if(knowledgeAreas.length > 0) {
                     Toast.makeText(getContext(),
                             "Area '" + knowledgeAreas[0].getArea() + "' already exists",
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -115,7 +127,7 @@ public class AreasDomainsTabFragment extends AppCompatDialogFragment
                 areasViewModel.insert(knowledgeArea);
                 Toast.makeText(getContext(),
                         "Area '" + area + "' created successfully",
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_SHORT).show();
             }
         };
         LiveDataUtil.observeOnce(areasViewModel.getAreaByName(area_ascii), areaObserver);
