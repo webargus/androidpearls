@@ -12,16 +12,20 @@ public class LanguagesViewModel extends AndroidViewModel {
     private LanguagesRepository mRepository;
 
     private LiveData<List<Language>> mAllLanguages;
+    private LiveData<List<Language>> mActiveLanguages;
 
     public LanguagesViewModel(Application application) {
         super(application);
         mRepository = new LanguagesRepository(application);
         mAllLanguages = mRepository.getmAllLanguages();
+        mActiveLanguages = mRepository.getmActiveLanguages();
     }
 
     public LiveData<List<Language>> getmAllLanguages() {
         return mAllLanguages;
     }
+
+    public LiveData<List<Language>> getActiveLanguages() { return mActiveLanguages; }
 
     public void insert(Language language) {
         mRepository.insertLanguage(language);

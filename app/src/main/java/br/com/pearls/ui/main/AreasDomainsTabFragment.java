@@ -57,6 +57,8 @@ public class AreasDomainsTabFragment extends Fragment
         this.domainListener = domainListener;
     }
 
+    public AreasDomainsTabFragment() {/* Default constructor: prevents app from crashing when finishing */}
+
     public interface OnDomainSelectedListener {
         void setSelectedDomain(KnowledgeArea area, Domain domain);
     }

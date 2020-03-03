@@ -16,8 +16,9 @@ public interface LanguagesDao {
     @Query("SELECT * FROM languages")
     LiveData<List<Language>> getAllLanguages();
 
-    @Query("SELECT * FROM languages WHERE active = 1")
-    LiveData<List<Language>> getActiveLanguages();
+    @Query("SELECT * FROM languages WHERE active = :active")
+    LiveData<List<Language>> getActiveLanguages(final int active);
+
 
 }
 

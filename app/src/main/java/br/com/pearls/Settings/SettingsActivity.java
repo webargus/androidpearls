@@ -6,6 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceFragmentCompat;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         for(int ix = 0; ix < languages.size(); ix++) {
             entries.add(languages.get(ix).getLanguage());
-            entryValues.add(valueOf(languages.get(ix).getId()));
+            entryValues.add(String.valueOf(languages.get(ix).getId()));
         }
 
         LANGUAGE_ENTRIES = new Bundle();
@@ -89,6 +90,8 @@ public class SettingsActivity extends AppCompatActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             addPreferencesFromResource(R.xml.root_preferences);
+
+            PreferenceCategory lang = (PreferenceCategory) findPreference("pref_category_languages");
         }
 
     }

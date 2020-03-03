@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import br.com.pearls.DB.Language;
@@ -17,7 +18,7 @@ import br.com.pearls.R;
 
 public class RVTermFormAdapter extends RecyclerView.Adapter<RVTermFormAdapter.TermFormHolder> {
 
-    private List<Language> languages;
+    private List<Language> languages = new ArrayList<>();
 
     @NonNull
     @Override
@@ -40,6 +41,7 @@ public class RVTermFormAdapter extends RecyclerView.Adapter<RVTermFormAdapter.Te
 
     public void setLanguages(List<Language> languages) {
         this.languages = languages;
+        notifyDataSetChanged();
     }
 
     class TermFormHolder extends RecyclerView.ViewHolder {

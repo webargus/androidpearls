@@ -33,14 +33,12 @@ public class SearchActivity extends AppCompatActivity
     private static final String TAG = SearchActivity.class.getName();
 
     private static final String SEARCH_PREFERENCES = "search preferences";
-    private static final String CURRENT_AREA = "current area";
-    private static final String CURRENT_DOMAIN = "current domain";
+    public static final String CURRENT_AREA = "current area";
+    public static final String CURRENT_DOMAIN = "current domain";
 
     private KnowledgeArea currentArea;
     private Domain currentDomain;
     private TextView tvCaption;
-
-    private NewTermActivity newTermActivity;
 
     @Override
     public void setSelectedDomain(KnowledgeArea area, Domain domain) {
@@ -108,6 +106,8 @@ public class SearchActivity extends AppCompatActivity
     public void onNewTermFABClick() {
         Log.v(TAG, "got click from SearchTabFragment FAB");
         Intent newTermIntent = new Intent(SearchActivity.this, NewTermActivity.class);
+        newTermIntent.putExtra(CURRENT_AREA, currentArea);
+        newTermIntent.putExtra(CURRENT_DOMAIN, currentDomain);
         startActivity(newTermIntent);
     }
 }

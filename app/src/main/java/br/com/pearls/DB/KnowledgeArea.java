@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "areas")
@@ -27,17 +28,20 @@ public class KnowledgeArea implements Parcelable {
     public KnowledgeArea() {
     }
 
+    @Ignore
     public KnowledgeArea(@NonNull String area, @NonNull String area_ascii) {
         this.area = area;
         this.area_ascii = area_ascii;
     }
 
+    @Ignore
     public KnowledgeArea(@NonNull String area, @NonNull String area_ascii, int synced) {
         this.area = area;
         this.area_ascii = area_ascii;
         this.synced = synced;
     }
 
+    @Ignore
     protected KnowledgeArea(Parcel in) {
         id = in.readLong();
         area = in.readString();

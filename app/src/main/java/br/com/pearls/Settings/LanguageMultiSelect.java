@@ -78,12 +78,11 @@ public class LanguageMultiSelect extends MultiSelectListPreference
                 Log.v(TAG, "no languages selected");
             } else {
                 try {
-                    Set<String> selectedLanguages = (HashSet<String>) newValue;
+                    HashSet<String> selectedLanguages = (HashSet<String>) newValue;
                     if (selectedLanguages != null) {
-                        if(selectedLanguages.size() > 0) {
-                            CharSequence[] seq = selectedLanguages.toArray(new CharSequence[selectedLanguages.size()]);
-                            for (int ix = 0; ix < seq.length; ix++) {
-                                Log.v(TAG, "->->-> seq[" + ix + "] = " + seq[ix]);
+                        if(selectedLanguages.size() > 1) {
+                            for(String string : selectedLanguages) {
+                                Log.v(TAG, "->->-> string = " + string);
                             }
                             return true;
                         } else {

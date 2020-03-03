@@ -35,6 +35,8 @@ public class SearchTabFragment extends Fragment {
         this.newTermFABClick = newTermFABClick;
     }
 
+    public SearchTabFragment() {/*default constructor: prevents app from crashing when shutting down*/}
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
