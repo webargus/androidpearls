@@ -22,9 +22,13 @@ import br.com.pearls.DB.Domain;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.Settings.SettingsActivity;
 import br.com.pearls.ui.main.AreasDomainsTabFragment;
+import br.com.pearls.ui.main.NewTermActivity;
+import br.com.pearls.ui.main.SearchTabFragment;
 import br.com.pearls.ui.main.SectionsPagerAdapter;
 
-public class SearchActivity extends AppCompatActivity implements AreasDomainsTabFragment.OnDomainSelectedListener {
+public class SearchActivity extends AppCompatActivity
+        implements AreasDomainsTabFragment.OnDomainSelectedListener,
+        SearchTabFragment.OnNewTermFABClick {
 
     private static final String TAG = SearchActivity.class.getName();
 
@@ -35,6 +39,8 @@ public class SearchActivity extends AppCompatActivity implements AreasDomainsTab
     private KnowledgeArea currentArea;
     private Domain currentDomain;
     private TextView tvCaption;
+
+    private NewTermActivity newTermActivity;
 
     @Override
     public void setSelectedDomain(KnowledgeArea area, Domain domain) {
@@ -73,6 +79,7 @@ public class SearchActivity extends AppCompatActivity implements AreasDomainsTab
                 SearchActivity.this.startActivity(settingsIntent);
             }
         });
+
     }
 
     private void savePreferences() {
@@ -95,6 +102,13 @@ public class SearchActivity extends AppCompatActivity implements AreasDomainsTab
         currentDomain = gson.fromJson(domainJson, domainType);
         Type areaType = new TypeToken<KnowledgeArea>() {}.getType();
         currentArea = gson.fromJson(areaJson, areaType);
+    }
+
+    @Override
+    public void onNewTermFABClick() {
+        Log.v(TAG, "got click from SearchTabFragment FAB");
+        Intent newTermIntent = new Intent(SearchActivity.this, NewTermActivity.class);
+        startActivity(newTermIntent);
     }
 }
 

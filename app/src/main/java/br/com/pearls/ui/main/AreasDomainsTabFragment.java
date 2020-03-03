@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,7 +36,7 @@ import br.com.pearls.utils.RemoveDiacritics;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
-public class AreasDomainsTabFragment extends AppCompatDialogFragment
+public class AreasDomainsTabFragment extends Fragment
                         implements AreasDomainsTabSection.OnAreasDomainsTabSectionClick,
                                    NewAreaDialog.OnNewAreaInput,
                                    NewDomainDialog.OnNewDomainInput {

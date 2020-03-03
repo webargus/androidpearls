@@ -11,6 +11,13 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ui.main.NewTermActivity"
+            android:label="New Term"
+            android:parentActivityName=".SearchActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="br.com.pearls.SearchActivity" />
+        </activity>
         <activity
             android:name=".Settings.SettingsActivity"
             android:label="@string/title_activity_settings"

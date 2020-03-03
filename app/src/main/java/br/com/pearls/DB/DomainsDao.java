@@ -13,7 +13,7 @@ public interface DomainsDao {
     @Insert
     void insert(Domain domain);
 
-    @Query("SELECT * FROM domains")
+    @Query("SELECT * FROM domains ORDER BY domain ASC")
     LiveData<List<Domain>> getAllDomains();
 
     @Query("SELECT * FROM domains WHERE synced = 1")

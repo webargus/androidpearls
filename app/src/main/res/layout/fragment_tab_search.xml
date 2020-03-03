@@ -1,39 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <!-- TODO: Update blank fragment layout -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:focusableInTouchMode="true">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:focusableInTouchMode="true">
+    <EditText
+        android:id="@+id/search_edit"
+        android:layout_width="275dp"
+        android:layout_height="62dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:hint="Enter diacritic term"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:padding="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/search_edit"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:hint="Enter diacritic term"
-            android:padding="16dp"
-            android:inputType="textPersonName"
-            />
+    <Button
+        android:id="@+id/search_go"
+        android:layout_width="86dp"
+        android:layout_height="52dp"
 
-        <Button
-            android:id="@+id/search_go"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-
-            android:text="go" />
-    </LinearLayout>
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="20dp"
+        android:text="go"
+        app:layout_constraintStart_toEndOf="@+id/search_edit"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/search_text_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:layout_width="372dp"
+        android:layout_height="51dp"
         android:layout_margin="16dp"
-        android:text="" />
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:text=""
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_edit" />
 
-</LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_add_term"
+        android:layout_width="87dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/ic_add_white"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+         />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

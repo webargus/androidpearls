@@ -3,6 +3,7 @@ package br.com.pearls.DB;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Embedded;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
@@ -22,7 +23,7 @@ public interface AreasDao {
     LiveData<List<KnowledgeArea>> getSyncedAreas();
 
     @Transaction
-    @Query("SELECT * FROM areas")
+    @Query("SELECT * FROM areas ORDER BY area ASC")
     LiveData<List<AreasWithDomains>> getAreasWithDomains();
 
     @Query("SELECT * FROM areas WHERE area_ascii = :area")

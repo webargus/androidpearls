@@ -38,6 +38,12 @@ public abstract class PearlsRoomDatabase extends RoomDatabase {
                 language = new Language();
                 language.setLanguage("Spanish");
                 dao.insert(language);
+                language.setLanguage("French");
+                dao.insert(language);
+                language.setLanguage("German");
+                dao.insert(language);
+                language.setLanguage("Italian");
+                dao.insert(language);
             });
         }
 

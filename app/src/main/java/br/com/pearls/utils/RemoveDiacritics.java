@@ -10,6 +10,8 @@ import java.util.regex.PatternSyntaxException;
 
 public class RemoveDiacritics {
 
+    private static RemoveDiacritics INSTANCE;
+
     private static final Map<String, Pattern> MAP = new HashMap<>();
     private static final String map_a = "[áâãàäåāăą]";
     private static final String map_A = "[ÁÂÃÀÄÅĀĂĄ]";
@@ -49,7 +51,7 @@ public class RemoveDiacritics {
     private static final String map_t = "[þťțţ]";
     private static final String map_T = "[ÞŤȚŢ]";
 
-    public RemoveDiacritics() {
+    private RemoveDiacritics() {
         MAP.put("a", Pattern.compile(map_a));
         MAP.put("A", Pattern.compile(map_A));
         MAP.put("e", Pattern.compile(map_e));
@@ -90,11 +92,19 @@ public class RemoveDiacritics {
     }
 
     public static String removeDiacritics(String string) {
+        getInstance();
         for(Map.Entry<String, Pattern> entry : MAP.entrySet()) {
             Matcher m = entry.getValue().matcher(string);
             string = m.replaceAll(entry.getKey());
         }
         return string;
+    }
+
+    private static final RemoveDiacritics getInstance() {
+        if(INSTANCE == null) {
+            INSTANCE = new RemoveDiacritics();
+        }
+        return INSTANCE;
     }
 
 }

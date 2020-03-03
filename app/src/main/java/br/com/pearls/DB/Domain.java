@@ -1,12 +1,17 @@
 package br.com.pearls.DB;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "domains")
-public class Domain {
+public class Domain implements Parcelable {
+
+    public Domain() {}
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -23,6 +28,26 @@ public class Domain {
     @NonNull
     @ColumnInfo(defaultValue = "0")
     private int synced;
+
+    protected Domain(Parcel in) {
+        id = in.readLong();
+        domain = in.readString();
+        domain_ascii = in.readString();
+        area_ref = in.readLong();
+        synced = in.readInt();
+    }
+
+    public static final Creator<Domain> CREATOR = new Creator<Domain>() {
+        @Override
+        public Domain createFromParcel(Parcel in) {
+            return new Domain(in);
+        }
+
+        @Override
+        public Domain[] newArray(int size) {
+            return new Domain[size];
+        }
+    };
 
     public long getId() { return this.id; }
 
@@ -44,6 +69,19 @@ public class Domain {
 
     public void setSynced(int synced) { this.synced = synced; }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(domain);
+        dest.writeString(domain_ascii);
+        dest.writeLong(area_ref);
+        dest.writeInt(synced);
+    }
 }
 
 

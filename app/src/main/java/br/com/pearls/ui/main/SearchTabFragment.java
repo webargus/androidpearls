@@ -13,12 +13,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import br.com.pearls.R;
 import br.com.pearls.utils.RemoveDiacritics;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class SearchTabFragment extends Fragment {
 
     private static final String TAG = SearchTabFragment.class.getName();
@@ -26,10 +25,14 @@ public class SearchTabFragment extends Fragment {
     private TextView tvSearch;
     private EditText editText;
     private Button go;
-    private static final RemoveDiacritics diacritics = new RemoveDiacritics();
+    OnNewTermFABClick newTermFABClick;
 
-    public SearchTabFragment() {
-        // Required empty public constructor
+    public interface OnNewTermFABClick {
+        void onNewTermFABClick();
+    }
+
+    public SearchTabFragment(OnNewTermFABClick newTermFABClick) {
+        this.newTermFABClick = newTermFABClick;
     }
 
     @Override
@@ -51,6 +54,14 @@ public class SearchTabFragment extends Fragment {
                 str = RemoveDiacritics.removeDiacritics(str);
                 Log.v(TAG, "#####################################str=" + str);
                 tvSearch.setText(str);
+            }
+        });
+
+        FloatingActionButton fab = root.findViewById(R.id.btn_add_term);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newTermFABClick.onNewTermFABClick();
             }
         });
         return root;
