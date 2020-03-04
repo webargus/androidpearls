@@ -12,6 +12,9 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -22,13 +25,14 @@ import br.com.pearls.DB.Domain;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.Settings.SettingsActivity;
 import br.com.pearls.ui.main.AreasDomainsTabFragment;
+import br.com.pearls.ui.main.LanguagesActivity;
 import br.com.pearls.ui.main.NewTermActivity;
 import br.com.pearls.ui.main.SearchTabFragment;
 import br.com.pearls.ui.main.SectionsPagerAdapter;
 
 public class SearchActivity extends AppCompatActivity
         implements AreasDomainsTabFragment.OnDomainSelectedListener,
-        SearchTabFragment.OnNewTermFABClick {
+                   SearchTabFragment.OnNewTermFABClick {
 
     private static final String TAG = SearchActivity.class.getName();
 
@@ -57,6 +61,8 @@ public class SearchActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        setTitle(R.string.title_activity_search);
+
         tvCaption = (TextView) findViewById(R.id.area_domain_caption);
         loadPreferences();
         if(currentArea != null) {
@@ -68,16 +74,36 @@ public class SearchActivity extends AppCompatActivity
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
+    }
 
-        ImageButton settingsButton = findViewById(R.id.action_settings);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent settingsIntent = new Intent(SearchActivity.this, SettingsActivity.class);
-                SearchActivity.this.startActivity(settingsIntent);
-            }
-        });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.search_activity_menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                openSettingsActivity();
+                return true;
+            case R.id.action_languages:
+                openLanguagesActivity();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void openLanguagesActivity() {
+        Intent languagesIntent = new Intent(SearchActivity.this, LanguagesActivity.class);
+        SearchActivity.this.startActivity(languagesIntent);
+    }
+
+    private void openSettingsActivity() {
+        Intent settingsIntent = new Intent(SearchActivity.this, SettingsActivity.class);
+        SearchActivity.this.startActivity(settingsIntent);
     }
 
     private void savePreferences() {

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -19,7 +20,8 @@ public interface LanguagesDao {
     @Query("SELECT * FROM languages WHERE active = :active")
     LiveData<List<Language>> getActiveLanguages(final int active);
 
-
+    @Update
+    void update(List<Language> languages);
 }
 
 

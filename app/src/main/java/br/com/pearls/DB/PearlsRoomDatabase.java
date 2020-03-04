@@ -18,10 +18,10 @@ public abstract class PearlsRoomDatabase extends RoomDatabase {
     public abstract AreasDao areasDao();
     public abstract DomainsDao domainsDao();
 
-    private static volatile PearlsRoomDatabase INSTANCE;
+    public static volatile PearlsRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
 
-    static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+    public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
     private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
@@ -31,18 +31,24 @@ public abstract class PearlsRoomDatabase extends RoomDatabase {
                 LanguagesDao dao = INSTANCE.languagesDao();
                 Language language = new Language();
                 language.setLanguage("English");
+                language.setActive(1);
                 dao.insert(language);
                 language = new Language();
                 language.setLanguage("Portuguese");
+                language.setActive(1);
                 dao.insert(language);
                 language = new Language();
                 language.setLanguage("Spanish");
+                language.setActive(1);
                 dao.insert(language);
                 language.setLanguage("French");
+                language.setActive(1);
                 dao.insert(language);
                 language.setLanguage("German");
+                language.setActive(1);
                 dao.insert(language);
                 language.setLanguage("Italian");
+                language.setActive(1);
                 dao.insert(language);
             });
         }
