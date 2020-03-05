@@ -32,7 +32,7 @@ import br.com.pearls.SearchActivity;
 import br.com.pearls.utils.GraphUtil;
 import br.com.pearls.utils.RemoveDiacritics;
 
-public class NewTermActivity extends AppCompatActivity {
+public class NewTermActivity extends AppCompatActivity implements GraphUtil.OnGraphCreated {
 
     private static final String TAG = NewTermActivity.class.getName();
 
@@ -48,6 +48,7 @@ public class NewTermActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_term_activity);
+
         Intent input = getIntent();
         area = input.getParcelableExtra(SearchActivity.CURRENT_AREA);
         domain = input.getParcelableExtra(SearchActivity.CURRENT_DOMAIN);
@@ -81,7 +82,7 @@ public class NewTermActivity extends AppCompatActivity {
 
     private void saveGraph() {
         // validate
-        GraphUtil graphUtil = new GraphUtil(getApplication());
+        GraphUtil graphUtil = new GraphUtil(getApplication(), this);
         Term term;
         boolean isEmpty = true;
         for (int position = 0; position < adapter.getItemCount(); position++) {
@@ -107,6 +108,28 @@ public class NewTermActivity extends AppCompatActivity {
         }
 
         graphUtil.createGraph(domain.getId());
+    }
+
+    @Override
+    public void onGraphCreated(boolean graphOk) {
+        clearForm();
+        String msg = "Terms created and saved successfully!";
+        if(!graphOk) {
+            msg = "Term creation failed...";
+        }
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private void clearForm() {
+        for (int position = 0; position < adapter.getItemCount(); position++) {
+            RVTermFormAdapter.TermFormHolder itemHolder =
+                    (RVTermFormAdapter.TermFormHolder) recyclerView.findViewHolderForAdapterPosition(position);
+            itemHolder.etTerm.setText("");
+            if(position == 0) {
+                itemHolder.etTerm.requestFocus();
+            }
+            itemHolder.etContext.setText("");
+        }
     }
 }
 

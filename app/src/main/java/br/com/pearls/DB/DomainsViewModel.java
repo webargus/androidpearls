@@ -9,13 +9,13 @@ import java.util.List;
 
 public class DomainsViewModel extends AndroidViewModel {
 
-    private DomainsRepository mRepository;
+    private DomainRepository mRepository;
 
     private LiveData<List<Domain>> mAllDomains;
 
     public DomainsViewModel(Application application) {
         super(application);
-        mRepository = new DomainsRepository(application);
+        mRepository = new DomainRepository(application);
         mAllDomains = mRepository.getmAllDomains();
     }
 

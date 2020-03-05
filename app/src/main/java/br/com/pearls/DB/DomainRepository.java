@@ -6,12 +6,12 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-public class DomainsRepository {
+public class DomainRepository {
 
     private DomainsDao mDomainsDao;
     private LiveData<List<Domain>> mAllDomains;
 
-    DomainsRepository(Application application) {
+    public DomainRepository(Application application) {
 
         PearlsRoomDatabase db = PearlsRoomDatabase.getDatabase(application);
         mDomainsDao = db.domainsDao();
@@ -29,6 +29,8 @@ public class DomainsRepository {
             mDomainsDao.insert(domain);
         });
     }
+
+    public long[] getDomain(long domain_id) { return mDomainsDao.getDomain(domain_id); }
 }
 
 

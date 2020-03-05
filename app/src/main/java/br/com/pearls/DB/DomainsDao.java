@@ -22,4 +22,6 @@ public interface DomainsDao {
     @Query("SELECT * FROM domains WHERE domain_ascii = :domain AND area_ref = :area_ref")
     LiveData<Domain[]> getDomainByName(String domain, long area_ref);
 
+    @Query("SELECT id FROM domains WHERE id = :domain_id")
+    long[] getDomain(long domain_id);
 }

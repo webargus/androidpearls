@@ -2,34 +2,49 @@ package br.com.pearls.utils;
 
 import android.app.Application;
 import android.os.AsyncTask;
-import android.widget.Toast;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.pearls.DB.DomainRepository;
 import br.com.pearls.DB.Graph;
 import br.com.pearls.DB.GraphRepository;
 import br.com.pearls.DB.Term;
 import br.com.pearls.DB.TermRepository;
 import br.com.pearls.DB.Vertex;
 import br.com.pearls.DB.VertexRepository;
+import br.com.pearls.ui.main.NewTermActivity;
 
 public class GraphUtil {
 
+    public static final String TAG = GraphUtil.class.getName();
+
+    private static DomainRepository domainRepository;
     private static GraphRepository graphRepository;
     private static VertexRepository vertexRepository;
     private static TermRepository termRepository;
     private static List<VertexWithTerm> vertices;
     private static Graph graph;
-    private static Application application;
+    private static OnGraphCreated graphCreated;
 
-    public GraphUtil(Application application) {
+    public interface OnGraphCreated {
+        void onGraphCreated(boolean graphOk);
+    }
+
+    public GraphUtil(Application application, NewTermActivity newTermActivity) {
+        try {
+            graphCreated = (OnGraphCreated) newTermActivity;
+        } catch (ClassCastException ex) {
+            Log.e(TAG, "You must implement the OnGraphCreated interface");
+            return;
+        }
+        domainRepository = new DomainRepository(application);
         graphRepository = new GraphRepository(application);
         vertexRepository = new VertexRepository(application);
         termRepository = new TermRepository(application);
-        this.application = application;
         graph = new Graph();
         vertices = new ArrayList<>();
     }
@@ -43,11 +58,14 @@ public class GraphUtil {
         new GraphAsyncTask().execute();
     }
 
-    private static class GraphAsyncTask extends AsyncTask<Void, Void, Void> {
+    private static class GraphAsyncTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
-        protected Void doInBackground(Void... voids) {
-            // TODO: check if domain_ref exists
+        protected Boolean doInBackground(Void... voids) {
+            // Check if domain_ref exists, return false if not
+            if(domainRepository.getDomain(graph.getDomain_ref()).length == 0) {
+                return false;
+            }
             graph.setId(graphRepository.insert(graph));
             long termId;
             for (VertexWithTerm vertexWithTerm : vertices) {
@@ -57,13 +75,12 @@ public class GraphUtil {
                 vertexWithTerm.vertex.setGraph_ref(graph.getId());
                 vertexRepository.insert(vertexWithTerm.vertex);
             }
-            return null;
+            return true;
         }
 
         @Override
-        protected void onPostExecute(Void nothing) {
-            // Toast graph creation
-            Toast.makeText(application, "Terms saved successfully", Toast.LENGTH_SHORT).show();
+        protected void onPostExecute(Boolean result) {
+          graphCreated.onGraphCreated(result);
         }
     }
 
