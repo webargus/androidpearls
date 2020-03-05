@@ -20,8 +20,8 @@ public class Graph {
 
     public long getId() { return this.id; }
     public void setId(final long id) { this.id = id; }
-    public long getDomainRef() { return this.domain_ref; }
-    public void setDomainRef(final long ref) { this.domain_ref = ref; }
+    public long getDomain_ref() { return this.domain_ref; }
+    public void setDomain_ref(final long ref) { this.domain_ref = ref; }
     public int getSynced() { return this.synced; }
     public void setSynced(final int synced) { this.synced = synced; }
 }

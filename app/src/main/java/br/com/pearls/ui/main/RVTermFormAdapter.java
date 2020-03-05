@@ -31,7 +31,7 @@ public class RVTermFormAdapter extends RecyclerView.Adapter<RVTermFormAdapter.Te
     @Override
     public void onBindViewHolder(@NonNull TermFormHolder holder, int position) {
         Language language = languages.get(position);
-        holder.tvLanguage.setText(language.getLanguage());
+        holder.setTvLanguage(language);
     }
 
     @Override
@@ -45,10 +45,11 @@ public class RVTermFormAdapter extends RecyclerView.Adapter<RVTermFormAdapter.Te
     }
 
     class TermFormHolder extends RecyclerView.ViewHolder {
-        private TextView tvLanguage;
-        private TextView tvRank;
-        private EditText etTerm;
-        private EditText etContext;
+        public TextView tvLanguage;
+        public TextView tvRank;
+        public EditText etTerm;
+        public EditText etContext;
+        public Language language;
 
         public TermFormHolder(@NonNull View itemView) {
             super(itemView);
@@ -56,7 +57,11 @@ public class RVTermFormAdapter extends RecyclerView.Adapter<RVTermFormAdapter.Te
             tvRank = itemView.findViewById(R.id.tv_term_form_rank);
             etTerm = itemView.findViewById(R.id.et_term_form_term);
             etContext = itemView.findViewById(R.id.et_term_form_context);
+        }
 
+        public void setTvLanguage(Language language) {
+            this.language = language;
+            tvLanguage.setText(this.language.getLanguage());
         }
     }
 }

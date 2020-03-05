@@ -93,10 +93,12 @@ public class LanguagesActivity extends AppCompatActivity {
                     Log.v(TAG, "Language " + activeLanguages.get(ix).getLanguage() + " " +
                             (activeLanguages.get(ix).getActive() == 1 ? "active" : "inactive"));
                 }
-                LanguagesDao dao = PearlsRoomDatabase.INSTANCE.languagesDao();
-                PearlsRoomDatabase.databaseWriteExecutor.execute(() -> {
+                PearlsRoomDatabase db = PearlsRoomDatabase.getDatabase(context);
+                LanguagesDao dao = db.languagesDao();
+                db.databaseWriteExecutor.execute(() -> {
                     dao.update(activeLanguages);
                 });
+                finish();
             }
         });
     }

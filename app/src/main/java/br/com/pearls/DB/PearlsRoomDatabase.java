@@ -11,14 +11,18 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Language.class, KnowledgeArea.class, Domain.class}, version = 1, exportSchema = false)
+@Database(entities = {Language.class, KnowledgeArea.class, Domain.class, Term.class, Graph.class, Vertex.class},
+          version = 1, exportSchema = false)
 public abstract class PearlsRoomDatabase extends RoomDatabase {
 
     public abstract LanguagesDao languagesDao();
     public abstract AreasDao areasDao();
     public abstract DomainsDao domainsDao();
+    public abstract TermDao termDao();
+    public abstract GraphDao graphDao();
+    public abstract VertexDao vertexDao();
 
-    public static volatile PearlsRoomDatabase INSTANCE;
+    private static volatile PearlsRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
 
     public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
@@ -55,7 +59,7 @@ public abstract class PearlsRoomDatabase extends RoomDatabase {
 
     };
 
-    static PearlsRoomDatabase getDatabase(final Context context) {
+    public static PearlsRoomDatabase getDatabase(final Context context) {
         if(INSTANCE == null) {
             INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                        PearlsRoomDatabase.class,

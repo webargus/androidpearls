@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.reflect.Type;
 
@@ -57,7 +58,6 @@ public class SearchActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.v(TAG, "UUUUUUUUUUUUUUUUUUUUUUUUUU ->->-> onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
@@ -131,6 +131,12 @@ public class SearchActivity extends AppCompatActivity
     @Override
     public void onNewTermFABClick() {
         Log.v(TAG, "got click from SearchTabFragment FAB");
+        if(currentArea == null) {
+            Toast.makeText(this,
+                        "You must create/select a Knowldedge area and domain first",
+                            Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent newTermIntent = new Intent(SearchActivity.this, NewTermActivity.class);
         newTermIntent.putExtra(CURRENT_AREA, currentArea);
         newTermIntent.putExtra(CURRENT_DOMAIN, currentDomain);
