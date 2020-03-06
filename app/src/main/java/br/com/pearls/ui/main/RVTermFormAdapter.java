@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -46,7 +47,7 @@ public class RVTermFormAdapter extends RecyclerView.Adapter<RVTermFormAdapter.Te
 
     class TermFormHolder extends RecyclerView.ViewHolder {
         public TextView tvLanguage;
-        public TextView tvRank;
+        public RatingBar rbRank;
         public EditText etTerm;
         public EditText etContext;
         public Language language;
@@ -54,9 +55,9 @@ public class RVTermFormAdapter extends RecyclerView.Adapter<RVTermFormAdapter.Te
         public TermFormHolder(@NonNull View itemView) {
             super(itemView);
             tvLanguage = itemView.findViewById(R.id.tv_term_form_language);
-            tvRank = itemView.findViewById(R.id.tv_term_form_rank);
             etTerm = itemView.findViewById(R.id.et_term_form_term);
             etContext = itemView.findViewById(R.id.et_term_form_context);
+            rbRank = itemView.findViewById(R.id.term_form_rank);
         }
 
         public void setTvLanguage(Language language) {

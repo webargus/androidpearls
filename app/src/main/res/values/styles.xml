@@ -23,7 +23,7 @@ The margin is a simple delimiter between the areas/domains. -->
         <item name="android:layout_width">match_parent</item>
         <item name="android:padding">16dp</item>
         <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">16dp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="domain_item">
@@ -33,7 +33,7 @@ The margin is a simple delimiter between the areas/domains. -->
         <item name="android:layout_marginLeft">12dp</item>
         <item name="android:background">@android:color/background_light</item>
         <item name="android:textColor">@android:color/secondary_text_light</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="divider">

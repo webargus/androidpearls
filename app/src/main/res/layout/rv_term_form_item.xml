@@ -11,26 +11,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <LinearLayout
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp">
+            android:orientation="horizontal"
+            android:paddingLeft="8dp"
+            android:paddingStart="8dp">
 
             <TextView
                 android:id="@+id/tv_term_form_language"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_height="32dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_vertical"
+                android:layout_toLeftOf="@+id/term_form_rank"
                 android:text="language name"
-                />
-            <TextView
-                android:id="@+id/tv_term_form_rank"
+                android:layout_toStartOf="@+id/term_form_rank" />
+
+            <RatingBar
+                android:id="@+id/term_form_rank"
+                style="@android:style/Widget.Holo.RatingBar.Indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="rank widget"
-                android:layout_weight="1"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:isIndicator="false"
+                android:numStars="4"
+                android:rating="0"
+                android:scaleX=".7"
+                android:scaleY=".7"
+                android:stepSize="1"
                 />
-        </LinearLayout>
+
+        </RelativeLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,14 +57,16 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:hint="Enter term"
-                />
+                android:inputType="textCapSentences"
+                android:importantForAutofill="no" />
             <EditText
                 android:id="@+id/et_term_form_context"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:hint="Enter context"
-                />
+                android:importantForAutofill="no"
+                android:inputType="textCapSentences" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
