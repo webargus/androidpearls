@@ -6,9 +6,12 @@ import androidx.room.Query;
 
 import java.util.List;
 
+import br.com.pearls.utils.GraphSearchResult;
+
 @Dao
-public interface GraphSearchResultDao {
-    @Query("SELECT DISTINCT graph_ref, domain AS domainName, area AS areaName FROM vertices " +
+public interface GraphSearchDao {
+    @Query("SELECT DISTINCT graph_ref, domain_ref, area_ref, domain AS domainName, area AS areaName " +
+           "FROM vertices " +
            "LEFT JOIN terms ON term_ref = terms.id " +
            "LEFT JOIN languages ON lang_ref = languages.id " +
            "LEFT JOIN graphs ON graph_ref = graphs.id " +
@@ -17,9 +20,4 @@ public interface GraphSearchResultDao {
            "WHERE languages.active = 1 AND term_ascii LIKE :term")
     public List<GraphSearchResult> loadGraphsForTermSearch(@NonNull final String term);
 
-    static class GraphSearchResult {
-        public long graph_ref;
-        public String domainName;
-        public String areaName;
-    }
 }

@@ -6,16 +6,18 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-public class GraphSearchResultRepository {
+import br.com.pearls.utils.GraphSearchResult;
 
-    private GraphSearchResultDao resultDao;
+public class GraphSearchRepository {
 
-    public GraphSearchResultRepository(Application application) {
+    private GraphSearchDao resultDao;
+
+    public GraphSearchRepository(Application application) {
         PearlsRoomDatabase db = PearlsRoomDatabase.getDatabase(application);
         resultDao = db.graphSearchResultDao();
     }
 
-    public List<GraphSearchResultDao.GraphSearchResult> loadGraphsForTermSearch(@NonNull final String term) {
+    public List<GraphSearchResult> loadGraphsForTermSearch(@NonNull final String term) {
         return resultDao.loadGraphsForTermSearch(term);
     }
 }

@@ -14,10 +14,13 @@ import android.widget.SearchView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.Map;
 
-import br.com.pearls.DB.GraphSearchResultDao;
+import br.com.pearls.DB.GraphSearchDao;
 import br.com.pearls.R;
+import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.GraphSearchUtil;
+import br.com.pearls.utils.SearchVertex;
 
 public class SearchTabFragment extends Fragment implements GraphSearchUtil.OnGraphSearchFinished {
 
@@ -29,12 +32,28 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.OnGra
     GraphSearchUtil graphSearchUtil;
 
     @Override
-    public void fetchGraphSearchResults(List<GraphSearchResultDao.GraphSearchResult> results) {
-        for(int ix = 0; ix < results.size(); ix++) {
-            GraphSearchResultDao.GraphSearchResult result = results.get(ix);
-            Log.v(TAG, "graph_ref: " + result.graph_ref +
-                            "; area: " + result.areaName +
-                            "; domain: " + result.domainName);
+    public void fetchGraphSearchResults(Map<GraphSearchResult, List<SearchVertex>> results) {
+        for(Map.Entry entry : results.entrySet()) {
+            GraphSearchResult graph = (GraphSearchResult) entry.getKey();
+            List<SearchVertex> vertices = (List<SearchVertex>) entry.getValue();
+            Log.v(TAG,  "graph: { graph_ref = " + graph.graph_ref +
+                            "; domain_ref = " + graph.domain_ref +
+                            "; domainName = " + graph.domainName +
+                            "; area_ref = " + graph.area_ref +
+                            "; areaName = " + graph.areaName + " }");
+            Log.v(TAG, "\tvertices:");
+            SearchVertex vertex;
+            for(int ix = 0; ix < vertices.size(); ix++) {
+                vertex = vertices.get(ix);
+                Log.v(TAG, "\tvertex_id = " + vertex.vertex_id +
+                                "; term_ref = " + vertex.term_ref +
+                                "; user_rank = " + vertex.user_rank +
+                                "; vertex_context = " + vertex.vertex_context +
+                                "; term = " + vertex.term +
+                                "; lang_ref = " + vertex.lang_ref +
+                                "; language = " + vertex.language);
+            }
+            Log.v(TAG, "----------------------------------------");
         }
     }
 

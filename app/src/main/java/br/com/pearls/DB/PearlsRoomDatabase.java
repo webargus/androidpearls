@@ -20,8 +20,9 @@ public abstract class PearlsRoomDatabase extends RoomDatabase {
     public abstract DomainsDao domainsDao();
     public abstract TermDao termDao();
     public abstract GraphDao graphDao();
-    public abstract GraphSearchResultDao graphSearchResultDao();
+    public abstract GraphSearchDao graphSearchResultDao();
     public abstract VertexDao vertexDao();
+    public abstract GraphSearchVerticesDao graphSearchVerticesDao();
 
     private static volatile PearlsRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
