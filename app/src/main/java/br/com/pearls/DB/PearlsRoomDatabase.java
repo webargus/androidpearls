@@ -20,6 +20,7 @@ public abstract class PearlsRoomDatabase extends RoomDatabase {
     public abstract DomainsDao domainsDao();
     public abstract TermDao termDao();
     public abstract GraphDao graphDao();
+    public abstract GraphSearchResultDao graphSearchResultDao();
     public abstract VertexDao vertexDao();
 
     private static volatile PearlsRoomDatabase INSTANCE;

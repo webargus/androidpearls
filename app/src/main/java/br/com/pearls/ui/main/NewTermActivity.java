@@ -96,7 +96,7 @@ public class NewTermActivity extends AppCompatActivity implements GraphUtil.OnGr
             term.setTerm(termString);
             term.setTerm_ascii(RemoveDiacritics.removeDiacritics(termString));
             term.setLang_ref(itemHolder.language.getId());
-            GraphUtil.VertexWithTerm vertex = graphUtil.new VertexWithTerm(term);
+            GraphUtil.GraphVertexWithTerm vertex = graphUtil.new GraphVertexWithTerm(term);
             String termContext = itemHolder.etContext.getText().toString().trim();
             vertex.setVertexParams(termContext, (int)itemHolder.rbRank.getRating());
             graphUtil.add(vertex);

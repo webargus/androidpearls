@@ -14,7 +14,6 @@ import br.com.pearls.DB.Graph;
 import br.com.pearls.DB.GraphRepository;
 import br.com.pearls.DB.Term;
 import br.com.pearls.DB.TermRepository;
-import br.com.pearls.DB.Vertex;
 import br.com.pearls.DB.VertexRepository;
 import br.com.pearls.ui.main.NewTermActivity;
 
@@ -26,7 +25,7 @@ public class GraphUtil {
     private static GraphRepository graphRepository;
     private static VertexRepository vertexRepository;
     private static TermRepository termRepository;
-    private static List<VertexWithTerm> vertices;
+    private static List<GraphVertexWithTerm> vertices;
     private static Graph graph;
     private static OnGraphCreated graphCreated;
 
@@ -49,7 +48,7 @@ public class GraphUtil {
         vertices = new ArrayList<>();
     }
 
-    public void add(@NonNull final VertexWithTerm vertex) {
+    public void add(@NonNull final GraphVertexWithTerm vertex) {
         this.vertices.add(vertex);
     }
 
@@ -68,7 +67,7 @@ public class GraphUtil {
             }
             graph.setId(graphRepository.insert(graph));
             long termId;
-            for (VertexWithTerm vertexWithTerm : vertices) {
+            for (GraphVertexWithTerm vertexWithTerm : vertices) {
                 termId = termRepository.insert(vertexWithTerm.term);
                 vertexWithTerm.term.setId(termId);
                 vertexWithTerm.vertex.setTerm_ref(termId);
@@ -84,21 +83,8 @@ public class GraphUtil {
         }
     }
 
-    public class VertexWithTerm {
-
-        private Vertex vertex;
-        private Term term;
-
-        public VertexWithTerm(@NonNull final Term term) {
-            vertex = new Vertex();
-            vertex.setTerm_ref(term.getId());
-            this.term = term;
-        }
-
-        public void setVertexParams(final String vertexContext, final int userRank) {
-            this.vertex.setVertex_context(vertexContext);
-            this.vertex.setUser_rank(userRank);
-        }
+    public class GraphVertexWithTerm extends VertexWithTerm {
+        public GraphVertexWithTerm(Term term) { super(term); }
     }
 }
 

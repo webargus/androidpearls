@@ -13,15 +13,31 @@
 
         <SearchView
             android:id="@+id/searchView"
-            android:queryHint="@string/search_view_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-        />
+            android:iconifiedByDefault="false"
+            android:queryHint="@string/search_view_hint" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_search"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp" />
+            </LinearLayout>
+        </ScrollView>
 
     </LinearLayout>
 
@@ -37,7 +53,6 @@
         android:src="@drawable/ic_add_white"
         app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-         />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
