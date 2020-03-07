@@ -17,3 +17,4 @@ public interface GraphSearchVerticesDao {
     List<SearchVertex> fetchVerticesForGraph(@NonNull long graph_ref);
 
 }
+

@@ -3,6 +3,7 @@ package br.com.pearls.ui.main;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -21,6 +22,7 @@ import br.com.pearls.R;
 import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.GraphSearchUtil;
 import br.com.pearls.utils.SearchVertex;
+import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
 public class SearchTabFragment extends Fragment implements GraphSearchUtil.OnGraphSearchFinished {
 
@@ -31,30 +33,35 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.OnGra
     OnNewTermFABClick newTermFABClick;
     GraphSearchUtil graphSearchUtil;
 
+    private SectionedRecyclerViewAdapter sectionedAdapter;
+
     @Override
     public void fetchGraphSearchResults(Map<GraphSearchResult, List<SearchVertex>> results) {
+        sectionedAdapter.removeAllSections();
         for(Map.Entry entry : results.entrySet()) {
             GraphSearchResult graph = (GraphSearchResult) entry.getKey();
             List<SearchVertex> vertices = (List<SearchVertex>) entry.getValue();
-            Log.v(TAG,  "graph: { graph_ref = " + graph.graph_ref +
-                            "; domain_ref = " + graph.domain_ref +
-                            "; domainName = " + graph.domainName +
-                            "; area_ref = " + graph.area_ref +
-                            "; areaName = " + graph.areaName + " }");
-            Log.v(TAG, "\tvertices:");
-            SearchVertex vertex;
-            for(int ix = 0; ix < vertices.size(); ix++) {
-                vertex = vertices.get(ix);
-                Log.v(TAG, "\tvertex_id = " + vertex.vertex_id +
-                                "; term_ref = " + vertex.term_ref +
-                                "; user_rank = " + vertex.user_rank +
-                                "; vertex_context = " + vertex.vertex_context +
-                                "; term = " + vertex.term +
-                                "; lang_ref = " + vertex.lang_ref +
-                                "; language = " + vertex.language);
-            }
-            Log.v(TAG, "----------------------------------------");
+            sectionedAdapter.addSection(new SearchSection(graph, vertices));
+//            Log.v(TAG,  "graph: { graph_ref = " + graph.graph_ref +
+//                            "; domain_ref = " + graph.domain_ref +
+//                            "; domainName = " + graph.domainName +
+//                            "; area_ref = " + graph.area_ref +
+//                            "; areaName = " + graph.areaName + " }");
+//            Log.v(TAG, "\tvertices:");
+//            SearchVertex vertex;
+//            for(int ix = 0; ix < vertices.size(); ix++) {
+//                vertex = vertices.get(ix);
+//                Log.v(TAG, "\tvertex_id = " + vertex.vertex_id +
+//                                "; term_ref = " + vertex.term_ref +
+//                                "; user_rank = " + vertex.user_rank +
+//                                "; vertex_context = " + vertex.vertex_context +
+//                                "; term = " + vertex.term +
+//                                "; lang_ref = " + vertex.lang_ref +
+//                                "; language = " + vertex.language);
+//            }
+//            Log.v(TAG, "----------------------------------------");
         }
+        sectionedAdapter.notifyDataSetChanged();
     }
 
     public interface OnNewTermFABClick {
@@ -95,6 +102,13 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.OnGra
                 return false;
             }
         });
+
+        sectionedAdapter = new SectionedRecyclerViewAdapter();
+
+        final RecyclerView recyclerView = root.findViewById(R.id.rv_search);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(sectionedAdapter);
+
         return root;
     }
 
