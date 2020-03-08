@@ -7,10 +7,11 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 import br.com.pearls.DB.Domain;
 import br.com.pearls.DB.GraphSearchRepository;
@@ -22,13 +23,13 @@ public class GraphSearchUtil {
 
     public static final String TAG = GraphSearchUtil.class.getName();
 
+    private static TreeMap<GraphSearchResult, List<SearchVertex>> treeMap;
     private static GraphSearchRepository graphSearchRepository;
     private static GraphSearchVerticesRepository graphSearchVerticesRepository;
     private static SearchUtilIFace searchUtilIFace;
 
     public interface SearchUtilIFace {
-        void fetchGraphSearchResults(Map<GraphSearchResult, List<SearchVertex>> results);
-
+        void fetchGraphSearchResults(TreeMap<GraphSearchResult, List<SearchVertex>> results);
         Bundle getAreaAndDomain();
     }
 
@@ -46,34 +47,119 @@ public class GraphSearchUtil {
         new GraphSearchAsyncTask().execute(RemoveDiacritics.removeDiacritics(term));
     }
 
-    private static class GraphSearchAsyncTask
-            extends AsyncTask<String, Void, Map<GraphSearchResult, List<SearchVertex>>> {
+    /*  Comparator class for TreeMap -> rank results according to score
+    *   calculated in getScore method
+    * */
+    private static class CompareGraphs implements Comparator<GraphSearchResult> {
 
-        @Override
-        protected Map<GraphSearchResult, List<SearchVertex>> doInBackground(String... strings) {
-            // get current area and domain
-            Bundle bundle = searchUtilIFace.getAreaAndDomain();
-            KnowledgeArea area = bundle.getParcelable(SearchActivity.CURRENT_AREA);
-            Domain domain = bundle.getParcelable(SearchActivity.CURRENT_DOMAIN);
-            if (area != null) {
-                Log.v(TAG, "area = " + area.getArea() + "; domain = " + domain.getDomain());
-            }
-            Map<GraphSearchResult, List<SearchVertex>> map1 = new HashMap<>();
-            Map<GraphSearchResult, List<SearchVertex>> map2 = new HashMap<>();
-            List<GraphSearchResult> graphs =
-                    graphSearchRepository.loadGraphsForTermSearch(strings[0]);
-            GraphSearchResult graphResult;
-            for (int ix = 0; ix < graphs.size(); ix++) {
-                map1.put(graphs.get(ix),
-                        graphSearchVerticesRepository.fetchVerticesForGraph(graphs.get(ix).graph_ref));
-            }
-            map1.putAll(map2);
-            return map1;
+        private KnowledgeArea area;
+        private Domain domain;
+
+        CompareGraphs(KnowledgeArea area, Domain domain) {
+            this.area = area;
+            this.domain = domain;
         }
 
         @Override
-        protected void onPostExecute(Map<GraphSearchResult, List<SearchVertex>> graphSearchResults) {
-            searchUtilIFace.fetchGraphSearchResults(graphSearchResults);
+        public int compare(GraphSearchResult o1, GraphSearchResult o2) {
+            int score = getScore(o2) - getScore(o1);
+            if(score == 0) {
+                return 1;
+            }
+            return score;
+        }
+
+        private int getScore(GraphSearchResult obj) {
+            int score = 0;
+                if (area != null) {
+                    if(obj.area_ref == domain.getArea_ref()) {
+                        score ++;
+                    }
+                    if(obj.domain_ref == domain.getId()) {
+                        score ++;
+                    }
+                }
+            return score;
+        }
+    }
+
+    private static void processGraphResults(List<GraphSearchResult> results) {
+        // get current area and domain
+        Bundle bundle = searchUtilIFace.getAreaAndDomain();
+        KnowledgeArea area = bundle.getParcelable(SearchActivity.CURRENT_AREA);
+        Domain domain = bundle.getParcelable(SearchActivity.CURRENT_DOMAIN);
+        treeMap = new TreeMap<>(new CompareGraphs(area, domain));
+        VertexAsyncSearch.Result result;
+        long lastGraphRef = 0;
+        for(int ix = 0; ix < results.size(); ix ++) {
+            long currentGraphRef = results.get(ix).graph_ref;
+            if(currentGraphRef == lastGraphRef) {
+                continue;
+            }
+            lastGraphRef = currentGraphRef;
+            result = new VertexAsyncSearch.Result();
+            result.graph = results.get(ix);
+            if(ix == results.size() - 1) {
+                result.lastResult = true;
+            }
+            new VertexAsyncSearch().execute(result);
+        }
+    }
+
+    private static void addVerticesToMap(VertexAsyncSearch.Result result) {
+        treeMap.put(result.graph, result.vertices);
+        if(result.lastResult) {
+            searchUtilIFace.fetchGraphSearchResults(treeMap);
+        }
+    }
+
+    private static class VertexAsyncSearch
+            extends AsyncTask<VertexAsyncSearch.Result, Void, VertexAsyncSearch.Result> {
+
+        private static class Result {
+            GraphSearchResult graph;
+            List<SearchVertex> vertices;
+            boolean lastResult;
+
+            Result() {
+                lastResult = false;
+            }
+        }
+
+        @Override
+        protected Result doInBackground(Result... results) {
+            Result result = results[0];
+            result.vertices = graphSearchVerticesRepository.fetchVerticesForGraph(result.graph.graph_ref);
+            return result;
+        }
+
+        @Override
+        protected void onPostExecute(Result result) {
+            addVerticesToMap(result);
+        }
+    }
+
+    private static class GraphSearchAsyncTask
+            extends AsyncTask<String, Void, List<GraphSearchResult>> {
+
+        @Override
+        protected List<GraphSearchResult> doInBackground(String... strings) {
+            return  graphSearchRepository.loadGraphsForTermSearch(strings[0]);
+        }
+
+        @Override
+        protected void onPostExecute(List<GraphSearchResult> graphSearchResults) {
+            processGraphResults(graphSearchResults);
         }
     }
 }
+
+
+
+
+
+
+
+
+
+

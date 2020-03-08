@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import br.com.pearls.R;
 import br.com.pearls.utils.GraphSearchResult;
@@ -37,30 +39,30 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.Searc
     private SectionedRecyclerViewAdapter sectionedAdapter;
 
     @Override
-    public void fetchGraphSearchResults(Map<GraphSearchResult, List<SearchVertex>> results) {
+    public void fetchGraphSearchResults(TreeMap<GraphSearchResult, List<SearchVertex>> results) {
         sectionedAdapter.removeAllSections();
-        for (Map.Entry entry : results.entrySet()) {
+        for (TreeMap.Entry entry : results.entrySet()) {
             GraphSearchResult graph = (GraphSearchResult) entry.getKey();
             List<SearchVertex> vertices = (List<SearchVertex>) entry.getValue();
             sectionedAdapter.addSection(new SearchSection(graph, vertices));
-//            Log.v(TAG,  "graph: { graph_ref = " + graph.graph_ref +
-//                            "; domain_ref = " + graph.domain_ref +
-//                            "; domainName = " + graph.domainName +
-//                            "; area_ref = " + graph.area_ref +
-//                            "; areaName = " + graph.areaName + " }");
-//            Log.v(TAG, "\tvertices:");
-//            SearchVertex vertex;
-//            for(int ix = 0; ix < vertices.size(); ix++) {
-//                vertex = vertices.get(ix);
-//                Log.v(TAG, "\tvertex_id = " + vertex.vertex_id +
-//                                "; term_ref = " + vertex.term_ref +
-//                                "; user_rank = " + vertex.user_rank +
-//                                "; vertex_context = " + vertex.vertex_context +
-//                                "; term = " + vertex.term +
-//                                "; lang_ref = " + vertex.lang_ref +
-//                                "; language = " + vertex.language);
-//            }
-//            Log.v(TAG, "----------------------------------------");
+            Log.v(TAG,  "graph: { graph_ref = " + graph.graph_ref +
+                            "; domain_ref = " + graph.domain_ref +
+                            "; domainName = " + graph.domainName +
+                            "; area_ref = " + graph.area_ref +
+                            "; areaName = " + graph.areaName + " }");
+            Log.v(TAG, "\tvertices:");
+            SearchVertex vertex;
+            for(int ix = 0; ix < vertices.size(); ix++) {
+                vertex = vertices.get(ix);
+                Log.v(TAG, "\tvertex_id = " + vertex.vertex_id +
+                                "; term_ref = " + vertex.term_ref +
+                                "; user_rank = " + vertex.user_rank +
+                                "; vertex_context = " + vertex.vertex_context +
+                                "; term = " + vertex.term +
+                                "; lang_ref = " + vertex.lang_ref +
+                                "; language = " + vertex.language);
+            }
+            Log.v(TAG, "----------------------------------------");
         }
         // close keyboard:
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
