@@ -6,4 +6,5 @@ public class GraphSearchResult {
     public long area_ref;
     public String domainName;
     public String areaName;
+    public String term_ascii;
 }

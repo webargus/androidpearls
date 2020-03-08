@@ -144,12 +144,7 @@ public class SearchActivity extends AppCompatActivity
     }
 
     @Override
-    public Bundle getAreaAndDomain() {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(CURRENT_AREA, currentArea);
-        bundle.putParcelable(CURRENT_DOMAIN, currentDomain);
-        return bundle;
-    }
+    public Domain getDomain() { return currentDomain; }
 }
 
 

@@ -19,9 +19,9 @@ import android.widget.SearchView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
+import br.com.pearls.DB.Domain;
 import br.com.pearls.R;
 import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.GraphSearchUtil;
@@ -45,24 +45,24 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.Searc
             GraphSearchResult graph = (GraphSearchResult) entry.getKey();
             List<SearchVertex> vertices = (List<SearchVertex>) entry.getValue();
             sectionedAdapter.addSection(new SearchSection(graph, vertices));
-            Log.v(TAG,  "graph: { graph_ref = " + graph.graph_ref +
-                            "; domain_ref = " + graph.domain_ref +
-                            "; domainName = " + graph.domainName +
-                            "; area_ref = " + graph.area_ref +
-                            "; areaName = " + graph.areaName + " }");
-            Log.v(TAG, "\tvertices:");
-            SearchVertex vertex;
-            for(int ix = 0; ix < vertices.size(); ix++) {
-                vertex = vertices.get(ix);
-                Log.v(TAG, "\tvertex_id = " + vertex.vertex_id +
-                                "; term_ref = " + vertex.term_ref +
-                                "; user_rank = " + vertex.user_rank +
-                                "; vertex_context = " + vertex.vertex_context +
-                                "; term = " + vertex.term +
-                                "; lang_ref = " + vertex.lang_ref +
-                                "; language = " + vertex.language);
-            }
-            Log.v(TAG, "----------------------------------------");
+//            Log.v(TAG,  "graph: { graph_ref = " + graph.graph_ref +
+//                            "; domain_ref = " + graph.domain_ref +
+//                            "; domainName = " + graph.domainName +
+//                            "; area_ref = " + graph.area_ref +
+//                            "; areaName = " + graph.areaName + " }");
+//            Log.v(TAG, "\tvertices:");
+//            SearchVertex vertex;
+//            for(int ix = 0; ix < vertices.size(); ix++) {
+//                vertex = vertices.get(ix);
+//                Log.v(TAG, "\tvertex_id = " + vertex.vertex_id +
+//                                "; term_ref = " + vertex.term_ref +
+//                                "; user_rank = " + vertex.user_rank +
+//                                "; vertex_context = " + vertex.vertex_context +
+//                                "; term = " + vertex.term +
+//                                "; lang_ref = " + vertex.lang_ref +
+//                                "; language = " + vertex.language);
+//            }
+//            Log.v(TAG, "----------------------------------------");
         }
         // close keyboard:
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -73,7 +73,7 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.Searc
 
     public interface SearchTabIFace {
         void onNewTermFABClick();
-        Bundle getAreaAndDomain();
+        Domain getDomain();
     }
 
     public SearchTabFragment() {/*default constructor: prevents app from crashing when shutting down*/}
@@ -121,14 +121,13 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.Searc
         super.onAttach(context);
         try {
             searchTabIFace = (SearchTabIFace) context;
-            getAreaAndDomain();
         } catch (ClassCastException e) {
             throw new RuntimeException("You must implement the SearchTabIFace interface");
         }
     }
 
     @Override
-    public Bundle getAreaAndDomain() {
-        return searchTabIFace.getAreaAndDomain();
+    public Domain getDomain() {
+        return searchTabIFace.getDomain();
     }
 }
