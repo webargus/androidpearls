@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:background="@android:color/holo_blue_dark"
     android:paddingStart="8dp"
     android:paddingLeft="8dp">
 
@@ -14,7 +15,9 @@
         android:layout_alignParentLeft="true"
         android:layout_toStartOf="@+id/pearls_rank"
         android:layout_toLeftOf="@+id/pearls_rank"
-        android:gravity="center_vertical" />
+        android:gravity="center_vertical"
+        android:textColor="@android:color/white"
+        />
 
     <RatingBar
         android:id="@+id/pearls_rank"

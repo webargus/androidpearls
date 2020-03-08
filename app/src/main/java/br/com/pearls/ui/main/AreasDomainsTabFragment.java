@@ -1,5 +1,6 @@
 package br.com.pearls.ui.main;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -52,10 +53,6 @@ public class AreasDomainsTabFragment extends Fragment
 
     private KnowledgeArea mSelectedArea;
     private OnDomainSelectedListener domainListener;
-
-    public AreasDomainsTabFragment(OnDomainSelectedListener domainListener) {
-        this.domainListener = domainListener;
-    }
 
     public AreasDomainsTabFragment() {/* Default constructor: prevents app from crashing when finishing */}
 
@@ -230,6 +227,16 @@ public class AreasDomainsTabFragment extends Fragment
         NewDomainDialog dlg = new NewDomainDialog();
         dlg.setTargetFragment(AreasDomainsTabFragment.this, 1);
         dlg.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "AreasDomainsTabFragment");
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            domainListener = (OnDomainSelectedListener) context;
+        } catch (ClassCastException e) {
+            throw new RuntimeException("You must implement the OnDomainSelectedListener interface...");
+        }
     }
 }
 

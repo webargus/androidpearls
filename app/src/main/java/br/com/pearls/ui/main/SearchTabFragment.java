@@ -1,15 +1,18 @@
 package br.com.pearls.ui.main;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -17,20 +20,18 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 import java.util.Map;
 
-import br.com.pearls.DB.GraphSearchDao;
 import br.com.pearls.R;
 import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.GraphSearchUtil;
 import br.com.pearls.utils.SearchVertex;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
-public class SearchTabFragment extends Fragment implements GraphSearchUtil.OnGraphSearchFinished {
+public class SearchTabFragment extends Fragment implements GraphSearchUtil.SearchUtilIFace {
 
     private static final String TAG = SearchTabFragment.class.getName();
 
     SearchView searchView;
-    RecyclerView recyclerView;
-    OnNewTermFABClick newTermFABClick;
+    SearchTabIFace searchTabIFace;
     GraphSearchUtil graphSearchUtil;
 
     private SectionedRecyclerViewAdapter sectionedAdapter;
@@ -38,7 +39,7 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.OnGra
     @Override
     public void fetchGraphSearchResults(Map<GraphSearchResult, List<SearchVertex>> results) {
         sectionedAdapter.removeAllSections();
-        for(Map.Entry entry : results.entrySet()) {
+        for (Map.Entry entry : results.entrySet()) {
             GraphSearchResult graph = (GraphSearchResult) entry.getKey();
             List<SearchVertex> vertices = (List<SearchVertex>) entry.getValue();
             sectionedAdapter.addSection(new SearchSection(graph, vertices));
@@ -61,15 +62,16 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.OnGra
 //            }
 //            Log.v(TAG, "----------------------------------------");
         }
+        // close keyboard:
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+        // update recycler view
         sectionedAdapter.notifyDataSetChanged();
     }
 
-    public interface OnNewTermFABClick {
+    public interface SearchTabIFace {
         void onNewTermFABClick();
-    }
-
-    public SearchTabFragment(OnNewTermFABClick newTermFABClick) {
-        this.newTermFABClick = newTermFABClick;
+        Bundle getAreaAndDomain();
     }
 
     public SearchTabFragment() {/*default constructor: prevents app from crashing when shutting down*/}
@@ -84,7 +86,7 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.OnGra
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                newTermFABClick.onNewTermFABClick();
+                searchTabIFace.onNewTermFABClick();
             }
         });
 
@@ -112,4 +114,19 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.OnGra
         return root;
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            searchTabIFace = (SearchTabIFace) context;
+            getAreaAndDomain();
+        } catch (ClassCastException e) {
+            throw new RuntimeException("You must implement the SearchTabIFace interface");
+        }
+    }
+
+    @Override
+    public Bundle getAreaAndDomain() {
+        return searchTabIFace.getAreaAndDomain();
+    }
 }

@@ -15,8 +15,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +31,7 @@ import br.com.pearls.ui.main.SectionsPagerAdapter;
 
 public class SearchActivity extends AppCompatActivity
         implements AreasDomainsTabFragment.OnDomainSelectedListener,
-                   SearchTabFragment.OnNewTermFABClick {
+        SearchTabFragment.SearchTabIFace {
 
     private static final String TAG = SearchActivity.class.getName();
 
@@ -128,6 +126,8 @@ public class SearchActivity extends AppCompatActivity
         currentArea = gson.fromJson(areaJson, areaType);
     }
 
+    /* SearchTabFragment.SearchTabIFace overrides */
+
     @Override
     public void onNewTermFABClick() {
         Log.v(TAG, "got click from SearchTabFragment FAB");
@@ -141,6 +141,14 @@ public class SearchActivity extends AppCompatActivity
         newTermIntent.putExtra(CURRENT_AREA, currentArea);
         newTermIntent.putExtra(CURRENT_DOMAIN, currentDomain);
         startActivity(newTermIntent);
+    }
+
+    @Override
+    public Bundle getAreaAndDomain() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(CURRENT_AREA, currentArea);
+        bundle.putParcelable(CURRENT_DOMAIN, currentDomain);
+        return bundle;
     }
 }
 

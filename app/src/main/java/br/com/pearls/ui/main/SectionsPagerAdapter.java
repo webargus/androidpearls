@@ -30,8 +30,8 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public SectionsPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
-        searchTabFragment = new SearchTabFragment((SearchActivity) context);
-        areasTabFragment = new AreasDomainsTabFragment((SearchActivity) context);
+        searchTabFragment = new SearchTabFragment();
+        areasTabFragment = new AreasDomainsTabFragment();
     }
 
     @Override

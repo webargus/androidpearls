@@ -22,7 +22,9 @@
             android:layout_alignParentLeft="true"
             android:layout_toStartOf="@+id/result_rank"
             android:layout_toLeftOf="@+id/result_rank"
-            android:gravity="center_vertical" />
+            android:gravity="center_vertical"
+            android:textStyle="italic"
+            />
 
         <RatingBar
             android:id="@+id/result_rank"
@@ -50,6 +52,10 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:textSize="18dp"
+            android:textStyle="bold"
             android:gravity="center_vertical" />
 
         <TextView
