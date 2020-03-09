@@ -28,7 +28,8 @@ import br.com.pearls.utils.GraphSearchUtil;
 import br.com.pearls.utils.SearchVertex;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
-public class SearchTabFragment extends Fragment implements GraphSearchUtil.SearchUtilIFace {
+public class SearchTabFragment extends Fragment
+        implements GraphSearchUtil.SearchUtilIFace, SearchSection.ClickListener {
 
     private static final String TAG = SearchTabFragment.class.getName();
 
@@ -40,11 +41,12 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.Searc
 
     @Override
     public void fetchGraphSearchResults(TreeMap<GraphSearchResult, List<SearchVertex>> results) {
+        Log.v(TAG, "received TreeMap, size: " + results.size());
         sectionedAdapter.removeAllSections();
         for (TreeMap.Entry entry : results.entrySet()) {
             GraphSearchResult graph = (GraphSearchResult) entry.getKey();
             List<SearchVertex> vertices = (List<SearchVertex>) entry.getValue();
-            sectionedAdapter.addSection(new SearchSection(graph, vertices));
+            sectionedAdapter.addSection(new SearchSection(graph, vertices, this));
 //            Log.v(TAG,  "graph: { graph_ref = " + graph.graph_ref +
 //                            "; domain_ref = " + graph.domain_ref +
 //                            "; domainName = " + graph.domainName +
@@ -74,6 +76,7 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.Searc
     public interface SearchTabIFace {
         void onNewTermFABClick();
         Domain getDomain();
+        void onEditTerm(GraphSearchResult header, List<SearchVertex> vertices);
     }
 
     public SearchTabFragment() {/*default constructor: prevents app from crashing when shutting down*/}
@@ -129,5 +132,10 @@ public class SearchTabFragment extends Fragment implements GraphSearchUtil.Searc
     @Override
     public Domain getDomain() {
         return searchTabIFace.getDomain();
+    }
+
+    @Override
+    public void onItemClick(GraphSearchResult header, List<SearchVertex> vertices) {
+        searchTabIFace.onEditTerm(header, vertices);
     }
 }

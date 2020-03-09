@@ -41,6 +41,7 @@ public class GraphSearchUtil {
     }
 
     public void asyncSearchForTerm(@NonNull final String term) {
+        Log.v(TAG, "searching term: " + term);
         searchTerm = RemoveDiacritics.removeDiacritics(term);
         new GraphSearchAsyncTask().execute(searchTerm);
     }
@@ -67,17 +68,17 @@ public class GraphSearchUtil {
 
         private int getScore(GraphSearchResult obj) {
             int score = 0;
-                if (domain != null) {
-                    if(obj.area_ref == domain.getArea_ref()) {
-                        score += 3;
-                    }
-                    if(obj.domain_ref == domain.getId()) {
-                        score += 4;
-                    }
+            if (domain != null) {
+                if(obj.area_ref == domain.getArea_ref()) {
+                    score += 3;
                 }
-                if(obj.term_ascii == searchTerm) {
-                    score += 2;
+                if(obj.domain_ref == domain.getId()) {
+                    score += 4;
                 }
+            }
+            if(obj.term_ascii == searchTerm) {
+                score += 2;
+            }
             return score;
         }
     }
@@ -93,16 +94,12 @@ public class GraphSearchUtil {
         Domain domain = searchUtilIFace.getDomain();
         treeMap = new TreeMap<>(new CompareGraphs(domain));
         VertexAsyncSearch.Result result;
-        long lastGraphRef = 0;
+        long prevGraphId = 0;
         for(int ix = 0; ix < results.size(); ix ++) {
-            long currentGraphRef = results.get(ix).graph_ref;
-            /* IMPORTANT! GraphSearchDao must order results by graph_ref */
-            if(currentGraphRef == lastGraphRef) {
-                continue;
-            }
-            lastGraphRef = currentGraphRef;
             result = new VertexAsyncSearch.Result();
             result.graph = results.get(ix);
+            result.lastGraphId = prevGraphId;
+            prevGraphId = result.graph.graph_ref;
             if(ix == results.size() - 1) {
                 result.lastResult = true;
             }
@@ -111,29 +108,47 @@ public class GraphSearchUtil {
     }
 
     private static void addVerticesToMap(VertexAsyncSearch.Result result) {
-        treeMap.put(result.graph, result.vertices);
+        if(result.vertices != null) {
+            treeMap.put(result.graph, result.vertices);
+        }
         if(result.lastResult) {
+            Log.v(TAG, "sending treeMap to search fragment; size: " + treeMap.size());
             searchUtilIFace.fetchGraphSearchResults(treeMap);
         }
     }
 
+    /* async classes to fetch search results from db
+       efforts made to merge both classes into one failed because TreeMap is not
+       synchronized and results return messed up unless we sort them them in main thread
+     */
     private static class VertexAsyncSearch
             extends AsyncTask<VertexAsyncSearch.Result, Void, VertexAsyncSearch.Result> {
 
         private static class Result {
             GraphSearchResult graph;
             List<SearchVertex> vertices;
+            /*  flag that tells addVerticesToMap that this is the last result
+                to be processed in the GraphSearchResult list; addVerticesToMap
+                needs this information when deciding to send TreeMap back to
+                search fragment through the searchUtilIFace interface.
+            */
             boolean lastResult;
+            long lastGraphId;
 
             Result() {
                 lastResult = false;
+                lastGraphId = 0;
             }
         }
 
         @Override
         protected Result doInBackground(Result... results) {
             Result result = results[0];
-            result.vertices = graphSearchVerticesRepository.fetchVerticesForGraph(result.graph.graph_ref);
+            if(result.graph.graph_ref == result.lastGraphId) {
+                result.vertices = null;
+            } else {
+                result.vertices = graphSearchVerticesRepository.fetchVerticesForGraph(result.graph.graph_ref);
+            }
             return result;
         }
 
@@ -153,6 +168,7 @@ public class GraphSearchUtil {
 
         @Override
         protected void onPostExecute(List<GraphSearchResult> graphSearchResults) {
+            Log.v(TAG, "got results, sending them to process");
             processGraphResults(graphSearchResults);
         }
     }

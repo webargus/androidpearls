@@ -1,7 +1,6 @@
 package br.com.pearls.ui.main;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,16 +20,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.pearls.DB.Domain;
-import br.com.pearls.DB.Graph;
-import br.com.pearls.DB.GraphRepository;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.DB.Language;
 import br.com.pearls.DB.LanguagesViewModel;
 import br.com.pearls.DB.Term;
 import br.com.pearls.R;
-import br.com.pearls.SearchActivity;
+import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.GraphUtil;
 import br.com.pearls.utils.RemoveDiacritics;
+import br.com.pearls.utils.SearchVertex;
+
+import static br.com.pearls.SearchActivity.PEARLS_KEY_CURRENT_AREA;
+import static br.com.pearls.SearchActivity.PEARLS_KEY_CURRENT_DOMAIN;
+import static br.com.pearls.SearchActivity.PEARLS_KEY_GRAPH;
+import static br.com.pearls.SearchActivity.PEARLS_KEY_VERTICES;
 
 public class NewTermActivity extends AppCompatActivity implements GraphUtil.OnGraphCreated {
 
@@ -38,6 +41,8 @@ public class NewTermActivity extends AppCompatActivity implements GraphUtil.OnGr
 
     private KnowledgeArea area;
     private Domain domain;
+    private ArrayList<SearchVertex> vertices;
+    private GraphSearchResult graph;
     private LanguagesViewModel languagesViewModel;
     private RVTermFormAdapter adapter;
     private RecyclerView recyclerView;
@@ -50,12 +55,38 @@ public class NewTermActivity extends AppCompatActivity implements GraphUtil.OnGr
         setContentView(R.layout.new_term_activity);
 
         Intent input = getIntent();
-        area = input.getParcelableExtra(SearchActivity.CURRENT_AREA);
-        domain = input.getParcelableExtra(SearchActivity.CURRENT_DOMAIN);
-        Log.v(TAG, "-------------> got area '" + area.getArea() + "'");
+        if(input.hasExtra(PEARLS_KEY_GRAPH)) {      // edit
+            this.graph = input.getParcelableExtra(PEARLS_KEY_GRAPH);
+            this.area = new KnowledgeArea();
+            area.setId(graph.area_ref);
+            area.setArea(graph.areaName);
+            this.domain = new Domain();
+            domain.setArea_ref(graph.area_ref);
+            domain.setDomain(graph.domainName);
+            domain.setId(graph.domain_ref);
+            this.vertices = input.getParcelableArrayListExtra(PEARLS_KEY_VERTICES);
+            if (vertices != null) {
+                for (SearchVertex v : vertices) {       // debug
+                    Log.v(TAG, "language: " + v.language + "; term: " + v.term);
+                }
+            }
+        } else { // new term
+            if (input.hasExtra(PEARLS_KEY_CURRENT_AREA)) {
+                this.area = input.getParcelableExtra(PEARLS_KEY_CURRENT_AREA);
+                this.domain = input.getParcelableExtra(PEARLS_KEY_CURRENT_DOMAIN);
+            }
+        }
 
         tvCaption = findViewById(R.id.tv_term_form_caption);
-        tvCaption.setText(area.getArea() + " > " + domain.getDomain());
+        if(domain != null) {
+            StringBuffer buffer = new StringBuffer();
+            buffer.append(area.getArea());
+            buffer.append(" > ");
+            buffer.append(domain.getDomain());
+            tvCaption.setText(buffer);
+        }else{
+            Log.v(TAG, "--------------------xxxxxxxxxxxx domain is null");
+        }
 
         recyclerView = findViewById(R.id.rv_term_form);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

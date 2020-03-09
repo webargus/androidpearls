@@ -17,8 +17,14 @@ public class SearchSection extends Section {
 
     private GraphSearchResult header;
     private List<SearchVertex> items;
+    private ClickListener clickListener;
 
-    public SearchSection(@NonNull final GraphSearchResult header, List<SearchVertex> items) {
+    public interface ClickListener {
+        void onItemClick(GraphSearchResult header, List<SearchVertex> vertices);
+    }
+
+    public SearchSection(@NonNull final GraphSearchResult header,
+                         List<SearchVertex> items, ClickListener clickListener) {
         super(SectionParameters.builder()
                 .itemResourceId(R.layout.rv_term_search_item)
                 .headerResourceId(R.layout.rv_term_search_item_header)
@@ -26,6 +32,7 @@ public class SearchSection extends Section {
 
         this.header = header;
         this.items = items;
+        this.clickListener = clickListener;
     }
 
     @Override
@@ -46,6 +53,13 @@ public class SearchSection extends Section {
         searchItemViewHolder.userRating.setRating((float)vertex.user_rank);
         searchItemViewHolder.tvTerm.setText(vertex.term);
         searchItemViewHolder.tvContext.setText(vertex.vertex_context);
+
+        searchItemViewHolder.rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clickListener.onItemClick(header, items);
+            }
+        });
     }
 
     @Override
