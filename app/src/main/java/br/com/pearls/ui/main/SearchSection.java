@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import br.com.pearls.R;
+import br.com.pearls.utils.GraphSearchRated;
 import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.SearchVertex;
 import io.github.luizgrp.sectionedrecyclerviewadapter.Section;
@@ -15,7 +16,7 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters;
 
 public class SearchSection extends Section {
 
-    private GraphSearchResult header;
+    private GraphSearchRated header;
     private List<SearchVertex> items;
     private ClickListener clickListener;
 
@@ -23,7 +24,7 @@ public class SearchSection extends Section {
         void onItemClick(GraphSearchResult header, List<SearchVertex> vertices);
     }
 
-    public SearchSection(@NonNull final GraphSearchResult header,
+    public SearchSection(@NonNull final GraphSearchRated header,
                          List<SearchVertex> items, ClickListener clickListener) {
         super(SectionParameters.builder()
                 .itemResourceId(R.layout.rv_term_search_item)
@@ -57,7 +58,9 @@ public class SearchSection extends Section {
         searchItemViewHolder.rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickListener.onItemClick(header, items);
+                if(clickListener != null) {
+                    clickListener.onItemClick(header.graph, items);
+                }
             }
         });
     }
@@ -70,8 +73,8 @@ public class SearchSection extends Section {
     @Override
     public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder) {
         SearchHeaderViewHolder headerViewHolder = (SearchHeaderViewHolder) holder;
-        headerViewHolder.tvDomain.setText(header.areaName + " > " + header.domainName);
-        headerViewHolder.pearlsRating.setRating(2);
+        headerViewHolder.tvDomain.setText(header.graph.areaName + " > " + header.graph.domainName);
+        headerViewHolder.tvPearlsRating.setText(header.getScorePercent());
     }
 }
 

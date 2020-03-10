@@ -125,7 +125,7 @@ public class NewTermActivity extends AppCompatActivity implements GraphUtil.OnGr
                 isEmpty = false;
             }
             term.setTerm(termString);
-            term.setTerm_ascii(RemoveDiacritics.removeDiacritics(termString));
+            term.setTerm_ascii(RemoveDiacritics.removeDiacritics(termString).toLowerCase());
             term.setLang_ref(itemHolder.language.getId());
             GraphUtil.GraphVertexWithTerm vertex = graphUtil.new GraphVertexWithTerm(term);
             String termContext = itemHolder.etContext.getText().toString().trim();

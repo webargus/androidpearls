@@ -4,33 +4,31 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@android:color/holo_blue_dark"
-    android:paddingStart="8dp"
-    android:paddingLeft="8dp">
+    android:padding="8dp"
+>
 
     <TextView
         android:id="@+id/tv_result_domain"
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_toStartOf="@+id/pearls_rank"
         android:layout_toLeftOf="@+id/pearls_rank"
         android:gravity="center_vertical"
         android:textColor="@android:color/white"
+        android:text="area domain"
         />
 
-    <RatingBar
+    <TextView
         android:id="@+id/pearls_rank"
-        style="@android:style/Widget.Holo.RatingBar.Indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:isIndicator="true"
-        android:numStars="4"
-        android:rating="0"
-        android:scaleX=".7"
-        android:scaleY=".7"
-        android:stepSize="1" />
+        android:gravity="center_vertical"
+        android:textColor="@android:color/white"
+        android:text="pearls rating: 70%"
+    />
 
 </RelativeLayout>

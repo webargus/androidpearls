@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -23,6 +24,7 @@ import java.util.TreeMap;
 
 import br.com.pearls.DB.Domain;
 import br.com.pearls.R;
+import br.com.pearls.utils.GraphSearchRated;
 import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.GraphSearchUtil;
 import br.com.pearls.utils.SearchVertex;
@@ -40,18 +42,22 @@ public class SearchTabFragment extends Fragment
     private SectionedRecyclerViewAdapter sectionedAdapter;
 
     @Override
-    public void fetchGraphSearchResults(TreeMap<GraphSearchResult, List<SearchVertex>> results) {
-        Log.v(TAG, "received TreeMap, size: " + results.size());
+    public void fetchGraphSearchResults(TreeMap<GraphSearchRated, List<SearchVertex>> results) {
         sectionedAdapter.removeAllSections();
+        if((results == null) || (results.size() == 0)) {
+            Toast.makeText(getContext(), "No match found for searched term", Toast.LENGTH_LONG).show();
+            return;
+        }
         for (TreeMap.Entry entry : results.entrySet()) {
-            GraphSearchResult graph = (GraphSearchResult) entry.getKey();
+            GraphSearchRated graph = (GraphSearchRated) entry.getKey();
             List<SearchVertex> vertices = (List<SearchVertex>) entry.getValue();
             sectionedAdapter.addSection(new SearchSection(graph, vertices, this));
-//            Log.v(TAG,  "graph: { graph_ref = " + graph.graph_ref +
-//                            "; domain_ref = " + graph.domain_ref +
-//                            "; domainName = " + graph.domainName +
-//                            "; area_ref = " + graph.area_ref +
-//                            "; areaName = " + graph.areaName + " }");
+//            Log.v(TAG,  "graph: { graph_ref = " + graph.graph.graph_ref +
+//                            "; domain_ref = " + graph.graph.domain_ref +
+//                            "; domainName = " + graph.graph.domainName +
+//                            "; area_ref = " + graph.graph.area_ref +
+//                            "; areaName = " + graph.graph.areaName +
+//                            "; score = " + graph.score + " }");
 //            Log.v(TAG, "\tvertices:");
 //            SearchVertex vertex;
 //            for(int ix = 0; ix < vertices.size(); ix++) {
