@@ -7,6 +7,7 @@ import androidx.room.Ignore;
 
 public class SearchVertex implements Parcelable {
     public long vertex_id;
+    public long graph_ref;
     public long term_ref;
     public int user_rank;
     public String vertex_context;
@@ -19,6 +20,7 @@ public class SearchVertex implements Parcelable {
     @Ignore
     protected SearchVertex(Parcel in) {
         vertex_id = in.readLong();
+        graph_ref = in.readLong();
         term_ref = in.readLong();
         user_rank = in.readInt();
         vertex_context = in.readString();
@@ -47,6 +49,7 @@ public class SearchVertex implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(vertex_id);
+        dest.writeLong(graph_ref);
         dest.writeLong(term_ref);
         dest.writeInt(user_rank);
         dest.writeString(vertex_context);

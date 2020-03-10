@@ -11,15 +11,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.pearls.DB.Language;
 import br.com.pearls.R;
+import br.com.pearls.utils.SearchVertex;
 
-public class RVTermFormAdapter extends RecyclerView.Adapter<RVTermFormAdapter.TermFormHolder> {
+public class AddEditTermAdapter extends RecyclerView.Adapter<AddEditTermAdapter.TermFormHolder> {
 
-    private List<Language> languages = new ArrayList<>();
+    private List<SearchVertex> vertices;
 
     @NonNull
     @Override
@@ -31,17 +31,23 @@ public class RVTermFormAdapter extends RecyclerView.Adapter<RVTermFormAdapter.Te
 
     @Override
     public void onBindViewHolder(@NonNull TermFormHolder holder, int position) {
-        Language language = languages.get(position);
-        holder.setTvLanguage(language);
+        SearchVertex vertex = vertices.get(position);
+        holder.tvLanguage.setText(vertex.language);
+        holder.rbRank.setRating((float) vertex.user_rank);
+        holder.etTerm.setText(vertex.term);
+        holder.etContext.setText(vertex.vertex_context);
     }
 
     @Override
     public int getItemCount() {
-        return languages.size();
+        if(vertices != null) {
+            return vertices.size();
+        }
+        return 0;
     }
 
-    public void setLanguages(List<Language> languages) {
-        this.languages = languages;
+    public void setData(List<SearchVertex> vertices) {
+        this.vertices = vertices;
         notifyDataSetChanged();
     }
 
@@ -58,11 +64,6 @@ public class RVTermFormAdapter extends RecyclerView.Adapter<RVTermFormAdapter.Te
             etTerm = itemView.findViewById(R.id.et_term_form_term);
             etContext = itemView.findViewById(R.id.et_term_form_context);
             rbRank = itemView.findViewById(R.id.term_form_rank);
-        }
-
-        public void setTvLanguage(Language language) {
-            this.language = language;
-            tvLanguage.setText(this.language.getLanguage());
         }
     }
 }

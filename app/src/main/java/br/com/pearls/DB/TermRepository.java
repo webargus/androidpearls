@@ -12,5 +12,5 @@ public class TermRepository {
     }
 
     public long insert(Term term) { return termDao.insert(term); }
-
+    public void update(Term term) { termDao.update(term); }
 }

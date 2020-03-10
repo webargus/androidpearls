@@ -12,4 +12,5 @@ public class VertexRepository {
     }
 
     public long insert(Vertex vertex) { return vertexDao.insert(vertex); }
+    public void update(Vertex vertex) { vertexDao.update(vertex); }
 }

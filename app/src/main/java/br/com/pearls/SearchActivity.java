@@ -8,6 +8,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import androidx.annotation.Nullable;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -27,7 +28,7 @@ import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.Settings.SettingsActivity;
 import br.com.pearls.ui.main.AreasDomainsTabFragment;
 import br.com.pearls.ui.main.LanguagesActivity;
-import br.com.pearls.ui.main.NewTermActivity;
+import br.com.pearls.ui.main.AddEditTermActivity;
 import br.com.pearls.ui.main.SearchTabFragment;
 import br.com.pearls.ui.main.SectionsPagerAdapter;
 import br.com.pearls.utils.GraphSearchResult;
@@ -39,12 +40,11 @@ public class SearchActivity extends AppCompatActivity
 
     private static final String TAG = SearchActivity.class.getName();
 
-    private static final String PEARLS_KEY_SEARCH_PREFERENCES = "search preferences";
-    public static final String PEARLS_KEY_CURRENT_AREA = "current area";
-    public static final String PEARLS_KEY_CURRENT_DOMAIN = "current domain";
-    public static final String PEARLS_KEY_VERTICES = "vertices";
-    public static final String PEARLS_KEY_GRAPH = "graph";
-
+    private static final String PEARLS_SEARCH_PREFERENCES = "search preferences";
+    public static final String PEARLS_CURRENT_AREA = "current area";
+    public static final String PEARLS_CURRENT_DOMAIN = "current domain";
+    public static final int PEARLS_KEY_EDIT = 2020;
+    public static final int PEARLS_KEY_ADD = 2021;
 
     private KnowledgeArea currentArea;
     private Domain currentDomain;
@@ -111,21 +111,21 @@ public class SearchActivity extends AppCompatActivity
     }
 
     private void savePreferences() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PEARLS_KEY_SEARCH_PREFERENCES, MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(PEARLS_SEARCH_PREFERENCES, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         String domain = gson.toJson(currentDomain);
         String area = gson.toJson(currentArea);
-        editor.putString(PEARLS_KEY_CURRENT_DOMAIN, domain);
-        editor.putString(PEARLS_KEY_CURRENT_AREA, area);
+        editor.putString(PEARLS_CURRENT_DOMAIN, domain);
+        editor.putString(PEARLS_CURRENT_AREA, area);
         editor.apply();
     }
 
     private void loadPreferences() {
-        SharedPreferences sharedPreferences = getSharedPreferences(PEARLS_KEY_SEARCH_PREFERENCES, MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(PEARLS_SEARCH_PREFERENCES, MODE_PRIVATE);
         Gson gson = new Gson();
-        String domainJson = sharedPreferences.getString(PEARLS_KEY_CURRENT_DOMAIN, null);
-        String areaJson = sharedPreferences.getString(PEARLS_KEY_CURRENT_AREA, null);
+        String domainJson = sharedPreferences.getString(PEARLS_CURRENT_DOMAIN, null);
+        String areaJson = sharedPreferences.getString(PEARLS_CURRENT_AREA, null);
         Type domainType = new TypeToken<Domain>() {}.getType();
         currentDomain = gson.fromJson(domainJson, domainType);
         Type areaType = new TypeToken<KnowledgeArea>() {}.getType();
@@ -143,22 +143,28 @@ public class SearchActivity extends AppCompatActivity
                             Toast.LENGTH_SHORT).show();
             return;
         }
-        Intent intent = new Intent(SearchActivity.this, NewTermActivity.class);
-        intent.putExtra(PEARLS_KEY_CURRENT_DOMAIN, currentDomain);
-        intent.putExtra(PEARLS_KEY_CURRENT_AREA, currentArea);
-        startActivity(intent);
+        Intent intent = new Intent(SearchActivity.this, AddEditTermActivity.class);
+        intent.putExtra(AddEditTermActivity.PEARLS_KEY_DOMAIN, currentDomain);
+        intent.putExtra(AddEditTermActivity.PEARLS_KEY_AREA, currentArea);
+        startActivityForResult(intent, PEARLS_KEY_ADD);
     }
 
     @Override
     public Domain getDomain() { return currentDomain; }
 
     @Override
-    public void onEditTerm(GraphSearchResult header, List<SearchVertex> vertices) {
+    public void onEditTerm(List<SearchVertex> vertices) {
         ArrayList<SearchVertex> arrayList = new ArrayList<>(vertices);
-        Intent intent = new Intent(SearchActivity.this, NewTermActivity.class);
-        intent.putExtra(PEARLS_KEY_GRAPH, header);
-        intent.putParcelableArrayListExtra(PEARLS_KEY_VERTICES, arrayList);
-        startActivity(intent);
+        Intent intent = new Intent(SearchActivity.this, AddEditTermActivity.class);
+        intent.putExtra(AddEditTermActivity.PEARLS_KEY_AREA, currentArea);
+        intent.putExtra(AddEditTermActivity.PEARLS_KEY_DOMAIN, currentDomain);
+        intent.putParcelableArrayListExtra(AddEditTermActivity.PEARLS_KEY_VERTICES, arrayList);
+        startActivityForResult(intent, PEARLS_KEY_EDIT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
 

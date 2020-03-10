@@ -82,7 +82,7 @@ public class SearchTabFragment extends Fragment
     public interface SearchTabIFace {
         void onNewTermFABClick();
         Domain getDomain();
-        void onEditTerm(GraphSearchResult header, List<SearchVertex> vertices);
+        void onEditTerm(List<SearchVertex> vertices);
     }
 
     public SearchTabFragment() {/*default constructor: prevents app from crashing when shutting down*/}
@@ -141,7 +141,7 @@ public class SearchTabFragment extends Fragment
     }
 
     @Override
-    public void onItemClick(GraphSearchResult header, List<SearchVertex> vertices) {
-        searchTabIFace.onEditTerm(header, vertices);
+    public void onItemClick(List<SearchVertex> vertices) {
+        searchTabIFace.onEditTerm(vertices);
     }
 }

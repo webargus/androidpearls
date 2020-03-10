@@ -10,7 +10,7 @@ import br.com.pearls.utils.SearchVertex;
 
 @Dao
 public interface GraphSearchVerticesDao {
-    @Query("SELECT vertices.id AS vertex_id, term_ref, user_rank, vertex_context, term, lang_ref, language " +
+    @Query("SELECT vertices.id AS vertex_id, graph_ref, term_ref, user_rank, vertex_context, term, lang_ref, language " +
            "FROM vertices LEFT JOIN terms ON term_ref = terms.id " +
            "LEFT JOIN languages ON lang_ref = languages.id " +
            "WHERE languages.active = 1 AND graph_ref = :graph_ref")

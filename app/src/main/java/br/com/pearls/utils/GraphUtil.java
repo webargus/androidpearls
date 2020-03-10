@@ -6,7 +6,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.pearls.DB.DomainRepository;
@@ -14,8 +13,8 @@ import br.com.pearls.DB.Graph;
 import br.com.pearls.DB.GraphRepository;
 import br.com.pearls.DB.Term;
 import br.com.pearls.DB.TermRepository;
+import br.com.pearls.DB.Vertex;
 import br.com.pearls.DB.VertexRepository;
-import br.com.pearls.ui.main.NewTermActivity;
 
 public class GraphUtil {
 
@@ -25,7 +24,7 @@ public class GraphUtil {
     private static GraphRepository graphRepository;
     private static VertexRepository vertexRepository;
     private static TermRepository termRepository;
-    private static List<GraphVertexWithTerm> vertices;
+    private static List<SearchVertex> vertices;
     private static Graph graph;
     private static OnGraphCreated graphCreated;
 
@@ -33,27 +32,21 @@ public class GraphUtil {
         void onGraphCreated(boolean graphOk);
     }
 
-    public GraphUtil(Application application, NewTermActivity newTermActivity) {
-        try {
-            graphCreated = (OnGraphCreated) newTermActivity;
-        } catch (ClassCastException ex) {
-            Log.e(TAG, "You must implement the OnGraphCreated interface");
-            return;
-        }
+    public void setOnGraphCreated(OnGraphCreated graphCreated) {
+        this.graphCreated = graphCreated;
+    }
+
+    public GraphUtil(Application application) {
         domainRepository = new DomainRepository(application);
         graphRepository = new GraphRepository(application);
         vertexRepository = new VertexRepository(application);
         termRepository = new TermRepository(application);
         graph = new Graph();
-        vertices = new ArrayList<>();
     }
 
-    public void add(@NonNull final GraphVertexWithTerm vertex) {
-        this.vertices.add(vertex);
-    }
-
-    public void createGraph(@NonNull final long domain_ref) {
+    public void createGraph(@NonNull final long domain_ref, @NonNull final List<SearchVertex> vertices) {
         graph.setDomain_ref(domain_ref);
+        this.vertices = vertices;
         new GraphAsyncTask().execute();
     }
 
@@ -62,29 +55,53 @@ public class GraphUtil {
         @Override
         protected Boolean doInBackground(Void... voids) {
             // Check if domain_ref exists, return false if not
-            if(domainRepository.getDomain(graph.getDomain_ref()).length == 0) {
+            if (domainRepository.getDomain(graph.getDomain_ref()).length == 0) {
                 return false;
             }
-            graph.setId(graphRepository.insert(graph));
-            long termId;
-            for (GraphVertexWithTerm vertexWithTerm : vertices) {
-                termId = termRepository.insert(vertexWithTerm.term);
-                vertexWithTerm.term.setId(termId);
-                vertexWithTerm.vertex.setTerm_ref(termId);
-                vertexWithTerm.vertex.setGraph_ref(graph.getId());
-                vertexRepository.insert(vertexWithTerm.vertex);
+            Vertex vertex;
+            Term term;
+            long graph_id = 0;
+            for(SearchVertex searchVertex : vertices) {
+                vertex = new Vertex();                  // vertex to insert or update
+                term = new Term();                      // term to insert or update
+                // set term fields according to user's GUI input
+                term.setTerm(searchVertex.term);
+                term.setTerm_ascii(RemoveDiacritics.removeDiacritics(searchVertex.term).toLowerCase());
+                if(searchVertex.term_ref == 0) {    // insert term
+                    term.setLang_ref(searchVertex.lang_ref);
+                    vertex.setTerm_ref(termRepository.insert(term));
+                } else {        // update term
+                    termRepository.update(term);
+                }
+                // set vertex fields according to user's input
+                vertex.setUser_rank(searchVertex.user_rank);
+                vertex.setVertex_context(searchVertex.vertex_context);
+                if(searchVertex.graph_ref == 0) {       // => we're inserting
+                    if(graph_id == 0) {
+                        // create graph once and reuse same graph_id for all new vertices
+                        graph_id = graphRepository.insert(graph);
+                        searchVertex.graph_ref = graph_id;
+                    }
+                    vertex.setGraph_ref(graph_id);
+                    Log.v(TAG, "inserting " + vertex.getId());
+                    searchVertex.vertex_id = vertexRepository.insert(vertex);
+                } else {                                // => we're updating
+                    vertex.setId(searchVertex.vertex_id);
+                    vertex.setGraph_ref(searchVertex.graph_ref);
+                    vertex.setTerm_ref(searchVertex.term_ref);
+                    Log.v(TAG, "updating " + vertex.getId());
+                    vertexRepository.update(vertex);
+                }
             }
             return true;
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
-          graphCreated.onGraphCreated(result);
+            if (graphCreated != null) {
+                graphCreated.onGraphCreated(result);
+            }
         }
-    }
-
-    public class GraphVertexWithTerm extends VertexWithTerm {
-        public GraphVertexWithTerm(Term term) { super(term); }
     }
 }
 
