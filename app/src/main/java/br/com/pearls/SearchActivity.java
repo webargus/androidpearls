@@ -173,9 +173,6 @@ public class SearchActivity extends AppCompatActivity
                 Toast.makeText(getApplicationContext(), "Couldn't update terms", Toast.LENGTH_LONG).show();
                 return;
             }
-            for(SearchVertex vertex: vertices) {
-                vertex.debugDump();
-            }
             String stringId = data.getStringExtra(AddEditTermActivity.PEARLS_KEY_ID);
             SearchTabFragment stf = (SearchTabFragment) (getSupportFragmentManager()
                     .getFragments().get(SectionsPagerAdapter.PEARLS_SEARCH_TAB_FRAGMENT_POSITION));

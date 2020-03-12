@@ -1,5 +1,7 @@
 package br.com.pearls.DB;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -7,6 +9,8 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "terms")
 public class Term {
+
+    public static final String TAG = Term.class.getName();
 
     @NonNull
     @PrimaryKey(autoGenerate = true)
@@ -35,7 +39,16 @@ public class Term {
     public void setTerm_ascii(final String term_ascii) { this.term_ascii = term_ascii; }
     public int getSynced() { return this.synced; }
     public void setSynced(final int synced) { this.synced = synced; }
+
+    public void debugDump() {
+        Log.v(TAG, "Term dump:");
+        Log.v(TAG, "id: " + id);
+        Log.v(TAG, "term: " + term);
+        Log.v(TAG, "term_ascii: " + term_ascii);
+        Log.v(TAG, "lang_ref: " + lang_ref);
+    }
 }
+
 
 
 

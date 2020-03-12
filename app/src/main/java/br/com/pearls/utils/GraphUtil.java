@@ -70,9 +70,12 @@ public class GraphUtil {
                 // lang_ref != 0 always, either in insert or edit mode
                 term.setLang_ref(searchVertex.lang_ref);
                 if(searchVertex.term_ref == 0) {    // insert term
-                    vertex.setTerm_ref(termRepository.insert(term));
+                    term.setId(termRepository.insert(term));
+                    vertex.setTerm_ref(term.getId());
+                    // searchVertex.term_ref = term.getId();
                 } else {        // update term
                     term.setId(searchVertex.term_ref);
+                    vertex.setTerm_ref(searchVertex.term_ref);
                     termRepository.update(term);
                 }
                 // set vertex fields according to user's input
@@ -82,18 +85,20 @@ public class GraphUtil {
                     if(graph_id == 0) {
                         // create graph once and reuse same graph_id for all new vertices
                         graph_id = graphRepository.insert(graph);
-                        searchVertex.graph_ref = graph_id;
                     }
+                    // searchVertex.graph_ref = graph_id;
                     vertex.setGraph_ref(graph_id);
                     Log.v(TAG, "inserting vertex");
-                    searchVertex.vertex_id = vertexRepository.insert(vertex);
+                    vertex.setId(vertexRepository.insert(vertex));
                 } else {                                // => we're updating
                     vertex.setId(searchVertex.vertex_id);
                     vertex.setGraph_ref(searchVertex.graph_ref);
                     vertex.setTerm_ref(searchVertex.term_ref);
-                    Log.v(TAG, "updating " + vertex.getId());
+                    Log.v(TAG, "updating vertex id " + vertex.getId());
                     vertexRepository.update(vertex);
                 }
+                vertex.debugDump();
+                term.debugDump();
             }
             return true;
         }
