@@ -9,7 +9,6 @@ import java.util.List;
 
 import br.com.pearls.R;
 import br.com.pearls.utils.GraphSearchRated;
-import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.SearchVertex;
 import io.github.luizgrp.sectionedrecyclerviewadapter.Section;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters;
@@ -19,9 +18,10 @@ public class SearchSection extends Section {
     private GraphSearchRated header;
     private List<SearchVertex> items;
     private ClickListener clickListener;
+    private String stringId;
 
     public interface ClickListener {
-        void onItemClick(List<SearchVertex> vertices);
+        void onItemClick(String stringId, List<SearchVertex> vertices);
     }
 
     public SearchSection(@NonNull final GraphSearchRated header,
@@ -34,6 +34,10 @@ public class SearchSection extends Section {
         this.header = header;
         this.items = items;
         this.clickListener = clickListener;
+    }
+
+    public void setStringId(String stringId) {
+        this.stringId = stringId;
     }
 
     @Override
@@ -59,7 +63,7 @@ public class SearchSection extends Section {
             @Override
             public void onClick(View v) {
                 if(clickListener != null) {
-                    clickListener.onItemClick(items);
+                    clickListener.onItemClick(stringId, items);
                 }
             }
         });
@@ -75,6 +79,10 @@ public class SearchSection extends Section {
         SearchHeaderViewHolder headerViewHolder = (SearchHeaderViewHolder) holder;
         headerViewHolder.tvDomain.setText(header.graph.areaName + " > " + header.graph.domainName);
         headerViewHolder.tvPearlsRating.setText(header.getScorePercent());
+    }
+
+    public void setItems(List<SearchVertex> items) {
+        this.items = items;
     }
 }
 

@@ -3,10 +3,12 @@ package br.com.pearls.ui.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
@@ -23,11 +25,8 @@ import br.com.pearls.DB.Domain;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.DB.Language;
 import br.com.pearls.DB.LanguagesViewModel;
-import br.com.pearls.DB.Term;
 import br.com.pearls.R;
-import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.GraphUtil;
-import br.com.pearls.utils.RemoveDiacritics;
 import br.com.pearls.utils.SearchVertex;
 
 public class AddEditTermActivity extends AppCompatActivity {
@@ -37,6 +36,7 @@ public class AddEditTermActivity extends AppCompatActivity {
     public static final String PEARLS_KEY_VERTICES = "vertices";
     public static final String PEARLS_KEY_DOMAIN = "domain";
     public static final String PEARLS_KEY_AREA = "area";
+    public static final String PEARLS_KEY_ID = "string id";
 
     private KnowledgeArea area;
     private Domain domain;
@@ -115,12 +115,25 @@ public class AddEditTermActivity extends AppCompatActivity {
         graphUtil.setOnGraphCreated(new GraphUtil.OnGraphCreated() {
             @Override
             public void onGraphCreated(boolean graphOk) {
-                clearForm();
-                String msg = "Terms created and saved successfully!";
-                if(!graphOk) {
-                    msg = "Term creation failed...";
+                if (getIntent().hasExtra(PEARLS_KEY_VERTICES)) {     // edit
+                    if(!graphOk) {
+                        setResult(RESULT_CANCELED);
+                    } else {
+                        Intent data = new Intent();
+                        String stringId = getIntent().getStringExtra(PEARLS_KEY_ID);
+                        data.putExtra(PEARLS_KEY_ID, stringId);
+                        data.putExtra(PEARLS_KEY_VERTICES, vertices);
+                        setResult(RESULT_OK, data);
+                    }
+                    finish();
+                } else {
+                    clearForm();
+                    String msg = "Terms created and saved successfully!";
+                    if (!graphOk) {
+                        msg = "Term creation failed...";
+                    }
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
                 }
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -160,6 +173,20 @@ public class AddEditTermActivity extends AppCompatActivity {
             }
             itemHolder.etContext.setText("");
         }
+    }
+
+    /*
+        Make top bar back button (<-) do the same as device back button, i.e.,
+        do not restart(?) previous activity, just show it the way we left it instead
+     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
 

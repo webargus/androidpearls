@@ -3,6 +3,7 @@ package br.com.pearls.ui.main;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
@@ -101,6 +103,20 @@ public class LanguagesActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    /*
+        Make top bar back button (<-) do the same as device back button, i.e.,
+        do not restart(?) previous activity, just show it the way we left it instead
+     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

@@ -67,10 +67,12 @@ public class GraphUtil {
                 // set term fields according to user's GUI input
                 term.setTerm(searchVertex.term);
                 term.setTerm_ascii(RemoveDiacritics.removeDiacritics(searchVertex.term).toLowerCase());
+                // lang_ref != 0 always, either in insert or edit mode
+                term.setLang_ref(searchVertex.lang_ref);
                 if(searchVertex.term_ref == 0) {    // insert term
-                    term.setLang_ref(searchVertex.lang_ref);
                     vertex.setTerm_ref(termRepository.insert(term));
                 } else {        // update term
+                    term.setId(searchVertex.term_ref);
                     termRepository.update(term);
                 }
                 // set vertex fields according to user's input
@@ -83,7 +85,7 @@ public class GraphUtil {
                         searchVertex.graph_ref = graph_id;
                     }
                     vertex.setGraph_ref(graph_id);
-                    Log.v(TAG, "inserting " + vertex.getId());
+                    Log.v(TAG, "inserting vertex");
                     searchVertex.vertex_id = vertexRepository.insert(vertex);
                 } else {                                // => we're updating
                     vertex.setId(searchVertex.vertex_id);

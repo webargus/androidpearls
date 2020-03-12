@@ -19,6 +19,8 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     private static final String TAG = SectionsPagerAdapter.class.getName();
 
+    public static final int PEARLS_SEARCH_TAB_FRAGMENT_POSITION = 0;
+    public static final int PEARLS_AREAS_TAB_FRAGMENT_POSITION = PEARLS_SEARCH_TAB_FRAGMENT_POSITION + 1;
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.tab_text_search,
                                                       R.string.tab_text_areas};
@@ -37,10 +39,13 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
-        if(position == 0) {
-            return searchTabFragment;
+        switch (position) {
+            case PEARLS_SEARCH_TAB_FRAGMENT_POSITION:
+                return searchTabFragment;
+            case PEARLS_AREAS_TAB_FRAGMENT_POSITION:
+                return areasTabFragment;
         }
-        return areasTabFragment;
+        return null;
     }
 
     @Nullable

@@ -31,7 +31,6 @@ import br.com.pearls.ui.main.LanguagesActivity;
 import br.com.pearls.ui.main.AddEditTermActivity;
 import br.com.pearls.ui.main.SearchTabFragment;
 import br.com.pearls.ui.main.SectionsPagerAdapter;
-import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.SearchVertex;
 
 public class SearchActivity extends AppCompatActivity
@@ -153,18 +152,36 @@ public class SearchActivity extends AppCompatActivity
     public Domain getDomain() { return currentDomain; }
 
     @Override
-    public void onEditTerm(List<SearchVertex> vertices) {
+    public void onEditTerm(String stringId, List<SearchVertex> vertices) {
         ArrayList<SearchVertex> arrayList = new ArrayList<>(vertices);
         Intent intent = new Intent(SearchActivity.this, AddEditTermActivity.class);
         intent.putExtra(AddEditTermActivity.PEARLS_KEY_AREA, currentArea);
         intent.putExtra(AddEditTermActivity.PEARLS_KEY_DOMAIN, currentDomain);
         intent.putParcelableArrayListExtra(AddEditTermActivity.PEARLS_KEY_VERTICES, arrayList);
+        intent.putExtra(AddEditTermActivity.PEARLS_KEY_ID, stringId);
         startActivityForResult(intent, PEARLS_KEY_EDIT);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if((resultCode == RESULT_OK) && (requestCode == PEARLS_KEY_EDIT)) {
+            ArrayList<SearchVertex> vertices =
+                    data.getParcelableArrayListExtra(AddEditTermActivity.PEARLS_KEY_VERTICES);
+            if(vertices == null) {
+                Toast.makeText(getApplicationContext(), "Couldn't update terms", Toast.LENGTH_LONG).show();
+                return;
+            }
+            for(SearchVertex vertex: vertices) {
+                vertex.debugDump();
+            }
+            String stringId = data.getStringExtra(AddEditTermActivity.PEARLS_KEY_ID);
+            SearchTabFragment stf = (SearchTabFragment) (getSupportFragmentManager()
+                    .getFragments().get(SectionsPagerAdapter.PEARLS_SEARCH_TAB_FRAGMENT_POSITION));
+            stf.updateRecyclerViewItem(stringId, vertices);
+            Toast.makeText(getApplicationContext(), "Terms updated successfully", Toast.LENGTH_SHORT).show();
+        }
     }
 }
 

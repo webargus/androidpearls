@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -25,7 +26,6 @@ import java.util.TreeMap;
 import br.com.pearls.DB.Domain;
 import br.com.pearls.R;
 import br.com.pearls.utils.GraphSearchRated;
-import br.com.pearls.utils.GraphSearchResult;
 import br.com.pearls.utils.GraphSearchUtil;
 import br.com.pearls.utils.SearchVertex;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
@@ -51,7 +51,9 @@ public class SearchTabFragment extends Fragment
         for (TreeMap.Entry entry : results.entrySet()) {
             GraphSearchRated graph = (GraphSearchRated) entry.getKey();
             List<SearchVertex> vertices = (List<SearchVertex>) entry.getValue();
-            sectionedAdapter.addSection(new SearchSection(graph, vertices, this));
+            SearchSection searchSection = new SearchSection(graph, vertices, this);
+            String stringId = sectionedAdapter.addSection(searchSection);
+            searchSection.setStringId(stringId);
 //            Log.v(TAG,  "graph: { graph_ref = " + graph.graph.graph_ref +
 //                            "; domain_ref = " + graph.graph.domain_ref +
 //                            "; domainName = " + graph.graph.domainName +
@@ -72,9 +74,7 @@ public class SearchTabFragment extends Fragment
 //            }
 //            Log.v(TAG, "----------------------------------------");
         }
-        // close keyboard:
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+        searchView.clearFocus();
         // update recycler view
         sectionedAdapter.notifyDataSetChanged();
     }
@@ -82,7 +82,7 @@ public class SearchTabFragment extends Fragment
     public interface SearchTabIFace {
         void onNewTermFABClick();
         Domain getDomain();
-        void onEditTerm(List<SearchVertex> vertices);
+        void onEditTerm(String stringId, List<SearchVertex> vertices);
     }
 
     public SearchTabFragment() {/*default constructor: prevents app from crashing when shutting down*/}
@@ -98,6 +98,7 @@ public class SearchTabFragment extends Fragment
             @Override
             public void onClick(View v) {
                 searchTabIFace.onNewTermFABClick();
+                searchView.clearFocus();
             }
         });
 
@@ -107,6 +108,7 @@ public class SearchTabFragment extends Fragment
             @Override
             public boolean onQueryTextSubmit(String query) {
                 graphSearchUtil.asyncSearchForTerm("%" + query.trim() + "%");
+                searchView.clearFocus();
                 return false;
             }
 
@@ -141,7 +143,18 @@ public class SearchTabFragment extends Fragment
     }
 
     @Override
-    public void onItemClick(List<SearchVertex> vertices) {
-        searchTabIFace.onEditTerm(vertices);
+    public void onItemClick(String stringId, List<SearchVertex> vertices) {
+        searchTabIFace.onEditTerm(stringId, vertices);
+    }
+
+    public void updateRecyclerViewItem(String stringId, List<SearchVertex> vertices) {
+        SearchSection ss = (SearchSection) sectionedAdapter.getSection(stringId);
+        ss.setItems(vertices);
+        sectionedAdapter.getAdapterForSection(stringId).notifyAllItemsChanged();
+    }
+
+    private void closeKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
     }
 }
