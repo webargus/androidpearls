@@ -51,7 +51,7 @@ public class NewAreaDialog extends DialogFragment {
                    }
                });
         mAreaNameEdit = view.findViewById(R.id.new_area_name);
-
+        mAreaNameEdit.requestFocus();
         return builder.create();
     }
 

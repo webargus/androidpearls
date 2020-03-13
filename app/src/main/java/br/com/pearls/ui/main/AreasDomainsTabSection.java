@@ -25,6 +25,7 @@ public class AreasDomainsTabSection extends Section {
         void onHeaderClicked(@NonNull final AreasDomainsTabSection section);
         boolean onHeaderLongClicked(@NonNull final KnowledgeArea area, @NonNull final AreasViewHolder viewHolder);
         void onDomainClicked(@NonNull final KnowledgeArea area, @NonNull Domain domain);
+        boolean onDomainLongClicked(@NonNull final KnowledgeArea area, @NonNull final Domain domain);
     }
 
     public AreasDomainsTabSection(@NonNull final AreasWithDomains areasWithDomains,
@@ -66,6 +67,8 @@ public class AreasDomainsTabSection extends Section {
         itemViewHolder.tvItem.setText(domains.get(position).getDomain());
         itemViewHolder.itemView
                 .setOnClickListener(view -> clickListener.onDomainClicked(area, domains.get(position)));
+        itemViewHolder.itemView
+                .setOnLongClickListener(view -> clickListener.onDomainLongClicked(area, domains.get(position)));
     }
 
     @Override

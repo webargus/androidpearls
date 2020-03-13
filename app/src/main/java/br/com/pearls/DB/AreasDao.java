@@ -7,6 +7,7 @@ import androidx.room.Embedded;
 import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Transaction;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -14,7 +15,10 @@ import java.util.List;
 public interface AreasDao {
 
     @Insert
-    void insert(KnowledgeArea area);
+    long insert(KnowledgeArea area);
+
+    @Update
+    void update(KnowledgeArea area);
 
     @Query("SELECT * FROM areas")
     LiveData<List<KnowledgeArea>> getAllAreas();

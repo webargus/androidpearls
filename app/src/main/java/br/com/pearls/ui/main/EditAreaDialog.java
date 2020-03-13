@@ -14,17 +14,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.R;
 
-public class NewDomainDialog extends DialogFragment {
+public class EditAreaDialog extends DialogFragment {
 
-    private static final String TAG = NewDomainDialog.class.getName();
+    private static final String TAG = EditAreaDialog.class.getName();
 
-    private EditText mDomainNameEdit;
-    private OnNewDomainInput onNewDomainInput;
+    private EditText mAreaNameEdit;
+    private OnAreaEditIFace onAreaEditIFace;
 
-    public interface OnNewDomainInput {
-        void onNewDomainInput(String area);
+    public interface OnAreaEditIFace {
+        void onAreaEdit(String area);
+        KnowledgeArea getKnowledgeArea();
     }
 
     @NonNull
@@ -34,9 +36,9 @@ public class NewDomainDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.new_domain_dlg, null);
+        View view = inflater.inflate(R.layout.edit_area_dlg, null);
 
-        builder.setView(view).setTitle("New Area Domain")
+        builder.setView(view).setTitle("Edit Area")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -46,12 +48,13 @@ public class NewDomainDialog extends DialogFragment {
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String domainName = mDomainNameEdit.getText().toString().trim();
-                        onNewDomainInput.onNewDomainInput(domainName);
+                        String area = mAreaNameEdit.getText().toString().trim();
+                        onAreaEditIFace.onAreaEdit(area);
                     }
                 });
-        mDomainNameEdit = view.findViewById(R.id.new_domain_name);
-        mDomainNameEdit.requestFocus();
+        mAreaNameEdit = view.findViewById(R.id.edit_text_area);
+        mAreaNameEdit.setText(onAreaEditIFace.getKnowledgeArea().getArea());
+        mAreaNameEdit.requestFocus();
 
         return builder.create();
     }
@@ -60,9 +63,10 @@ public class NewDomainDialog extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            onNewDomainInput = (OnNewDomainInput) getTargetFragment();
+            onAreaEditIFace = (OnAreaEditIFace) getTargetFragment();
         } catch (ClassCastException ex) {
             Log.e(TAG, "onAttach: ClassCastException: " + ex.getMessage());
+            throw new RuntimeException("You must attach the OnAreaEditIFace interface...");
         }
     }
 }

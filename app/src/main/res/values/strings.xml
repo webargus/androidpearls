@@ -29,4 +29,8 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="search_view_hint">Enter term to search</string>
+    <string name="menu_item_add_domain">Add domain</string>
+    <string name="menu_item_edit_area">Edit area</string>
+    <string name="menu_item_delete_area">Delete area</string>
+    <string name="dlg_new_domain_hint">Enter new domain name</string>
 </resources>

@@ -1,9 +1,7 @@
 package br.com.pearls.DB;
 
 import android.app.Application;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
@@ -33,10 +31,8 @@ public class AreasViewModel extends AndroidViewModel {
         return mRepository.getmAreaByName(area);
     }
 
-    public void insert(KnowledgeArea area) {
-        mRepository.insertArea(area);
-    }
-
+    public long insert(KnowledgeArea area) { return mRepository.insert(area); }
+    public void update(KnowledgeArea area) { mRepository.update(area); }
 }
 
 

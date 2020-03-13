@@ -30,7 +30,17 @@ public class DomainRepository {
         });
     }
 
+    void update(Domain domain) {
+        PearlsRoomDatabase.databaseWriteExecutor.execute(() -> {
+            mDomainsDao.update(domain);
+        });
+    }
+
     public long[] getDomain(long domain_id) { return mDomainsDao.getDomain(domain_id); }
+
+    public LiveData<Domain[]> getmDomainByName(String domain_ascii) {
+        return mDomainsDao.getDomainByName(domain_ascii);
+    }
 }
 
 

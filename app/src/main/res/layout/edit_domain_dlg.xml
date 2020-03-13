@@ -6,12 +6,27 @@
     android:padding="16dp">
 
     <EditText
-        android:id="@+id/new_area_name"
+        android:id="@+id/edit_domain_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textCapSentences"
-        android:hint="Enter new area name"
         android:padding="16dp"
         android:layout_margin="16dp"
         android:importantForAutofill="no" />
 </LinearLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

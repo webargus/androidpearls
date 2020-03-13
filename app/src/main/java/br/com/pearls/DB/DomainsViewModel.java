@@ -26,4 +26,9 @@ public class DomainsViewModel extends AndroidViewModel {
     }
 
     public void insert(Domain domain) { mRepository.insertDomain(domain); }
+    public void update(Domain domain) { mRepository.update(domain); }
+
+    public LiveData<Domain[]> getDomainByName(String domain_ascii) {
+        return mRepository.getmDomainByName(domain_ascii);
+    }
 }

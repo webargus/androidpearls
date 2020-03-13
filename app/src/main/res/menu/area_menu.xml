@@ -3,16 +3,16 @@
 
     <item
         android:id="@+id/domain_add"
-        android:title="Add domain"
+        android:title="@string/menu_item_add_domain"
         />
 
     <item
         android:id="@+id/area_edit"
-        android:title="Edit"
+        android:title="@string/menu_item_edit_area"
         />
 
     <item
         android:id="@+id/area_delete"
-        android:title="Delete"
+        android:title="@string/menu_item_delete_area"
         />
 </menu>

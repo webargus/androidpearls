@@ -14,17 +14,24 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import br.com.pearls.DB.Domain;
 import br.com.pearls.R;
+import br.com.pearls.utils.RemoveDiacritics;
 
-public class NewDomainDialog extends DialogFragment {
+public class EditDomainDialog extends DialogFragment {
 
-    private static final String TAG = NewDomainDialog.class.getName();
+    private static final String TAG = EditDomainDialog.class.getName();
 
     private EditText mDomainNameEdit;
-    private OnNewDomainInput onNewDomainInput;
+    private OnEditDomain onEditDomain;
+    private Domain mDomain;
 
-    public interface OnNewDomainInput {
-        void onNewDomainInput(String area);
+    public interface OnEditDomain {
+        void onEditDomainInput(Domain domain);
+    }
+
+    public EditDomainDialog(Domain domain) {
+        mDomain = domain;
     }
 
     @NonNull
@@ -34,9 +41,9 @@ public class NewDomainDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.new_domain_dlg, null);
+        View view = inflater.inflate(R.layout.edit_domain_dlg, null);
 
-        builder.setView(view).setTitle("New Area Domain")
+        builder.setView(view).setTitle("Edit Domain")
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -47,10 +54,13 @@ public class NewDomainDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String domainName = mDomainNameEdit.getText().toString().trim();
-                        onNewDomainInput.onNewDomainInput(domainName);
+                        mDomain.setDomain(domainName);
+                        mDomain.setDomain_ascii(RemoveDiacritics.removeDiacritics(domainName).toLowerCase());
+                        onEditDomain.onEditDomainInput(mDomain);
                     }
                 });
-        mDomainNameEdit = view.findViewById(R.id.new_domain_name);
+        mDomainNameEdit = view.findViewById(R.id.edit_domain_name);
+        mDomainNameEdit.setText(mDomain.getDomain());
         mDomainNameEdit.requestFocus();
 
         return builder.create();
@@ -60,9 +70,10 @@ public class NewDomainDialog extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            onNewDomainInput = (OnNewDomainInput) getTargetFragment();
+            onEditDomain = (OnEditDomain) getTargetFragment();
         } catch (ClassCastException ex) {
             Log.e(TAG, "onAttach: ClassCastException: " + ex.getMessage());
+            throw new RuntimeException("You must attach the OnEditDomain interface...");
         }
     }
 }

@@ -9,8 +9,8 @@
         android:id="@+id/new_domain_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="text"
-        android:hint="Enter new domain name"
+        android:inputType="textCapSentences"
+        android:hint="@string/dlg_new_domain_hint"
         android:padding="16dp"
         android:layout_margin="16dp"
         android:importantForAutofill="no" />

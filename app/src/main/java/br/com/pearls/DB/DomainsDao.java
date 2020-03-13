@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -24,4 +25,10 @@ public interface DomainsDao {
 
     @Query("SELECT id FROM domains WHERE id = :domain_id")
     long[] getDomain(long domain_id);
+
+    @Update
+    void update(Domain domain);
+
+    @Query("SELECT * FROM domains WHERE domain_ascii = :domain_ascii")
+    LiveData<Domain[]> getDomainByName(String domain_ascii);
 }

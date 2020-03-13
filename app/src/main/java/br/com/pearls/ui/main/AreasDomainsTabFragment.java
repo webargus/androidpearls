@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -38,9 +37,11 @@ import io.github.luizgrp.sectionedrecyclerviewadapter.SectionAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
 public class AreasDomainsTabFragment extends Fragment
-                        implements AreasDomainsTabSection.OnAreasDomainsTabSectionClick,
-                                   NewAreaDialog.OnNewAreaInput,
-                                   NewDomainDialog.OnNewDomainInput {
+        implements AreasDomainsTabSection.OnAreasDomainsTabSectionClick,
+        NewAreaDialog.OnNewAreaInput,
+        NewDomainDialog.OnNewDomainInput,
+        EditAreaDialog.OnAreaEditIFace,
+        EditDomainDialog.OnEditDomain {
 
     private static final String TAG = AreasDomainsTabFragment.class.getName();
 
@@ -52,9 +53,78 @@ public class AreasDomainsTabFragment extends Fragment
     private Observer<Domain[]> domainObserver;
 
     private KnowledgeArea mSelectedArea;
+    private Domain mSelectedDomain;
     private OnDomainSelectedListener domainListener;
 
     public AreasDomainsTabFragment() {/* Default constructor: prevents app from crashing when finishing */}
+
+    @Override
+    public void onAreaEdit(String areaName) {
+        if (areaName.isEmpty()) {
+            return;
+        }
+        String area_ascii = RemoveDiacritics.removeDiacritics(areaName).toLowerCase();
+        Log.v(TAG, "got area '" + areaName + "' to replace '" + mSelectedArea.getArea() + "'");
+        Log.v(TAG, "area_ref = " + mSelectedArea.getId());
+        Observer<KnowledgeArea[]> areaObserver = new Observer<KnowledgeArea[]>() {
+            @Override
+            public void onChanged(KnowledgeArea[] areas) {
+                if (areas.length > 0) {
+                    Toast.makeText(getContext(),
+                            "Area '" + areas[0].getArea() + "' already exists",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Log.v(TAG, "passed: will update area");
+                KnowledgeArea area = new KnowledgeArea();
+                area.setArea(areaName);
+                area.setArea_ascii(area_ascii);
+                area.setId(mSelectedArea.getId());
+                areasViewModel.update(area);
+                Toast.makeText(getContext(),
+                        "Area '" + areaName + "' edited successfully",
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+        LiveDataUtil.observeOnce(areasViewModel.getAreaByName(area_ascii), areaObserver);
+    }
+
+    @Override
+    public KnowledgeArea getKnowledgeArea() {
+        return mSelectedArea;
+    }
+
+    @Override
+    public void onEditDomainInput(Domain domain) {
+        if (domain.getDomain().isEmpty()) {
+            return;
+        }
+        Log.v(TAG, "got domain '" + domain.getDomain() + "' to replace '" + domain.getDomain());
+        Log.v(TAG, "domain_ref = " + domain.getId());
+        Observer<Domain[]> domainObserver = new Observer<Domain[]>() {
+            @Override
+            public void onChanged(Domain[] domains) {
+                if (domains.length > 0) {
+                    for (Domain d : domains) {
+                        if (d.getDomain_ascii().equals(domain.getDomain_ascii()) &&
+                                d.getArea_ref() == domain.getArea_ref() &&
+                                d.getId() != domain.getId()) {
+                            Toast.makeText(getContext(),
+                                    "Domain '" + d.getDomain() + "' already exists",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                }
+                Log.v(TAG, "passed: will update domain");
+                domainsViewModel.update(domain);
+                Toast.makeText(getContext(),
+                        "Domain '" + domain.getDomain() + "' edited successfully",
+                        Toast.LENGTH_SHORT).show();
+            }
+        };
+        LiveDataUtil.observeOnce(domainsViewModel.getDomainByName(domain.getDomain_ascii()), domainObserver);
+    }
 
     public interface OnDomainSelectedListener {
         void setSelectedDomain(KnowledgeArea area, Domain domain);
@@ -66,13 +136,22 @@ public class AreasDomainsTabFragment extends Fragment
     }
 
     @Override
+    public boolean onDomainLongClicked(@NonNull KnowledgeArea area, @NonNull Domain domain) {
+        // open domain name edit dialog
+        EditDomainDialog dlg = new EditDomainDialog(domain);
+        dlg.setTargetFragment(AreasDomainsTabFragment.this, 1);
+        dlg.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "AreasDomainsTabFragment");
+        return false;
+    }
+
+    @Override
     public void onNewDomainInput(String domainName) {
-        if(domainName.isEmpty()) {
+        if (domainName.isEmpty()) {
             return;
         }
         String domain_ascii = RemoveDiacritics.removeDiacritics(domainName).toLowerCase();
         Log.v(TAG, "Got new domain '" + domainName + "' to insert into: " + mSelectedArea.getArea());
-        Log.v(TAG, "domain_ascii = '" +domain_ascii + "' *************************");
+        Log.v(TAG, "domain_ascii = '" + domain_ascii + "' *************************");
         Log.v(TAG, "area_ref = " + mSelectedArea.getId());
         domainObserver = new Observer<Domain[]>() {
             @Override
@@ -95,7 +174,7 @@ public class AreasDomainsTabFragment extends Fragment
             }
         };
         LiveDataUtil.observeOnce(domainsViewModel.getDomainByName(domain_ascii, mSelectedArea.getId()),
-                                 domainObserver);
+                domainObserver);
     }
 
     @Override
@@ -105,14 +184,14 @@ public class AreasDomainsTabFragment extends Fragment
 
     @Override
     public void onNewAreaInput(String area) {
-        if(area.isEmpty()) {
+        if (area.isEmpty()) {
             return;
         }
         String area_ascii = RemoveDiacritics.removeDiacritics(area).toLowerCase();
         areaObserver = new Observer<KnowledgeArea[]>() {
             @Override
             public void onChanged(KnowledgeArea[] knowledgeAreas) {
-                if(knowledgeAreas.length > 0) {
+                if (knowledgeAreas.length > 0) {
                     Toast.makeText(getContext(),
                             "Area '" + knowledgeAreas[0].getArea() + "' already exists",
                             Toast.LENGTH_SHORT).show();
@@ -149,12 +228,11 @@ public class AreasDomainsTabFragment extends Fragment
         } else {
             adapterForSection.notifyAllItemsInserted();
         }
-
     }
 
     @Nullable
     @Override
-    public View  onCreateView(@NonNull LayoutInflater inflater,
+    public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_areas_domains, container, false);
@@ -211,6 +289,7 @@ public class AreasDomainsTabFragment extends Fragment
                         return true;
                     case R.id.area_edit:
                         Log.v(TAG, "******************* menu edit area selected");
+                        openAreaEditDialog();
                         return true;
                     case R.id.area_delete:
                         Log.v(TAG, "******************* menu area delete selected");
@@ -225,6 +304,12 @@ public class AreasDomainsTabFragment extends Fragment
 
     private void openDomainCreateDialog() {
         NewDomainDialog dlg = new NewDomainDialog();
+        dlg.setTargetFragment(AreasDomainsTabFragment.this, 1);
+        dlg.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "AreasDomainsTabFragment");
+    }
+
+    private void openAreaEditDialog() {
+        EditAreaDialog dlg = new EditAreaDialog();
         dlg.setTargetFragment(AreasDomainsTabFragment.this, 1);
         dlg.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "AreasDomainsTabFragment");
     }

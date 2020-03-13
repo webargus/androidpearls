@@ -1,12 +1,11 @@
 package br.com.pearls.DB;
 
 import android.app.Application;
-import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class AreasRepository {
 
@@ -32,12 +31,19 @@ public class AreasRepository {
         return mAreasDao.getAreaByName(area);
     }
 
-    void insertArea(KnowledgeArea area) {
+    long insert(KnowledgeArea area) {
+        AtomicLong insertId = new AtomicLong();
         PearlsRoomDatabase.databaseWriteExecutor.execute( () -> {
-            mAreasDao.insert(area);
+            insertId.set(mAreasDao.insert(area));
         });
+        return insertId.get();
     }
 
+    void update(KnowledgeArea area) {
+        PearlsRoomDatabase.databaseWriteExecutor.execute( () -> {
+            mAreasDao.update(area);
+        });
+    }
 }
 
 
