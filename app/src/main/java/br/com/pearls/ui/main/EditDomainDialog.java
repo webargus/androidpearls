@@ -16,7 +16,6 @@ import androidx.fragment.app.DialogFragment;
 
 import br.com.pearls.DB.Domain;
 import br.com.pearls.R;
-import br.com.pearls.utils.RemoveDiacritics;
 
 public class EditDomainDialog extends DialogFragment {
 
@@ -24,14 +23,10 @@ public class EditDomainDialog extends DialogFragment {
 
     private EditText mDomainNameEdit;
     private OnEditDomain onEditDomain;
-    private Domain mDomain;
 
     public interface OnEditDomain {
-        void onEditDomainInput(Domain domain);
-    }
-
-    public EditDomainDialog(Domain domain) {
-        mDomain = domain;
+        void onEditDomainInput(String domainName);
+        String getDomainName();
     }
 
     @NonNull
@@ -54,13 +49,11 @@ public class EditDomainDialog extends DialogFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String domainName = mDomainNameEdit.getText().toString().trim();
-                        mDomain.setDomain(domainName);
-                        mDomain.setDomain_ascii(RemoveDiacritics.removeDiacritics(domainName).toLowerCase());
-                        onEditDomain.onEditDomainInput(mDomain);
+                        onEditDomain.onEditDomainInput(domainName);
                     }
                 });
         mDomainNameEdit = view.findViewById(R.id.edit_domain_name);
-        mDomainNameEdit.setText(mDomain.getDomain());
+        mDomainNameEdit.setText(onEditDomain.getDomainName());
         mDomainNameEdit.requestFocus();
 
         return builder.create();

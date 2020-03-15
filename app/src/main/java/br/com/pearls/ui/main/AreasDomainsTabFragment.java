@@ -28,6 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import br.com.pearls.DB.AreasViewModel;
 import br.com.pearls.DB.AreasWithDomains;
 import br.com.pearls.DB.Domain;
+import br.com.pearls.DB.DomainRepository;
 import br.com.pearls.DB.DomainsViewModel;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.R;
@@ -95,19 +96,24 @@ public class AreasDomainsTabFragment extends Fragment
     }
 
     @Override
-    public void onEditDomainInput(Domain domain) {
-        if (domain.getDomain().isEmpty()) {
+    public void onEditDomainInput(String domainName) {
+
+        if (domainName.isEmpty()) {
             return;
         }
-        Log.v(TAG, "got domain '" + domain.getDomain() + "' to replace '" + domain.getDomain());
-        Log.v(TAG, "domain_ref = " + domain.getId());
+        // IMPORTANT! Shallow-copy new Domain obj from selected domain instead of using reference to it;
+        // otherwise we'll be working on the click-bound Domain obj in the AreasDomainsTabFragment
+        // instance directly, so that any changes we make here would show on the AreasDomainsTabFragment
+        // recycler view, which we don't want.
+        Domain domain = new Domain(mSelectedDomain);
+        domain.setDomain(domainName);
+        domain.setDomain_ascii(RemoveDiacritics.removeDiacritics(domainName).toLowerCase());
         Observer<Domain[]> domainObserver = new Observer<Domain[]>() {
             @Override
             public void onChanged(Domain[] domains) {
                 if (domains.length > 0) {
                     for (Domain d : domains) {
                         if (d.getDomain_ascii().equals(domain.getDomain_ascii()) &&
-                                d.getArea_ref() == domain.getArea_ref() &&
                                 d.getId() != domain.getId()) {
                             Toast.makeText(getContext(),
                                     "Domain '" + d.getDomain() + "' already exists",
@@ -118,12 +124,21 @@ public class AreasDomainsTabFragment extends Fragment
                 }
                 Log.v(TAG, "passed: will update domain");
                 domainsViewModel.update(domain);
+                mSelectedDomain = new Domain(domain);
+                domainListener.setSelectedDomain(mSelectedArea, mSelectedDomain);
                 Toast.makeText(getContext(),
                         "Domain '" + domain.getDomain() + "' edited successfully",
                         Toast.LENGTH_SHORT).show();
             }
         };
-        LiveDataUtil.observeOnce(domainsViewModel.getDomainByName(domain.getDomain_ascii()), domainObserver);
+        LiveDataUtil.observeOnce(
+                domainsViewModel.getDomainByName(domain.getDomain_ascii(),
+                                                 domain.getArea_ref()), domainObserver);
+    }
+
+    @Override
+    public String getDomainName() {
+        return mSelectedDomain.getDomain();
     }
 
     public interface OnDomainSelectedListener {
@@ -137,8 +152,11 @@ public class AreasDomainsTabFragment extends Fragment
 
     @Override
     public boolean onDomainLongClicked(@NonNull KnowledgeArea area, @NonNull Domain domain) {
+        mSelectedArea = area;
+        mSelectedDomain = domain;
+        domainListener.setSelectedDomain(area, domain);
         // open domain name edit dialog
-        EditDomainDialog dlg = new EditDomainDialog(domain);
+        EditDomainDialog dlg = new EditDomainDialog();
         dlg.setTargetFragment(AreasDomainsTabFragment.this, 1);
         dlg.show(Objects.requireNonNull(getActivity()).getSupportFragmentManager(), "AreasDomainsTabFragment");
         return false;
@@ -171,6 +189,7 @@ public class AreasDomainsTabFragment extends Fragment
                 Toast.makeText(getContext(),
                         "Domain '" + domainName + "' created successfully",
                         Toast.LENGTH_SHORT).show();
+                sectionAdapter.notifyDataSetChanged();
             }
         };
         LiveDataUtil.observeOnce(domainsViewModel.getDomainByName(domain_ascii, mSelectedArea.getId()),
@@ -253,13 +272,18 @@ public class AreasDomainsTabFragment extends Fragment
 
         domainsViewModel = new ViewModelProvider(this).get(DomainsViewModel.class);
 
+        // this will update the recycler view after any change performed by any of this
+        // class methods; so, there's no need to call notifyDataSetChanged() in any of those.
         areasViewModel = new ViewModelProvider(this).get(AreasViewModel.class);
-        areasViewModel.getmAreasWithDomains().observe(getViewLifecycleOwner(), new Observer<List<AreasWithDomains>>() {
+        areasViewModel.getmAreasWithDomains().observe(getViewLifecycleOwner(),
+                                                    new Observer<List<AreasWithDomains>>() {
             @Override
             public void onChanged(List<AreasWithDomains> areasWithDomains) {
                 sectionAdapter.removeAllSections();
                 for (AreasWithDomains awd : areasWithDomains) {
-                    sectionAdapter.addSection(new AreasDomainsTabSection(awd, AreasDomainsTabFragment.this));
+                    AreasDomainsTabSection section =
+                            new AreasDomainsTabSection(awd, AreasDomainsTabFragment.this);
+                    sectionAdapter.addSection(section);
                 }
                 sectionAdapter.notifyDataSetChanged();
             }

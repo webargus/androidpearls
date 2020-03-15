@@ -23,7 +23,8 @@ public class AreasDomainsTabSection extends Section {
 
     interface OnAreasDomainsTabSectionClick {
         void onHeaderClicked(@NonNull final AreasDomainsTabSection section);
-        boolean onHeaderLongClicked(@NonNull final KnowledgeArea area, @NonNull final AreasViewHolder viewHolder);
+        boolean onHeaderLongClicked(@NonNull final KnowledgeArea area,
+                                    @NonNull final AreasViewHolder viewHolder);
         void onDomainClicked(@NonNull final KnowledgeArea area, @NonNull Domain domain);
         boolean onDomainLongClicked(@NonNull final KnowledgeArea area, @NonNull final Domain domain);
     }
@@ -68,7 +69,8 @@ public class AreasDomainsTabSection extends Section {
         itemViewHolder.itemView
                 .setOnClickListener(view -> clickListener.onDomainClicked(area, domains.get(position)));
         itemViewHolder.itemView
-                .setOnLongClickListener(view -> clickListener.onDomainLongClicked(area, domains.get(position)));
+                .setOnLongClickListener(view ->
+                        clickListener.onDomainLongClicked(area, domains.get(position)));
     }
 
     @Override

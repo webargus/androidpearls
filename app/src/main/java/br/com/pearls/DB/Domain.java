@@ -2,16 +2,29 @@ package br.com.pearls.DB;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "domains")
 public class Domain implements Parcelable {
 
+    public static final String TAG = Domain.class.getName();
+
     public Domain() {}
+
+    @Ignore
+    public Domain(Domain other) {
+        this.id = other.getId();
+        this.area_ref = other.getArea_ref();
+        this.domain = other.getDomain();
+        this.domain_ascii = other.getDomain_ascii();
+        this.synced = other.getSynced();
+    }
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -81,6 +94,14 @@ public class Domain implements Parcelable {
         dest.writeString(domain_ascii);
         dest.writeLong(area_ref);
         dest.writeInt(synced);
+    }
+
+    public void debugDump() {
+        Log.v(TAG, "Domain dump:");
+        Log.v(TAG, "id: " + getId());
+        Log.v(TAG, "domain: " + getDomain());
+        Log.v(TAG, "domain_ascii: " + getDomain_ascii());
+        Log.v(TAG, "area_ref: " + getArea_ref());
     }
 }
 

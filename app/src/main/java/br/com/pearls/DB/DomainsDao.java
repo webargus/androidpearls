@@ -30,5 +30,5 @@ public interface DomainsDao {
     void update(Domain domain);
 
     @Query("SELECT * FROM domains WHERE domain_ascii = :domain_ascii")
-    LiveData<Domain[]> getDomainByName(String domain_ascii);
+    Domain[] getDomainByName(String domain_ascii);
 }
