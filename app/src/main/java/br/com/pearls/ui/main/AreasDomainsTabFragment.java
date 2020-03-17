@@ -67,20 +67,25 @@ public class AreasDomainsTabFragment extends Fragment
         String area_ascii = RemoveDiacritics.removeDiacritics(areaName).toLowerCase();
         Log.v(TAG, "got area '" + areaName + "' to replace '" + mSelectedArea.getArea() + "'");
         Log.v(TAG, "area_ref = " + mSelectedArea.getId());
+        KnowledgeArea area = new KnowledgeArea(mSelectedArea);
+        area.setArea(areaName);
+        area.setArea_ascii(area_ascii);
         Observer<KnowledgeArea[]> areaObserver = new Observer<KnowledgeArea[]>() {
             @Override
             public void onChanged(KnowledgeArea[] areas) {
                 if (areas.length > 0) {
-                    Toast.makeText(getContext(),
-                            "Area '" + areas[0].getArea() + "' already exists",
-                            Toast.LENGTH_SHORT).show();
-                    return;
+                    for (KnowledgeArea dbArea : areas) {
+                        if (dbArea.getArea_ascii().equals(area.getArea_ascii()) &&
+                                dbArea.getId() != area.getId()) {
+                            Toast.makeText(getContext(),
+                                    "Area '" + dbArea.getArea() + "' already exists",
+                                    Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
                 }
                 Log.v(TAG, "passed: will update area");
-                KnowledgeArea area = new KnowledgeArea();
-                area.setArea(areaName);
-                area.setArea_ascii(area_ascii);
-                area.setId(mSelectedArea.getId());
+                area.debugDump();
                 areasViewModel.update(area);
                 Toast.makeText(getContext(),
                         "Area '" + areaName + "' edited successfully",
@@ -91,8 +96,8 @@ public class AreasDomainsTabFragment extends Fragment
     }
 
     @Override
-    public KnowledgeArea getKnowledgeArea() {
-        return mSelectedArea;
+    public String getKnowledgeArea() {
+        return mSelectedArea.getArea();
     }
 
     @Override
@@ -152,8 +157,8 @@ public class AreasDomainsTabFragment extends Fragment
 
     @Override
     public boolean onDomainLongClicked(@NonNull KnowledgeArea area, @NonNull Domain domain) {
-        mSelectedArea = area;
-        mSelectedDomain = domain;
+        mSelectedArea = new KnowledgeArea(area);
+        mSelectedDomain = new Domain(domain);
         domainListener.setSelectedDomain(area, domain);
         // open domain name edit dialog
         EditDomainDialog dlg = new EditDomainDialog();
@@ -198,6 +203,7 @@ public class AreasDomainsTabFragment extends Fragment
 
     @Override
     public boolean onHeaderLongClicked(@NonNull KnowledgeArea area, @NonNull AreasViewHolder viewHolder) {
+        mSelectedArea = new KnowledgeArea(area);
         return deployHeaderLongClickMenu(area, viewHolder);
     }
 
@@ -299,7 +305,6 @@ public class AreasDomainsTabFragment extends Fragment
     }
 
     private boolean deployHeaderLongClickMenu(@NonNull KnowledgeArea area, @NonNull AreasViewHolder viewHolder) {
-        mSelectedArea = area;
         PopupMenu menu = new PopupMenu(getContext(), viewHolder.headerView);
         MenuInflater inflater = menu.getMenuInflater();
         inflater.inflate(R.menu.area_menu, menu.getMenu());

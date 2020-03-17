@@ -2,6 +2,7 @@ package br.com.pearls.DB;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
@@ -11,6 +12,8 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "areas")
 public class KnowledgeArea implements Parcelable {
+
+    public static final String TAG = KnowledgeArea.class.getName();
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -26,6 +29,14 @@ public class KnowledgeArea implements Parcelable {
     private int synced;
 
     public KnowledgeArea() {
+    }
+
+    @Ignore
+    public KnowledgeArea(KnowledgeArea other) {
+        this.id = other.getId();
+        this.area = other.area;
+        this.area_ascii = other.getArea_ascii();
+        this.synced = other.synced;
     }
 
     @Ignore
@@ -100,6 +111,14 @@ public class KnowledgeArea implements Parcelable {
 
     public void setSynced(int synced) {
         this.synced = synced;
+    }
+
+    public void debugDump() {
+        Log.v(TAG, "id: " + id);
+        Log.v(TAG, "area: " + area);
+        Log.v(TAG, "area_ascii: " + area_ascii);
+        Log.v(TAG, "synced: " + synced);
+
     }
 }
 

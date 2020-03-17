@@ -26,7 +26,7 @@ public class EditAreaDialog extends DialogFragment {
 
     public interface OnAreaEditIFace {
         void onAreaEdit(String area);
-        KnowledgeArea getKnowledgeArea();
+        String getKnowledgeArea();
     }
 
     @NonNull
@@ -53,7 +53,7 @@ public class EditAreaDialog extends DialogFragment {
                     }
                 });
         mAreaNameEdit = view.findViewById(R.id.edit_text_area);
-        mAreaNameEdit.setText(onAreaEditIFace.getKnowledgeArea().getArea());
+        mAreaNameEdit.setText(onAreaEditIFace.getKnowledgeArea());
         mAreaNameEdit.requestFocus();
 
         return builder.create();
