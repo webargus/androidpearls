@@ -57,6 +57,8 @@ public class AreasDomainsTabFragment extends Fragment
     private Domain mSelectedDomain;
     private OnDomainSelectedListener domainListener;
 
+    /* TODO: merge area create/edit and domain create/edit into one single dialog and insert/update code
+     */
     public AreasDomainsTabFragment() {/* Default constructor: prevents app from crashing when finishing */}
 
     @Override
