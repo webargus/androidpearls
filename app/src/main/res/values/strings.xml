@@ -34,4 +34,28 @@
     <string name="menu_item_delete_area">Delete area</string>
     <string name="dlg_new_domain_hint">Enter new domain name</string>
     <string name="could_not_open_file">Couldn\'t open file</string>
+
+    <string name="csv_table_init"><![CDATA[
+        <style>
+            .table {
+                display: table;
+                border-collapse: collapse;
+            }
+            .tableRow {
+                display: table-row;
+            }
+            .tableCell {
+                display: table-cell;
+                border: 1px solid black;
+                padding: .25em;
+            }
+            .tableCell:first-child {
+                background-color: lightGray;
+                text-align: center;
+                vertical-align: middle;
+            }
+        </style>
+        <div class="table">
+    ]]>
+    </string>
 </resources>

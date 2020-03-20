@@ -2,39 +2,33 @@ package br.com.pearls;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.TextView;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.StringWriter;
 import java.util.Set;
 
 public class CsvReaderActivity extends AppCompatActivity {
 
     public static final String TAG = CsvReaderActivity.class.getName();
 
-    TextView tvCSV;
+    WebView wvCSV;
+    private String tvHTML;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_csv_reader);
 
-        tvCSV = findViewById(R.id.edit_text_csv);
+        wvCSV = findViewById(R.id.csv_web_view);
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -68,11 +62,15 @@ public class CsvReaderActivity extends AppCompatActivity {
                     InputStreamReader streamReader = new InputStreamReader(inputStream);
                     BufferedReader reader=new BufferedReader(streamReader);
                     String line;
+                    tvHTML = getResources().getString(R.string.csv_table_init);
+                    int lineId = 0;
                     while (true){
                         try {
-                            if ((line=reader.readLine()) == null)
+                            if ((line=reader.readLine()) == null) {
                                 break;
-                            tvCSV.append(line + "\n");
+                            }
+                            lineId ++;
+                            processLineHTML(lineId, line);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -82,6 +80,8 @@ public class CsvReaderActivity extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    tvHTML += "</div>\n";
+                    wvCSV.loadData(tvHTML, "text/html;charset=utf-8", "utf-8");
                 }
             } else {
                 Log.v(TAG, "--------------->-----------> No type string supplied");
@@ -90,8 +90,21 @@ public class CsvReaderActivity extends AppCompatActivity {
         }
     }
 
+    private void processLineHTML(int lineId, String line) {
+        tvHTML += "<div class='tableRow'>\n";
+        tvHTML += "<div class='tableCell'>" + lineId + "</div>";
+        String[] fields = line.split(",");
+        String field;
+        for(int ix = 0; ix < fields.length; ix++) {
+            field = fields[ix];
+            tvHTML += "<div class='tableCell'>";
+            tvHTML += field;
+            tvHTML += "</div>\n";
+        }
+        tvHTML += "</div>\n";
+    }
+
     private void notifyUserOnException() {
-        tvCSV.setText("Failed trying to open file");
         Toast.makeText(this, "Couldn't read file content", Toast.LENGTH_SHORT);
     }
 
