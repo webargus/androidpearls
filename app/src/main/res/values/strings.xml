@@ -58,4 +58,10 @@
         <div class="table">
     ]]>
     </string>
+    <string name="radio_button_semicolon">Semi-colon (;)</string>
+    <string name="radio_button_tab">Tab</string>
+    <string name="radio_button_other">Other:</string>
+    <string name="radio_button_comma">Comma (,)</string>
+    <string name="csv_field_separator_label">Field separator:</string>
+    <string name="csv_label_quotes">Field delimiter</string>
 </resources>

@@ -7,49 +7,49 @@
     android:orientation="vertical"
     tools:context=".CsvReaderActivity">
 
-
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/label_separator"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Field separator:"
+        android:text="@string/csv_field_separator_label"
         android:paddingTop="8dp"
         android:paddingLeft="8dp"
         android:textSize="16dp"
-        android:textColor="@color/design_default_color_on_secondary"/>
+    />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
     <RadioGroup
+        android:id="@+id/separator_radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/radioButton"
+            android:id="@+id/radio_button_comma"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Comma (,)" />
+            android:text="@string/radio_button_comma" />
 
         <RadioButton
-            android:id="@+id/radioButton2"
+            android:id="@+id/radio_button_semicolon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Semi-colon (;)" />
+            android:text="@string/radio_button_semicolon" />
 
         <RadioButton
-            android:id="@+id/radioButton4"
+            android:id="@+id/radio_button_tab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tab" />
+            android:text="@string/radio_button_tab" />
 
         <RadioButton
-            android:id="@+id/radioButton3"
+            android:id="@+id/radio_button_other"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Other: " />
+            android:text="@string/radio_button_other" />
     </RadioGroup>
 
         <EditText
@@ -57,8 +57,45 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="1dp"
+            android:enabled="false"
+            android:inputType="text"
         />
     </LinearLayout>
+    <TextView
+        android:id="@+id/label_quotes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/csv_label_quotes"
+        android:paddingTop="8dp"
+        android:paddingLeft="8dp"
+        android:textSize="16dp"
+        />
+
+    <RadioGroup
+        android:id="@+id/quote_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <RadioButton
+        android:id="@+id/radio_double_quotes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text='Double quotes (")' />
+
+    <RadioButton
+        android:id="@+id/radio_single_quotes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Single quotes (')" />
+
+    <RadioButton
+        android:id="@+id/radio_no_quotes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No quotes " />
+    </RadioGroup>
+
     <WebView
         android:id="@+id/csv_web_view"
         android:layout_width="match_parent"
