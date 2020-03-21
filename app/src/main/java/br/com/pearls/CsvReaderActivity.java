@@ -6,9 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -27,6 +31,8 @@ public class CsvReaderActivity extends AppCompatActivity {
 
     private RadioGroup separatorGroup, quotesGroup;
     private RadioButton radioComma, radioTab, radioDoubleQuotes, radioNoQuotes;
+    private EditText sepOtherEdit;
+    private Button sepOtherBtn;
     private WebView webView;
     private String wvHTML, separator, quotes, streamType;
     private Uri streamUri;
@@ -45,12 +51,24 @@ public class CsvReaderActivity extends AppCompatActivity {
         quotesGroup = findViewById(R.id.quote_radio_group);
         radioDoubleQuotes = findViewById(R.id.radio_double_quotes);
         radioNoQuotes = findViewById(R.id.radio_no_quotes);
+        sepOtherEdit = findViewById(R.id.edit_other_separator);
+        sepOtherBtn = findViewById(R.id.btn_separator_other);
 
         getStreamUri();
+
+        sepOtherBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                separator = sepOtherEdit.getText().toString().trim();
+                processStreamInput();
+            }
+        });
 
         separatorGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                sepOtherBtn.setEnabled(false);
+                sepOtherEdit.setEnabled(false);
                 switch (checkedId) {
                     case R.id.radio_button_comma:
                         separator = ",";
@@ -65,11 +83,16 @@ public class CsvReaderActivity extends AppCompatActivity {
                         processStreamInput();
                         break;
                     case R.id.radio_button_other:
+                        sepOtherBtn.setEnabled(true);
+                        sepOtherEdit.setEnabled(true);
                         break;
                 }
             }
         });
 
+        // set quotes radio btns to their default values before setting their change listener;
+        // this is to prevent stream input processing from running twice needlessly;
+        // setting separator radios triggers call to stream input processing processStreamInput()
         if(streamType.equals("text/csv")) {
             quotes = "\"";
             radioDoubleQuotes.setChecked(true);
@@ -99,6 +122,7 @@ public class CsvReaderActivity extends AppCompatActivity {
         });
     }
 
+    // get stream type and stream Uri if we're apt to process this stream
     private void getStreamUri() {
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -128,6 +152,17 @@ public class CsvReaderActivity extends AppCompatActivity {
         }
     }
 
+    class processStreamInputAsync extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            return null;
+        }
+    }
     private void processStreamInput() {
         InputStream inputStream= null;
         try {
