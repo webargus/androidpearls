@@ -64,5 +64,9 @@
     <string name="radio_button_comma">Comma (,)</string>
     <string name="csv_field_separator_label">Field separator:</string>
     <string name="csv_label_quotes">Field delimiter:</string>
-    <string name="csv_set_languages">Set languages</string>
+    <string name="csv_tab_media">Media</string>
+    <string name="csv_tab_areas">Areas</string>
+    <string name="csv_tab_languages">Languages</string>
+    <string name="tab_search">search</string>
+    <string name="tab_search_areas">Knowledge areas</string>
 </resources>

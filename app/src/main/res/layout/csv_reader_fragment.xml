@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".CsvReaderActivity">
+
+    <TextView
+        android:id="@+id/label_separator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/csv_field_separator_label"
+        android:paddingTop="8dp"
+        android:paddingLeft="8dp"
+        />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioGroup
+            android:id="@+id/separator_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_vertical">
+
+            <RadioButton
+                android:id="@+id/radio_button_comma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_button_comma" />
+
+            <RadioButton
+                android:id="@+id/radio_button_semicolon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_button_semicolon" />
+
+            <RadioButton
+                android:id="@+id/radio_button_tab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_button_tab" />
+
+            <RadioButton
+                android:id="@+id/radio_button_other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_button_other" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/edit_other_separator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="1dp"
+            android:enabled="false"
+            android:inputType="text"
+            android:layout_gravity="center_vertical"
+            />
+
+        <Button
+            android:id="@+id/btn_separator_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="go"
+            />
+
+    </LinearLayout>
+    <TextView
+        android:id="@+id/label_quotes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/csv_label_quotes"
+        android:paddingTop="8dp"
+        android:paddingLeft="8dp"
+        />
+
+    <RadioGroup
+        android:id="@+id/quote_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_double_quotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text='Double quotes (")' />
+
+        <RadioButton
+            android:id="@+id/radio_single_quotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Single quotes (')" />
+
+        <RadioButton
+            android:id="@+id/radio_no_quotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No quotes " />
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="From line: "
+            />
+        <EditText
+            android:id="@+id/csv_init_line"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="To line: "
+            />
+        <EditText
+            android:id="@+id/csv_end_line"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            />
+    </LinearLayout>
+
+    <WebView
+        android:id="@+id/csv_web_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+         />
+</LinearLayout>
