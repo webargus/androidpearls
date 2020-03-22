@@ -28,7 +28,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import br.com.pearls.DB.AreasViewModel;
 import br.com.pearls.DB.AreasWithDomains;
 import br.com.pearls.DB.Domain;
-import br.com.pearls.DB.DomainRepository;
 import br.com.pearls.DB.DomainsViewModel;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.R;

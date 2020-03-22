@@ -14,7 +14,6 @@
         android:text="@string/csv_field_separator_label"
         android:paddingTop="8dp"
         android:paddingLeft="8dp"
-        android:textSize="16dp"
     />
 
     <LinearLayout
@@ -79,7 +78,6 @@
         android:text="@string/csv_label_quotes"
         android:paddingTop="8dp"
         android:paddingLeft="8dp"
-        android:textSize="16dp"
         />
 
     <RadioGroup
@@ -136,7 +134,13 @@
             android:layout_height="wrap_content"
             android:inputType="number"
             />
-
+        <Button
+            android:id="@+id/btn_csv_set_languages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:text="@string/csv_set_languages"
+            />
     </LinearLayout>
 
     <WebView

@@ -2,6 +2,7 @@ package br.com.pearls;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,21 +23,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class CsvReaderActivity extends AppCompatActivity {
+import br.com.pearls.DB.Domain;
+import br.com.pearls.DB.KnowledgeArea;
+import br.com.pearls.ui.main.AreasDomainsTabFragment;
+import br.com.pearls.ui.main.CsvReaderLanguagesSetDialog;
+
+public class CsvReaderActivity extends AppCompatActivity
+        implements AreasDomainsTabFragment.OnDomainSelectedListener {
 
     public static final String TAG = CsvReaderActivity.class.getName();
 
     private RadioGroup separatorGroup, quotesGroup;
-    private RadioButton radioComma, radioTab, radioDoubleQuotes, radioNoQuotes;
+    private RadioButton radioComma, radioTab, radioOther, radioDoubleQuotes, radioNoQuotes;
     private EditText sepOtherEdit;
-    private Button sepOtherBtn;
+    private Button sepOtherBtn, setLanguagesBtn;
     private WebView webView;
-    private String wvHTML, separator, quotes, streamType;
+    private String separator, quotes, streamType;
     private Uri streamUri;
-    private Pattern patternRepeatedQuotes;
+
+    AreasDomainsTabFragment areasDomainsTabFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,16 +57,25 @@ public class CsvReaderActivity extends AppCompatActivity {
         quotesGroup = findViewById(R.id.quote_radio_group);
         radioDoubleQuotes = findViewById(R.id.radio_double_quotes);
         radioNoQuotes = findViewById(R.id.radio_no_quotes);
+        radioOther = findViewById(R.id.radio_button_other);
         sepOtherEdit = findViewById(R.id.edit_other_separator);
         sepOtherBtn = findViewById(R.id.btn_separator_other);
+        setLanguagesBtn = findViewById(R.id.btn_csv_set_languages);
 
-        getStreamUri();
+        try {
+            getStreamUri();
+        } catch (ClassCastException e) {
+            notifyUserOnException();
+            return;
+        }
 
         sepOtherBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 separator = sepOtherEdit.getText().toString().trim();
-                processStreamInput();
+                sepOtherEdit.setEnabled(false);
+                sepOtherBtn.setEnabled(false);
+                new ProcessStreamInputAsync().execute();
             }
         });
 
@@ -72,15 +87,15 @@ public class CsvReaderActivity extends AppCompatActivity {
                 switch (checkedId) {
                     case R.id.radio_button_comma:
                         separator = ",";
-                        processStreamInput();
+                        new ProcessStreamInputAsync().execute();
                         break;
                     case R.id.radio_button_semicolon:
                         separator = ";";
-                        processStreamInput();
+                        new ProcessStreamInputAsync().execute();
                         break;
                     case R.id.radio_button_tab:
                         separator = "\t";
-                        processStreamInput();
+                        new ProcessStreamInputAsync().execute();
                         break;
                     case R.id.radio_button_other:
                         sepOtherBtn.setEnabled(true);
@@ -92,7 +107,7 @@ public class CsvReaderActivity extends AppCompatActivity {
 
         // set quotes radio btns to their default values before setting their change listener;
         // this is to prevent stream input processing from running twice needlessly;
-        // setting separator radios triggers call to stream input processing processStreamInput()
+        // setting separator radios triggers call to async stream input processing thread
         if(streamType.equals("text/csv")) {
             quotes = "\"";
             radioDoubleQuotes.setChecked(true);
@@ -117,13 +132,31 @@ public class CsvReaderActivity extends AppCompatActivity {
                         quotes = "";
                         break;
                 }
-                processStreamInput();
+                new ProcessStreamInputAsync().execute();
+            }
+        });
+
+        areasDomainsTabFragment = new AreasDomainsTabFragment();
+
+        setLanguagesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCsvLanguagesDialog();
             }
         });
     }
 
+    private void openCsvLanguagesDialog() {
+//        CsvReaderLanguagesSetDialog dialog = new CsvReaderLanguagesSetDialog();
+//        dialog.show(getSupportFragmentManager(), "CSV Languages Set Dialog");
+        getSupportFragmentManager().beginTransaction()
+                .replace(android.R.id.content, areasDomainsTabFragment, "areas domains")
+                .addToBackStack(null)
+                .commit();
+    }
+
     // get stream type and stream Uri if we're apt to process this stream
-    private void getStreamUri() {
+    private void getStreamUri() throws ClassCastException {
         Intent intent = getIntent();
         String action = intent.getAction();
         Log.v(TAG, "################################ intent action: '" + action + "'");
@@ -140,102 +173,122 @@ public class CsvReaderActivity extends AppCompatActivity {
                     try {
                         streamUri = (Uri) bundle.get(Intent.EXTRA_STREAM);
                     } catch (ClassCastException e) {
-                        notifyUserOnException();
+                        throw new ClassCastException("Failed to get stream uri");
                     }
                 }
             } else {
                 Log.v(TAG, "--------------->-----------> No type string supplied");
-                notifyUserOnException();
+                throw new ClassCastException("No type string supplied");
             }
         } else {
-            notifyUserOnException();
+            throw new ClassCastException("Unhandled intent action");
         }
     }
 
-    class processStreamInputAsync extends AsyncTask<Void, Void, String> {
+    @Override
+    public void setSelectedDomain(KnowledgeArea area, Domain domain) {
+
+    }
+
+    class ProcessStreamInputAsync extends AsyncTask<Void, Void, String> {
         @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+        protected void onPostExecute(String html) {
+            webView.loadUrl("about:blank");     // clear web view
+            webView.loadData(html, "text/html;charset=utf-8", "utf-8");
+            if(radioOther.isChecked()) {
+                sepOtherEdit.setEnabled(true);
+                sepOtherBtn.setEnabled(true);
+            }
         }
 
         @Override
         protected String doInBackground(Void... voids) {
+            try {
+                return processStreamInput();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                cancel(true);
+            }
             return null;
         }
-    }
-    private void processStreamInput() {
-        InputStream inputStream= null;
-        try {
-            inputStream = getContentResolver().openInputStream(streamUri);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
             notifyUserOnException();
-            return;
         }
-        InputStreamReader streamReader = new InputStreamReader(inputStream);
-        BufferedReader reader=new BufferedReader(streamReader);
-        String line;
-        webView.loadUrl("about:blank");
-        wvHTML = getResources().getString(R.string.csv_table_init);
-        int lineId = 0;
-        patternRepeatedQuotes = Pattern.compile(quotes + quotes);
-        while (true) {
-            try {
-                if ((line=reader.readLine()) == null) {
-                    break;
+
+        private String processStreamInput() throws FileNotFoundException {
+            InputStream inputStream;
+            inputStream = getContentResolver().openInputStream(streamUri);
+
+            InputStreamReader streamReader = new InputStreamReader(inputStream);
+            BufferedReader reader=new BufferedReader(streamReader);
+            String line;
+            String html = getResources().getString(R.string.csv_table_init);
+            int lineId = 0;
+            while (true) {
+                try {
+                    if ((line=reader.readLine()) == null) {
+                        break;
+                    }
+                    lineId ++;
+                    html += processLineHTML(lineId, line);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    cancel(true);
                 }
-                lineId ++;
-                processLineHTML(lineId, line);
+            }
+            try {
+                reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            html += "</div>\n";
+            return html;
         }
-        try {
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        wvHTML += "</div>\n";
-        webView.loadData(wvHTML, "text/html;charset=utf-8", "utf-8");
-    }
 
-    private void processLineHTML(int lineId, String line) {
-        wvHTML += "<div class='tableRow'>\n";
-        wvHTML += "<div class='tableCell'>" + lineId + "</div>";
-        String[] fields = line.split(quotes+separator+quotes);
-        for(String field: fields) {
-            wvHTML += "<div class='tableCell'>";
-            // replace repeated quotes by one quote only ("" -> ", '' -> ', ** -> *, ...)
-            if(quotes.length() > 0) {
-                Matcher matcher = patternRepeatedQuotes.matcher(field);
-                field = matcher.replaceAll(quotes);
-                if (field.length() > 0) {
-                    if (field.indexOf(quotes) == 0) {
-                        field = field.substring(1);
-                    }
-                    int length = field.length();
-                    if (length > 0) {
-                        if (field.lastIndexOf(quotes) == length - 1) {
-                            field = field.substring(0, length - 1);
+        private String processLineHTML(int lineId, String line) {
+            String html = "<div class='tableRow'>\n";
+            html += "<div class='tableCell'>" + lineId + "</div>";
+            String[] fields = line.split(quotes+separator+quotes, 6);
+            for(String field: fields) {
+                html += "<div class='tableCell'>";
+                // replace repeated quotes by one quote only ("" -> ", '' -> ', ** -> *, ...)
+                // and remove residual quotes trailing and starting fields
+                if(quotes.length() > 0) {
+                    field = field.replaceAll(quotes+quotes, quotes);
+                    if (field.length() > 0) {
+                        if (field.indexOf(quotes) == 0) {
+                            field = field.substring(1);
+                        }
+                        int length = field.length();
+                        if (length > 0) {
+                            if (field.lastIndexOf(quotes) == length - 1) {
+                                field = field.substring(0, length - 1);
+                            }
                         }
                     }
                 }
+                html += field;
+                html += "</div>\n";
             }
-            wvHTML += field;
-            wvHTML += "</div>\n";
+            html += "</div>\n";
+            return html;
         }
-        wvHTML += "</div>\n";
+
     }
 
     private void notifyUserOnException() {
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setCancelable(false);
         alertDialog.setTitle("Oops!");
-        alertDialog.setMessage("Couldn't open or read from file");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+        alertDialog.setMessage("Perls couldn't handle the medium you sent and will abort after you dismiss this dialog");
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Abort",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        finish();
+                        CsvReaderActivity.this.finish();
                     }
                 });
         alertDialog.show();
@@ -249,5 +302,4 @@ public class CsvReaderActivity extends AppCompatActivity {
         }
         Log.v(TAG, "------------------------------------------------------");
     }
-
 }
