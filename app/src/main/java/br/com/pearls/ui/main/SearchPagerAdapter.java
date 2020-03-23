@@ -9,15 +9,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 import br.com.pearls.R;
-import br.com.pearls.SearchActivity;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+public class SearchPagerAdapter extends FragmentPagerAdapter {
 
-    private static final String TAG = SectionsPagerAdapter.class.getName();
+    private static final String TAG = SearchPagerAdapter.class.getName();
 
     public static final int PEARLS_SEARCH_TAB_FRAGMENT_POSITION = 0;
     public static final int PEARLS_AREAS_TAB_FRAGMENT_POSITION = PEARLS_SEARCH_TAB_FRAGMENT_POSITION + 1;
@@ -29,7 +28,7 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     private AreasDomainsTabFragment areasTabFragment;
     private final Context mContext;
 
-    public SectionsPagerAdapter(Context context, FragmentManager fm) {
+    public SearchPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
         searchTabFragment = new SearchTabFragment();

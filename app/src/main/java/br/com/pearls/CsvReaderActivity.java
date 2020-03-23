@@ -2,58 +2,37 @@ package br.com.pearls;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.webkit.WebView;
-import android.widget.Adapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Set;
 
 import br.com.pearls.DB.Domain;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.ui.main.AreasDomainsTabFragment;
-import br.com.pearls.ui.main.CsvReaderFragment;
-import br.com.pearls.ui.main.CsvReaderLanguagesSetDialog;
+import br.com.pearls.ui.main.CsvReaderMediaFragment;
 import br.com.pearls.ui.main.CsvReaderViewPagerAdapter;
-import br.com.pearls.ui.main.SectionsPagerAdapter;
 
 public class CsvReaderActivity extends AppCompatActivity
         implements AreasDomainsTabFragment.OnDomainSelectedListener,
-                   CsvReaderFragment.ParentDataIFace {
+                   CsvReaderMediaFragment.ParentDataIFace {
 
     public static final String TAG = CsvReaderActivity.class.getName();
 
     TextView textViewCaption;
     AlertDialog alertDialog;
+    CsvReaderViewPagerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_csv_reader);
 
-        CsvReaderViewPagerAdapter adapter = new CsvReaderViewPagerAdapter(this, getSupportFragmentManager());
+        adapter = new CsvReaderViewPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.csv_reader_view_pager);
         viewPager.setAdapter(adapter);
         TabLayout tabs = findViewById(R.id.csv_reader_tab_layout);

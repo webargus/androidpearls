@@ -16,24 +16,26 @@ import br.com.pearls.R;
  */
 public class CsvReaderViewPagerAdapter extends FragmentPagerAdapter {
 
-    private static final String TAG = SectionsPagerAdapter.class.getName();
+    private static final String TAG = SearchPagerAdapter.class.getName();
 
     public static final int PEARLS_CSV_MEDIA_TAB_FRAGMENT_POSITION = 0;
     public static final int PEARLS_CSV_AREAS_TAB_FRAGMENT_POSITION = PEARLS_CSV_MEDIA_TAB_FRAGMENT_POSITION + 1;
+    public static final int PEARLS_CSV_LANGUAGES_TAB_FRAGMENT_POSITION = PEARLS_CSV_AREAS_TAB_FRAGMENT_POSITION + 1;
     @StringRes
-    private static final int[] TAB_TITLES = new int[]{R.string.csv_tab_media,
-            R.string.csv_tab_areas};
+    private static final int[] TAB_TITLES = new int[]{R.string.csv_tab_media, R.string.csv_tab_areas, R.string.csv_tab_languages};
 
-    private CsvReaderFragment readerFragment;
+    private CsvReaderMediaFragment readerFragment;
     private AreasDomainsTabFragment areasTabFragment;
+    private CsvReaderLanguagesFragment languagesFragment;
     private final Context mContext;
 
     @SuppressWarnings("deprecation")
     public CsvReaderViewPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
-        readerFragment = new CsvReaderFragment();
+        readerFragment = new CsvReaderMediaFragment();
         areasTabFragment = new AreasDomainsTabFragment();
+        languagesFragment = new CsvReaderLanguagesFragment();
     }
 
     @Override
@@ -44,6 +46,8 @@ public class CsvReaderViewPagerAdapter extends FragmentPagerAdapter {
                 return readerFragment;
             case PEARLS_CSV_AREAS_TAB_FRAGMENT_POSITION:
                 return areasTabFragment;
+            case PEARLS_CSV_LANGUAGES_TAB_FRAGMENT_POSITION:
+                return languagesFragment;
         }
         return null;
     }

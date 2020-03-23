@@ -29,9 +29,9 @@ import java.util.Set;
 
 import br.com.pearls.R;
 
-public class CsvReaderFragment extends Fragment {
+public class CsvReaderMediaFragment extends Fragment {
 
-    public static final String TAG = CsvReaderFragment.class.getName();
+    public static final String TAG = CsvReaderMediaFragment.class.getName();
 
     private RadioGroup separatorGroup, quotesGroup;
     private RadioButton radioComma, radioTab, radioOther, radioDoubleQuotes, radioNoQuotes;
@@ -48,7 +48,7 @@ public class CsvReaderFragment extends Fragment {
         Intent csvReaderFragmentGetIntent();
     }
 
-    public CsvReaderFragment() {}
+    public CsvReaderMediaFragment() {}
 
     @Nullable
     @Override

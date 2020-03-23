@@ -30,7 +30,7 @@ import br.com.pearls.ui.main.AreasDomainsTabFragment;
 import br.com.pearls.ui.main.LanguagesActivity;
 import br.com.pearls.ui.main.AddEditTermActivity;
 import br.com.pearls.ui.main.SearchTabFragment;
-import br.com.pearls.ui.main.SectionsPagerAdapter;
+import br.com.pearls.ui.main.SearchPagerAdapter;
 import br.com.pearls.utils.SearchVertex;
 
 public class SearchActivity extends AppCompatActivity
@@ -72,9 +72,9 @@ public class SearchActivity extends AppCompatActivity
             tvCaption.setText(currentArea.getArea() + " > " + currentDomain.getDomain());
         }
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        SearchPagerAdapter searchPagerAdapter = new SearchPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);
-        viewPager.setAdapter(sectionsPagerAdapter);
+        viewPager.setAdapter(searchPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
     }
@@ -175,7 +175,7 @@ public class SearchActivity extends AppCompatActivity
             }
             String stringId = data.getStringExtra(AddEditTermActivity.PEARLS_KEY_ID);
             SearchTabFragment stf = (SearchTabFragment) (getSupportFragmentManager()
-                    .getFragments().get(SectionsPagerAdapter.PEARLS_SEARCH_TAB_FRAGMENT_POSITION));
+                    .getFragments().get(SearchPagerAdapter.PEARLS_SEARCH_TAB_FRAGMENT_POSITION));
             stf.updateRecyclerViewItem(stringId, vertices);
             Toast.makeText(getApplicationContext(), "Terms updated successfully", Toast.LENGTH_SHORT).show();
         }
