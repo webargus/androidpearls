@@ -14,11 +14,14 @@ public interface LanguagesDao {
     @Insert
     void insert(Language language);
 
-    @Query("SELECT * FROM languages")
-    LiveData<List<Language>> getAllLanguages();
+    @Query("SELECT * FROM languages ORDER BY status ASC")
+    LiveData<List<Language>> getmAllLanguages();
 
     @Query("SELECT * FROM languages WHERE active = :active")
     LiveData<List<Language>> getActiveLanguages(final int active);
+
+    @Query("SELECT * FROM languages ORDER BY status ASC")
+    List<Language> getAllLanguages();
 
     @Update
     void update(List<Language> languages);

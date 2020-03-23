@@ -17,7 +17,6 @@ public class Language {
     @ColumnInfo(defaultValue = "1")
     private int active;
 
-    @ColumnInfo(defaultValue = "0")
     private int status;
 
     public long getId() {

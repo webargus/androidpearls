@@ -1,5 +1,6 @@
 package br.com.pearls.ui.main;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,9 +15,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import br.com.pearls.DB.Language;
+import br.com.pearls.DB.LanguagesRepository;
 import br.com.pearls.DB.LanguagesViewModel;
 import br.com.pearls.R;
 
@@ -41,7 +45,6 @@ public class CsvReaderLanguagesFragment extends Fragment {
             @Override
             public void onChanged(List<Language> languages) {
                 languagesAdapter.setLanguages(languages);
-                languagesAdapter.notifyDataSetChanged();
             }
         };
         languagesViewModel = new ViewModelProvider(this).get(LanguagesViewModel.class);
@@ -62,7 +65,13 @@ public class CsvReaderLanguagesFragment extends Fragment {
 
             int fromPosition = viewHolder.getAdapterPosition();
             int toPosition = target.getAdapterPosition();
-            languagesAdapter.swapPositions(fromPosition, toPosition);
+
+            Language lang1 = languagesAdapter.getLanguage(fromPosition);
+            Language lang2 = languagesAdapter.getLanguage(toPosition);
+            int status1 = lang1.getStatus();
+            lang1.setStatus(lang2.getStatus());
+            lang2.setStatus(status1);
+            new updateLanguageAsync().execute(lang1, lang2);
 
             return false;
         }
@@ -73,4 +82,14 @@ public class CsvReaderLanguagesFragment extends Fragment {
         }
     };
 
+    class updateLanguageAsync extends AsyncTask<Language, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Language... languages) {
+            LanguagesRepository repository = new LanguagesRepository(getActivity().getApplication());
+            List<Language> lang = Arrays.asList(languages);
+            repository.update(lang);
+            return null;
+        }
+    }
 }

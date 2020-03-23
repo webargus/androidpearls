@@ -24,9 +24,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import br.com.pearls.DB.Language;
+import br.com.pearls.DB.LanguagesRepository;
 import br.com.pearls.R;
 
 public class CsvReaderMediaFragment extends Fragment {
@@ -41,11 +44,11 @@ public class CsvReaderMediaFragment extends Fragment {
     private String separator, quotes, streamType;
     private Uri streamUri;
 
-    private ParentDataIFace parentIFace;
+    private CsvMediaParentDataIFace parentIFace;
 
-    public interface ParentDataIFace {
-        void onCsvReaderFragmentException();
-        Intent csvReaderFragmentGetIntent();
+    public interface CsvMediaParentDataIFace {
+        void onCsvMediaFragmentException();
+        Intent csvMediaFragmentGetIntent();
     }
 
     public CsvReaderMediaFragment() {}
@@ -54,7 +57,7 @@ public class CsvReaderMediaFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.csv_reader_fragment, container, false);
+        View view = inflater.inflate(R.layout.csv_reader_media_fragment, container, false);
         webView = view.findViewById(R.id.csv_web_view);
 
         separatorGroup = view.findViewById(R.id.separator_radio_group);
@@ -69,20 +72,10 @@ public class CsvReaderMediaFragment extends Fragment {
 
         try {
             getStreamUri();
-        } catch (ClassCastException e) {
-            parentIFace.onCsvReaderFragmentException();
+        } catch (RuntimeException e) {
+            parentIFace.onCsvMediaFragmentException();
             return null;
         }
-
-        sepOtherBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                separator = sepOtherEdit.getText().toString().trim();
-                sepOtherEdit.setEnabled(false);
-                sepOtherBtn.setEnabled(false);
-                new ProcessStreamInputAsync().execute();
-            }
-        });
 
         separatorGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -110,9 +103,9 @@ public class CsvReaderMediaFragment extends Fragment {
             }
         });
 
-        // set quotes radio btns to their default values before setting their change listener;
-        // this is to prevent stream input processing from running twice needlessly;
-        // setting separator radios triggers call to async stream input processing thread
+        // set quotes radio buttons to their default values before setting their change listener;
+        // this prevents listeners from calling async thread to process medium input
+        // twice (setting separator radio buttons below already calls async thread)
         if(streamType.equals("text/csv")) {
             quotes = "\"";
             radioDoubleQuotes.setChecked(true);
@@ -123,6 +116,7 @@ public class CsvReaderMediaFragment extends Fragment {
             radioTab.setChecked(true);
         }
 
+        // quotes radio buttons
         quotesGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -141,6 +135,16 @@ public class CsvReaderMediaFragment extends Fragment {
             }
         });
 
+        sepOtherBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                separator = sepOtherEdit.getText().toString().trim();
+                sepOtherEdit.setEnabled(false);
+                sepOtherBtn.setEnabled(false);
+                new ProcessStreamInputAsync().execute();
+            }
+        });
+
         return view;
     }
 
@@ -148,22 +152,23 @@ public class CsvReaderMediaFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         try {
-            parentIFace = (ParentDataIFace) context;
+            parentIFace = (CsvMediaParentDataIFace) context;
         } catch (ClassCastException e) {
-            throw new RuntimeException("You must implement the ParentDataIFace...");
+            throw new RuntimeException("You must implement the CsvMediaParentDataIFace...");
         }
-
     }
 
     // get stream type and stream Uri if we're apt to process this stream
     private void getStreamUri() throws ClassCastException {
-        Intent intent = parentIFace.csvReaderFragmentGetIntent();
+        // get intent from parent activity through i-face
+        Intent intent = parentIFace.csvMediaFragmentGetIntent();
         String action = intent.getAction();
         Log.v(TAG, "################################ intent action: '" + action + "'");
 
         if (action.equals(Intent.ACTION_SEND)) {
+            // save stream type to local member
             streamType = intent.getType();
-            Log.v(TAG, "type: " + streamType);
+            Log.v(TAG, "type: " + streamType);          // debug
             // type is set to application/octet-stream for .prl (former desktop pearls app format) files
             // and text/csv for .csv files; checked to be true for chrome download, gmail app and whatsapp.
             if (streamType != null && (streamType.equals("text/csv") || streamType.equals("application/octet-stream"))) {
@@ -173,19 +178,23 @@ public class CsvReaderMediaFragment extends Fragment {
                     try {
                         streamUri = (Uri) bundle.get(Intent.EXTRA_STREAM);
                     } catch (ClassCastException e) {
-                        throw new ClassCastException("Failed to get stream uri");
+                        throw new RuntimeException("Failed to get stream uri");
                     }
                 }
-            } else {
+            } else {        // abort if sender didn't declare their media type
                 Log.v(TAG, "--------------->-----------> No type string supplied");
-                throw new ClassCastException("No type string supplied");
+                throw new RuntimeException("No type string supplied");
             }
-        } else {
-            throw new ClassCastException("Unhandled intent action");
+        } else {    // abort if script does not handle action
+            throw new RuntimeException("Unhandled intent action");
         }
     }
 
     class ProcessStreamInputAsync extends AsyncTask<Void, Void, String> {
+
+        private int maxColumns;
+        private List<Language> languages;
+
         @Override
         protected void onPostExecute(String html) {
             webView.loadUrl("about:blank");     // clear web view
@@ -210,18 +219,22 @@ public class CsvReaderMediaFragment extends Fragment {
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            parentIFace.onCsvReaderFragmentException();
+            parentIFace.onCsvMediaFragmentException();
         }
 
         private String processStreamInput() throws FileNotFoundException {
+            if(languages == null) {
+                fetchLanguages();
+            }
             InputStream inputStream;
-            inputStream = Objects.requireNonNull(getActivity()).getContentResolver().openInputStream(streamUri);
+            inputStream = getContext().getContentResolver().openInputStream(streamUri);
 
             InputStreamReader streamReader = new InputStreamReader(inputStream);
             BufferedReader reader=new BufferedReader(streamReader);
             String line;
-            String html = getResources().getString(R.string.csv_table_init);
+            String html = "";
             int lineId = 0;
+            maxColumns = 0;
             while (true) {
                 try {
                     if ((line=reader.readLine()) == null) {
@@ -240,13 +253,19 @@ public class CsvReaderMediaFragment extends Fragment {
                 e.printStackTrace();
             }
             html += "</div>\n";
+            html = getResources().getString(R.string.csv_table_init) + languagesRow() + html;
             return html;
         }
 
         private String processLineHTML(int lineId, String line) {
             String html = "<div class='tableRow'>\n";
             html += "<div class='tableCell'>" + lineId + "</div>";
-            String[] fields = line.split(quotes+separator+quotes, 6);
+            String[] fields = line.split(quotes+separator+quotes, languages.size());
+            // save the greatest no. of columns found so far
+            if(fields.length > maxColumns) {
+                maxColumns = fields.length;
+            }
+            // create row cells
             for(String field: fields) {
                 html += "<div class='tableCell'>";
                 // replace repeated quotes by one quote only ("" -> ", '' -> ', ** -> *, ...)
@@ -270,6 +289,23 @@ public class CsvReaderMediaFragment extends Fragment {
             }
             html += "</div>\n";
             return html;
+        }
+
+        private void fetchLanguages() {
+            LanguagesRepository repository = new LanguagesRepository(getActivity().getApplication());
+            languages = repository.getAllLanguages();
+        }
+
+        private String languagesRow() {
+            String row = "<div class='tableRow'>";
+            row += "<div class='tableCell'>Row</div>";
+            for(int ix = 0; ix < maxColumns; ix++) {
+                row += "<div class='tableCell'>";
+                row += languages.get(ix).getLanguage();
+                row += "</div>";
+            }
+            row += "</div>";
+            return row;
         }
 
     }

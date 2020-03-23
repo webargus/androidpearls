@@ -23,7 +23,8 @@ public class CsvLanguagesAdapter
     @NonNull
     @Override
     public CsvLanguagesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.csv_languages_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.csv_languages_item, parent, false);
         return new CsvLanguagesViewHolder(itemView);
     }
 
@@ -52,10 +53,10 @@ public class CsvLanguagesAdapter
 
     public void setLanguages(@NonNull final List<Language> languages) {
         this.languages = languages;
+        notifyDataSetChanged();
     }
 
-    public void swapPositions(@NonNull final int fromPosition, @NonNull final int toPosition) {
-        Collections.swap(languages, fromPosition, toPosition);
-        notifyDataSetChanged();
+    public Language getLanguage(@NonNull final int position) {
+        return languages.get(position);
     }
 }

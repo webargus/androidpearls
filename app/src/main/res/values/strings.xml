@@ -50,9 +50,14 @@
                 padding: .25em;
             }
             .tableCell:first-child {
-                background-color: lightGray;
+                background-color: #33b5e5;
+                color: white;
                 text-align: center;
                 vertical-align: middle;
+            }
+            .tableRow:first-child {
+                background-color: #33b5e5;
+                color: white;
             }
         </style>
         <div class="table">
@@ -69,4 +74,7 @@
     <string name="csv_tab_languages">Languages</string>
     <string name="tab_search">search</string>
     <string name="tab_search_areas">Knowledge areas</string>
+    <string name="csv_reader_alert_msg">Perls couldn\'t handle the medium you sent and will abort after you dismiss this dialog</string>
+    <string name="oops">Oops!</string>
+    <string name="csv_reader_alert_btn">Abort</string>
 </resources>

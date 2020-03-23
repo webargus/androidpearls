@@ -12,11 +12,11 @@ public class LanguagesRepository {
     private LiveData<List<Language>> mAllLanguages;
     private LiveData<List<Language>> mActiveLanguages;
 
-    LanguagesRepository(Application application) {
+    public LanguagesRepository(Application application) {
 
         PearlsRoomDatabase db = PearlsRoomDatabase.getDatabase(application);
         mLanguagesDao = db.languagesDao();
-        mAllLanguages = mLanguagesDao.getAllLanguages();
+        mAllLanguages = mLanguagesDao.getmAllLanguages();
         mActiveLanguages = mLanguagesDao.getActiveLanguages(1);
     }
 
@@ -30,6 +30,12 @@ public class LanguagesRepository {
         PearlsRoomDatabase.databaseWriteExecutor.execute(() -> {
             mLanguagesDao.insert(language);
         });
+    }
+
+    public List<Language> getAllLanguages() { return mLanguagesDao.getAllLanguages(); }
+
+    public void update(List<Language> languages) {
+        mLanguagesDao.update(languages);
     }
 
 }

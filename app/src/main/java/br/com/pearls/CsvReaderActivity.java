@@ -11,15 +11,19 @@ import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.List;
+
 import br.com.pearls.DB.Domain;
 import br.com.pearls.DB.KnowledgeArea;
+import br.com.pearls.DB.Language;
 import br.com.pearls.ui.main.AreasDomainsTabFragment;
+import br.com.pearls.ui.main.CsvReaderLanguagesFragment;
 import br.com.pearls.ui.main.CsvReaderMediaFragment;
 import br.com.pearls.ui.main.CsvReaderViewPagerAdapter;
 
 public class CsvReaderActivity extends AppCompatActivity
         implements AreasDomainsTabFragment.OnDomainSelectedListener,
-                   CsvReaderMediaFragment.ParentDataIFace {
+                   CsvReaderMediaFragment.CsvMediaParentDataIFace {
 
     public static final String TAG = CsvReaderActivity.class.getName();
 
@@ -40,9 +44,9 @@ public class CsvReaderActivity extends AppCompatActivity
 
         alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setCancelable(false);       // make it modal!
-        alertDialog.setTitle("Oops!");
-        alertDialog.setMessage("Perls couldn't handle the medium you sent and will abort after you dismiss this dialog");
-        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Abort",
+        alertDialog.setTitle(getString(R.string.oops));
+        alertDialog.setMessage(getString(R.string.csv_reader_alert_msg));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.csv_reader_alert_btn),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         alertDialog.dismiss();
@@ -59,12 +63,12 @@ public class CsvReaderActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCsvReaderFragmentException() {
+    public void onCsvMediaFragmentException() {
         notifyUserOnException();
     }
 
     @Override
-    public Intent csvReaderFragmentGetIntent() {
+    public Intent csvMediaFragmentGetIntent() {
         return getIntent();
     }
 
