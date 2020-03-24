@@ -117,7 +117,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:text="From line: "
+            android:text="Save from line: "
             />
         <EditText
             android:id="@+id/csv_init_line"
@@ -129,13 +129,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
-            android:text="To line: "
+            android:text="To: "
             />
         <EditText
             android:id="@+id/csv_end_line"
             android:layout_width="32dp"
             android:layout_height="wrap_content"
             android:inputType="number"
+            />
+        <Button
+            android:id="@+id/csv_btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Save"
             />
     </LinearLayout>
 

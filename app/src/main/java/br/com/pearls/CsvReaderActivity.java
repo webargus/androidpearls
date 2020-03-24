@@ -30,6 +30,8 @@ public class CsvReaderActivity extends AppCompatActivity
     TextView textViewCaption;
     AlertDialog alertDialog;
     CsvReaderViewPagerAdapter adapter;
+    KnowledgeArea selectedArea;
+    Domain selectedDomain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,8 @@ public class CsvReaderActivity extends AppCompatActivity
 
     @Override
     public void setSelectedDomain(KnowledgeArea area, Domain domain) {
+        selectedArea = area;
+        selectedDomain = domain;
         textViewCaption.setText(area.getArea() + " > " + domain.getDomain());
     }
 
@@ -70,6 +74,16 @@ public class CsvReaderActivity extends AppCompatActivity
     @Override
     public Intent csvMediaFragmentGetIntent() {
         return getIntent();
+    }
+
+    @Override
+    public KnowledgeArea csvMediaFragmentGetArea() {
+        return selectedArea;
+    }
+
+    @Override
+    public Domain csvMediaFragmentGetDomain() {
+        return selectedDomain;
     }
 
     private void notifyUserOnException() {
