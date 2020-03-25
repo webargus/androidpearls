@@ -7,6 +7,12 @@
         android:title="Languages"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/action_csv_files"
+        android:icon="@drawable/ic_file"
+        android:title="Open CSV file"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_settings"
         android:icon="@drawable/ic_settings"
         android:title="Settings"

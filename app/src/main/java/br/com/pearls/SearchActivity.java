@@ -2,6 +2,7 @@ package br.com.pearls;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.google.android.material.tabs.TabLayout;
@@ -27,6 +28,7 @@ import br.com.pearls.DB.Domain;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.Settings.SettingsActivity;
 import br.com.pearls.ui.main.AreasDomainsTabFragment;
+import br.com.pearls.ui.main.CsvReaderMediaFragment;
 import br.com.pearls.ui.main.LanguagesActivity;
 import br.com.pearls.ui.main.AddEditTermActivity;
 import br.com.pearls.ui.main.SearchTabFragment;
@@ -38,6 +40,7 @@ public class SearchActivity extends AppCompatActivity
                    SearchTabFragment.SearchTabIFace {
 
     private static final String TAG = SearchActivity.class.getName();
+    private static final int CSV_FILE_CHOOSER_REQUEST = 53;
 
     private static final String PEARLS_SEARCH_PREFERENCES = "search preferences";
     public static final String PEARLS_CURRENT_AREA = "current area";
@@ -48,6 +51,9 @@ public class SearchActivity extends AppCompatActivity
     private KnowledgeArea currentArea;
     private Domain currentDomain;
     private TextView tvCaption;
+
+    private Uri streamUri;
+    private String streamType;
 
     @Override
     public void setSelectedDomain(KnowledgeArea area, Domain domain) {
@@ -92,11 +98,24 @@ public class SearchActivity extends AppCompatActivity
             case R.id.action_settings:
                 openSettingsActivity();
                 return true;
+            case R.id.action_csv_files:
+                browseForFile();
+                return true;
             case R.id.action_languages:
                 openLanguagesActivity();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void browseForFile() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        String [] mimeTypes = {"text/csv", "application/octet-stream"};
+        intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, CSV_FILE_CHOOSER_REQUEST);
     }
 
     private void openLanguagesActivity() {
@@ -166,19 +185,35 @@ public class SearchActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if((resultCode == RESULT_OK) && (requestCode == PEARLS_KEY_EDIT)) {
-            ArrayList<GraphVertex> vertices =
-                    data.getParcelableArrayListExtra(AddEditTermActivity.PEARLS_KEY_VERTICES);
-            if(vertices == null) {
-                Toast.makeText(getApplicationContext(), "Couldn't update terms", Toast.LENGTH_LONG).show();
-                return;
+        if((resultCode == RESULT_OK) && (data != null)) {
+            switch (requestCode) {
+                case PEARLS_KEY_EDIT:
+                    ArrayList<GraphVertex> vertices =
+                            data.getParcelableArrayListExtra(AddEditTermActivity.PEARLS_KEY_VERTICES);
+                    if (vertices == null) {
+                        Toast.makeText(getApplicationContext(), "Couldn't update terms", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    String stringId = data.getStringExtra(AddEditTermActivity.PEARLS_KEY_ID);
+                    SearchTabFragment stf = (SearchTabFragment) (getSupportFragmentManager()
+                            .getFragments().get(SearchPagerAdapter.PEARLS_SEARCH_TAB_FRAGMENT_POSITION));
+                    stf.updateRecyclerViewItem(stringId, vertices);
+                    Toast.makeText(getApplicationContext(), "Terms updated successfully", Toast.LENGTH_SHORT).show();
+                    break;
+                case CSV_FILE_CHOOSER_REQUEST:
+                    Uri uri = data.getData();
+                    String type = getContentResolver().getType(uri);
+                    launchCsvReaderActivity(uri, type);
+                    break;
             }
-            String stringId = data.getStringExtra(AddEditTermActivity.PEARLS_KEY_ID);
-            SearchTabFragment stf = (SearchTabFragment) (getSupportFragmentManager()
-                    .getFragments().get(SearchPagerAdapter.PEARLS_SEARCH_TAB_FRAGMENT_POSITION));
-            stf.updateRecyclerViewItem(stringId, vertices);
-            Toast.makeText(getApplicationContext(), "Terms updated successfully", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void launchCsvReaderActivity(Uri streamUri, String streamType) {
+        Intent intent = new Intent(SearchActivity.this, CsvReaderActivity.class);
+        intent.putExtra(CsvReaderActivity.CSV_READER_ACTIVITY_URI, streamUri.toString());
+        intent.putExtra(CsvReaderActivity.CSV_READER_ACTIVITY_TYPE, streamType);
+        startActivity(intent);
     }
 }
 

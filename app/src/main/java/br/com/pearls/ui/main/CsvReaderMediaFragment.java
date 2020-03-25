@@ -56,8 +56,8 @@ public class CsvReaderMediaFragment extends Fragment {
 
     public interface CsvMediaParentDataIFace {
         void onCsvMediaFragmentException();
-        Intent csvMediaFragmentGetIntent();
-        KnowledgeArea csvMediaFragmentGetArea();
+        Uri getStreamUri();
+        String getStreamType();
         Domain csvMediaFragmentGetDomain();
     }
 
@@ -90,9 +90,9 @@ public class CsvReaderMediaFragment extends Fragment {
             }
         });
 
-        try {
-            getStreamUri();
-        } catch (RuntimeException e) {
+        streamType = parentIFace.getStreamType();
+        streamUri = parentIFace.getStreamUri();
+        if((streamUri == null) || (streamType == null)) {
             parentIFace.onCsvMediaFragmentException();
             return null;
         }
@@ -175,19 +175,6 @@ public class CsvReaderMediaFragment extends Fragment {
                     "You must select a knowledge area/domain...", Toast.LENGTH_SHORT).show();
             return;
         }
-        // check if we got all it takes:
-//        Log.v(TAG, "domain: " + domain.getDomain());
-//        int rowCnt = 0;
-//        String rowString;
-//        for(List<String> row: rows) {
-//            rowCnt++;
-//            rowString = "row #" + rowCnt + ": ";
-//            for(String cell: row) {
-//                rowString += cell + "; ";
-//            }
-//            Log.v(TAG, rowString);
-//        }
-//        Log.v(TAG, "From line: " + initLine.getText() + " to: " + endLine.getText());
 
         int line1 = Integer.parseInt(initLine.getText().toString());
         int line2 = Integer.parseInt(endLine.getText().toString());
@@ -223,38 +210,6 @@ public class CsvReaderMediaFragment extends Fragment {
             parentIFace = (CsvMediaParentDataIFace) context;
         } catch (ClassCastException e) {
             throw new RuntimeException("You must implement the CsvMediaParentDataIFace...");
-        }
-    }
-
-    // get stream type and stream Uri if we're apt to process this stream
-    private void getStreamUri() throws ClassCastException {
-        // get intent from parent activity through i-face
-        Intent intent = parentIFace.csvMediaFragmentGetIntent();
-        String action = intent.getAction();
-        Log.v(TAG, "################################ intent action: '" + action + "'");
-
-        if (action.equals(Intent.ACTION_SEND)) {
-            // save stream type to local member
-            streamType = intent.getType();
-            Log.v(TAG, "type: " + streamType);          // debug
-            // type is set to application/octet-stream for .prl (former desktop pearls app format) files
-            // and text/csv for .csv files; checked to be true for chrome download, gmail app and whatsapp.
-            if (streamType != null && (streamType.equals("text/csv") || streamType.equals("application/octet-stream"))) {
-                Bundle bundle = intent.getExtras();
-                if (bundle != null && bundle.size() > 0 && bundle.containsKey(Intent.EXTRA_STREAM)) {
-                    logDebug(bundle);               // debug
-                    try {
-                        streamUri = (Uri) bundle.get(Intent.EXTRA_STREAM);
-                    } catch (ClassCastException e) {
-                        throw new RuntimeException("Failed to get stream uri");
-                    }
-                }
-            } else {        // abort if sender didn't declare their media type
-                Log.v(TAG, "--------------->-----------> No type string supplied");
-                throw new RuntimeException("No type string supplied");
-            }
-        } else {    // abort if script does not handle action
-            throw new RuntimeException("Unhandled intent action");
         }
     }
 
@@ -388,16 +343,6 @@ public class CsvReaderMediaFragment extends Fragment {
         }
 
     }
-
-    private void logDebug(Bundle bundle) {
-        Log.v(TAG, "\n-----------------------------------------------------");
-        Set<String> keys = bundle.keySet();
-        for(String key: keys) {
-            Log.v(TAG, key + ": " + bundle.get(key));
-        }
-        Log.v(TAG, "------------------------------------------------------");
-    }
-
 }
 
 

@@ -13,7 +13,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CsvReaderActivity" android:windowSoftInputMode="stateHidden">
+        <activity
+            android:name=".CsvReaderActivity"
+            android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -60,14 +62,7 @@
         <activity
             android:name=".SearchActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:label="@string/title_activity_search" />
-        <!--
-         configChanges="orientation|screenSize" -> this keeps web view content from
-             reloading upon screen rotation (portrait/landscape)
-        -->
-        <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:label="@string/title_activity_search"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -75,6 +70,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--
+         configChanges="orientation|screenSize" -> this keeps web view content from
+             reloading upon screen rotation (portrait/landscape)
+        -->
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:launchMode="singleTop"></activity>
     </application>
 
 </manifest>
