@@ -20,7 +20,7 @@ public class GraphSearchUtil {
 
     public static final String TAG = GraphSearchUtil.class.getName();
 
-    private static TreeMap<GraphSearchRated, List<SearchVertex>> treeMap;
+    private static TreeMap<GraphSearchRated, List<GraphVertex>> treeMap;
     private static GraphSearchRepository graphSearchRepository;
     private static GraphSearchVerticesRepository graphSearchVerticesRepository;
     private static SearchUtilIFace searchUtilIFace;
@@ -31,7 +31,7 @@ public class GraphSearchUtil {
     private static Domain mDomain;
 
     public interface SearchUtilIFace {
-        void fetchGraphSearchResults(TreeMap<GraphSearchRated, List<SearchVertex>> results);
+        void fetchGraphSearchResults(TreeMap<GraphSearchRated, List<GraphVertex>> results);
         Domain getDomain();
     }
 
@@ -91,7 +91,7 @@ public class GraphSearchUtil {
         new VertexAsyncSearch().execute(graphs.get(graphPointer).graph.graph_ref);
     }
 
-    private static void addVerticesToMap(List<SearchVertex> vertices) {
+    private static void addVerticesToMap(List<GraphVertex> vertices) {
         if(graphPointer >= graphs.size()) {
             searchUtilIFace.fetchGraphSearchResults(treeMap);
             return;
@@ -111,18 +111,18 @@ public class GraphSearchUtil {
 
     /* async classes to fetch search results from db
        efforts made to merge both classes into one failed because TreeMap is not
-       synchronized and results return messed up unless we sort them them in main thread
+       synchronized and results return messed up unless we sort them in main thread
      */
     private static class VertexAsyncSearch
-            extends AsyncTask<Long, Void, List<SearchVertex>> {
+            extends AsyncTask<Long, Void, List<GraphVertex>> {
 
         @Override
-        protected List<SearchVertex> doInBackground(Long... graph_refs) {
+        protected List<GraphVertex> doInBackground(Long... graph_refs) {
             return graphSearchVerticesRepository.fetchVerticesForGraph(graph_refs[0]);
         }
 
         @Override
-        protected void onPostExecute(List<SearchVertex> vertices) {
+        protected void onPostExecute(List<GraphVertex> vertices) {
             addVerticesToMap(vertices);
         }
     }

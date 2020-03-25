@@ -15,11 +15,11 @@ import java.util.List;
 
 import br.com.pearls.DB.Language;
 import br.com.pearls.R;
-import br.com.pearls.utils.SearchVertex;
+import br.com.pearls.utils.GraphVertex;
 
 public class AddEditTermAdapter extends RecyclerView.Adapter<AddEditTermAdapter.TermFormHolder> {
 
-    private List<SearchVertex> vertices;
+    private List<GraphVertex> vertices;
 
     @NonNull
     @Override
@@ -31,7 +31,7 @@ public class AddEditTermAdapter extends RecyclerView.Adapter<AddEditTermAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull TermFormHolder holder, int position) {
-        SearchVertex vertex = vertices.get(position);
+        GraphVertex vertex = vertices.get(position);
         holder.tvLanguage.setText(vertex.language);
         holder.rbRank.setRating((float) vertex.user_rank);
         holder.etTerm.setText(vertex.term);
@@ -46,7 +46,7 @@ public class AddEditTermAdapter extends RecyclerView.Adapter<AddEditTermAdapter.
         return 0;
     }
 
-    public void setData(List<SearchVertex> vertices) {
+    public void setData(List<GraphVertex> vertices) {
         this.vertices = vertices;
         notifyDataSetChanged();
     }

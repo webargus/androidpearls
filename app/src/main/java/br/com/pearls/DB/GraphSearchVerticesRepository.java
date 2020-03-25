@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import br.com.pearls.utils.SearchVertex;
+import br.com.pearls.utils.GraphVertex;
 
 public class GraphSearchVerticesRepository {
 
@@ -17,7 +17,7 @@ public class GraphSearchVerticesRepository {
         resultDao = db.graphSearchVerticesDao();
     }
 
-    public List<SearchVertex> fetchVerticesForGraph(@NonNull long graph_ref) {
+    public List<GraphVertex> fetchVerticesForGraph(@NonNull long graph_ref) {
         return resultDao.fetchVerticesForGraph(graph_ref);
     }
 

@@ -9,9 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -27,7 +25,7 @@ import br.com.pearls.DB.Domain;
 import br.com.pearls.R;
 import br.com.pearls.utils.GraphSearchRated;
 import br.com.pearls.utils.GraphSearchUtil;
-import br.com.pearls.utils.SearchVertex;
+import br.com.pearls.utils.GraphVertex;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
 public class SearchTabFragment extends Fragment
@@ -42,7 +40,7 @@ public class SearchTabFragment extends Fragment
     private SectionedRecyclerViewAdapter sectionedAdapter;
 
     @Override
-    public void fetchGraphSearchResults(TreeMap<GraphSearchRated, List<SearchVertex>> results) {
+    public void fetchGraphSearchResults(TreeMap<GraphSearchRated, List<GraphVertex>> results) {
         sectionedAdapter.removeAllSections();
         if((results == null) || (results.size() == 0)) {
             Toast.makeText(getContext(), "No match found for searched term", Toast.LENGTH_LONG).show();
@@ -50,7 +48,7 @@ public class SearchTabFragment extends Fragment
         }
         for (TreeMap.Entry entry : results.entrySet()) {
             GraphSearchRated graph = (GraphSearchRated) entry.getKey();
-            List<SearchVertex> vertices = (List<SearchVertex>) entry.getValue();
+            List<GraphVertex> vertices = (List<GraphVertex>) entry.getValue();
             SearchSection searchSection = new SearchSection(graph, vertices, this);
             String stringId = sectionedAdapter.addSection(searchSection);
             searchSection.setStringId(stringId);
@@ -61,7 +59,7 @@ public class SearchTabFragment extends Fragment
 //                            "; areaName = " + graph.graph.areaName +
 //                            "; score = " + graph.score + " }");
 //            Log.v(TAG, "\tvertices:");
-//            SearchVertex vertex;
+//            GraphVertex vertex;
 //            for(int ix = 0; ix < vertices.size(); ix++) {
 //                vertex = vertices.get(ix);
 //                Log.v(TAG, "\tvertex_id = " + vertex.vertex_id +
@@ -74,7 +72,7 @@ public class SearchTabFragment extends Fragment
 //            }
 //            Log.v(TAG, "----------------------------------------");
         }
-        searchView.clearFocus();
+        // searchView.clearFocus();
         // update recycler view
         sectionedAdapter.notifyDataSetChanged();
     }
@@ -82,7 +80,7 @@ public class SearchTabFragment extends Fragment
     public interface SearchTabIFace {
         void onNewTermFABClick();
         Domain getDomain();
-        void onEditTerm(String stringId, List<SearchVertex> vertices);
+        void onEditTerm(String stringId, List<GraphVertex> vertices);
     }
 
     public SearchTabFragment() {/*default constructor: prevents app from crashing when shutting down*/}
@@ -107,13 +105,17 @@ public class SearchTabFragment extends Fragment
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                graphSearchUtil.asyncSearchForTerm("%" + query.trim() + "%");
                 searchView.clearFocus();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                if(newText.length() < 3) {
+                    return false;
+                }
+                graphSearchUtil.asyncSearchForTerm("%" + newText.trim() + "%");
+
                 return false;
             }
         });
@@ -143,11 +145,11 @@ public class SearchTabFragment extends Fragment
     }
 
     @Override
-    public void onItemClick(String stringId, List<SearchVertex> vertices) {
+    public void onItemClick(String stringId, List<GraphVertex> vertices) {
         searchTabIFace.onEditTerm(stringId, vertices);
     }
 
-    public void updateRecyclerViewItem(String stringId, List<SearchVertex> vertices) {
+    public void updateRecyclerViewItem(String stringId, List<GraphVertex> vertices) {
         SearchSection ss = (SearchSection) sectionedAdapter.getSection(stringId);
         ss.setItems(vertices);
         sectionedAdapter.getAdapterForSection(stringId).notifyAllItemsChanged();

@@ -27,7 +27,7 @@ import br.com.pearls.DB.Language;
 import br.com.pearls.DB.LanguagesViewModel;
 import br.com.pearls.R;
 import br.com.pearls.utils.GraphUtil;
-import br.com.pearls.utils.SearchVertex;
+import br.com.pearls.utils.GraphVertex;
 
 public class AddEditTermActivity extends AppCompatActivity {
 
@@ -40,7 +40,7 @@ public class AddEditTermActivity extends AppCompatActivity {
 
     private KnowledgeArea area;
     private Domain domain;
-    private ArrayList<SearchVertex> vertices;
+    private ArrayList<GraphVertex> vertices;
     private LanguagesViewModel languagesViewModel;
     private AddEditTermAdapter adapter;
     private RecyclerView recyclerView;
@@ -73,9 +73,9 @@ public class AddEditTermActivity extends AppCompatActivity {
                 @Override
                 public void onChanged(List<Language> languages) {
                     vertices = new ArrayList<>();
-                    SearchVertex vertex;
+                    GraphVertex vertex;
                     for(Language lang: languages) {
-                        vertex = new SearchVertex();
+                        vertex = new GraphVertex();
                         vertex.language = lang.getLanguage();
                         vertex.lang_ref = lang.getId();
                         vertex.user_rank = 0;
@@ -141,7 +141,7 @@ public class AddEditTermActivity extends AppCompatActivity {
     private void saveGraph() {
         // validate
         boolean isEmpty = true;
-        SearchVertex vertex;
+        GraphVertex vertex;
         for (int position = 0; position < adapter.getItemCount(); position++) {
             AddEditTermAdapter.TermFormHolder itemHolder =
                     (AddEditTermAdapter.TermFormHolder) recyclerView.findViewHolderForAdapterPosition(position);

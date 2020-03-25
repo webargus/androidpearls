@@ -35,6 +35,8 @@ import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.DB.Language;
 import br.com.pearls.DB.LanguagesRepository;
 import br.com.pearls.R;
+import br.com.pearls.utils.GraphUtil;
+import br.com.pearls.utils.GraphVertex;
 import br.com.pearls.utils.InputFilterIntRange;
 
 public class CsvReaderMediaFragment extends Fragment {
@@ -47,7 +49,8 @@ public class CsvReaderMediaFragment extends Fragment {
     private WebView webView;
     private String separator, quotes, streamType;
     private Uri streamUri;
-    List<List<String>> rows;
+    private List<Language> languages;
+    private List<List<String>> rows;
 
     private CsvMediaParentDataIFace parentIFace;
 
@@ -166,27 +169,51 @@ public class CsvReaderMediaFragment extends Fragment {
     }
 
     private void saveTerms() {
-        KnowledgeArea area = parentIFace.csvMediaFragmentGetArea();
-        if(area == null) {
+        Domain domain = parentIFace.csvMediaFragmentGetDomain();
+        if(domain == null) {
             Toast.makeText(getContext(),
                     "You must select a knowledge area/domain...", Toast.LENGTH_SHORT).show();
             return;
         }
-        // if area isn't null then domain surely isn't either
-        Domain domain = parentIFace.csvMediaFragmentGetDomain();
-        // check if we go all it takes:
-        Log.v(TAG, "area > domain" + area.getArea() + " > " + domain.getDomain());
-        int rowCnt = 0;
-        String rowString;
-        for(List<String> row: rows) {
-            rowCnt++;
-            rowString = "row #" + rowCnt + ": ";
-            for(String cell: row) {
-                rowString += cell + "; ";
-            }
-            Log.v(TAG, rowString);
+        // check if we got all it takes:
+//        Log.v(TAG, "domain: " + domain.getDomain());
+//        int rowCnt = 0;
+//        String rowString;
+//        for(List<String> row: rows) {
+//            rowCnt++;
+//            rowString = "row #" + rowCnt + ": ";
+//            for(String cell: row) {
+//                rowString += cell + "; ";
+//            }
+//            Log.v(TAG, rowString);
+//        }
+//        Log.v(TAG, "From line: " + initLine.getText() + " to: " + endLine.getText());
+
+        int line1 = Integer.parseInt(initLine.getText().toString());
+        int line2 = Integer.parseInt(endLine.getText().toString());
+        if(line1 > line2) {
+            int swap = line1;
+            line1 = line2;
+            line2 = swap;
         }
-        Log.v(TAG, "From line: " + initLine.getText() + " to: " + endLine.getText());
+        line1--;
+        GraphUtil graphUtil = new GraphUtil(getActivity().getApplication());
+        List<GraphVertex> vertices = new ArrayList<>();
+        long domainId = domain.getId();
+        for(int iy = line1; iy < line2; iy++) {
+            List<String> row = rows.get(iy);
+            vertices.clear();
+            for(int ix = 0; ix < row.size(); ix++) {
+                GraphVertex vertex = new GraphVertex();
+                vertex.term = row.get(ix);
+                vertex.lang_ref = languages.get(ix).getId();
+                vertex.language = languages.get(ix).getLanguage();
+                vertex.user_rank = 0;
+                vertex.vertex_context = "";
+                vertices.add(vertex);
+            }
+            graphUtil.createGraph(domainId, vertices);
+        }
     }
 
     @Override
@@ -234,7 +261,6 @@ public class CsvReaderMediaFragment extends Fragment {
     class ProcessStreamInputAsync extends AsyncTask<Void, Void, String> {
 
         private int maxColumns, lineId;
-        private List<Language> languages;
 
         @Override
         protected void onPostExecute(String html) {

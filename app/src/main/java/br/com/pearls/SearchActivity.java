@@ -31,7 +31,7 @@ import br.com.pearls.ui.main.LanguagesActivity;
 import br.com.pearls.ui.main.AddEditTermActivity;
 import br.com.pearls.ui.main.SearchTabFragment;
 import br.com.pearls.ui.main.SearchPagerAdapter;
-import br.com.pearls.utils.SearchVertex;
+import br.com.pearls.utils.GraphVertex;
 
 public class SearchActivity extends AppCompatActivity
         implements AreasDomainsTabFragment.OnDomainSelectedListener,
@@ -152,8 +152,8 @@ public class SearchActivity extends AppCompatActivity
     public Domain getDomain() { return currentDomain; }
 
     @Override
-    public void onEditTerm(String stringId, List<SearchVertex> vertices) {
-        ArrayList<SearchVertex> arrayList = new ArrayList<>(vertices);
+    public void onEditTerm(String stringId, List<GraphVertex> vertices) {
+        ArrayList<GraphVertex> arrayList = new ArrayList<>(vertices);
         Intent intent = new Intent(SearchActivity.this, AddEditTermActivity.class);
         intent.putExtra(AddEditTermActivity.PEARLS_KEY_AREA, currentArea);
         intent.putExtra(AddEditTermActivity.PEARLS_KEY_DOMAIN, currentDomain);
@@ -167,7 +167,7 @@ public class SearchActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         if((resultCode == RESULT_OK) && (requestCode == PEARLS_KEY_EDIT)) {
-            ArrayList<SearchVertex> vertices =
+            ArrayList<GraphVertex> vertices =
                     data.getParcelableArrayListExtra(AddEditTermActivity.PEARLS_KEY_VERTICES);
             if(vertices == null) {
                 Toast.makeText(getApplicationContext(), "Couldn't update terms", Toast.LENGTH_LONG).show();

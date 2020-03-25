@@ -6,8 +6,8 @@ import android.util.Log;
 
 import androidx.room.Ignore;
 
-public class SearchVertex implements Parcelable {
-    public static final String TAG = SearchVertex.class.getName();
+public class GraphVertex implements Parcelable {
+    public static final String TAG = GraphVertex.class.getName();
 
     public long vertex_id;
     public long graph_ref;
@@ -18,10 +18,22 @@ public class SearchVertex implements Parcelable {
     public long lang_ref;
     public String language;
 
-    public SearchVertex() {}
+    public GraphVertex() {}
 
     @Ignore
-    protected SearchVertex(Parcel in) {
+    public GraphVertex(GraphVertex other) {
+        this.vertex_id = other.vertex_id;
+        this.graph_ref = other.graph_ref;
+        this.term_ref = other.term_ref;
+        this.user_rank = other.user_rank;
+        this.vertex_context = other.vertex_context;
+        this.term = other.term;
+        this.lang_ref = other.lang_ref;
+        this.language = other.language;
+    }
+
+    @Ignore
+    protected GraphVertex(Parcel in) {
         vertex_id = in.readLong();
         graph_ref = in.readLong();
         term_ref = in.readLong();
@@ -32,15 +44,15 @@ public class SearchVertex implements Parcelable {
         language = in.readString();
     }
 
-    public static final Creator<SearchVertex> CREATOR = new Creator<SearchVertex>() {
+    public static final Creator<GraphVertex> CREATOR = new Creator<GraphVertex>() {
         @Override
-        public SearchVertex createFromParcel(Parcel in) {
-            return new SearchVertex(in);
+        public GraphVertex createFromParcel(Parcel in) {
+            return new GraphVertex(in);
         }
 
         @Override
-        public SearchVertex[] newArray(int size) {
-            return new SearchVertex[size];
+        public GraphVertex[] newArray(int size) {
+            return new GraphVertex[size];
         }
     };
 

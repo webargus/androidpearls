@@ -6,7 +6,7 @@ import androidx.room.Query;
 
 import java.util.List;
 
-import br.com.pearls.utils.SearchVertex;
+import br.com.pearls.utils.GraphVertex;
 
 @Dao
 public interface GraphSearchVerticesDao {
@@ -14,7 +14,7 @@ public interface GraphSearchVerticesDao {
            "FROM vertices LEFT JOIN terms ON term_ref = terms.id " +
            "LEFT JOIN languages ON lang_ref = languages.id " +
            "WHERE languages.active = 1 AND graph_ref = :graph_ref")
-    List<SearchVertex> fetchVerticesForGraph(@NonNull long graph_ref);
+    List<GraphVertex> fetchVerticesForGraph(@NonNull long graph_ref);
 
 }
 

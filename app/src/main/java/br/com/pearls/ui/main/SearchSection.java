@@ -9,23 +9,23 @@ import java.util.List;
 
 import br.com.pearls.R;
 import br.com.pearls.utils.GraphSearchRated;
-import br.com.pearls.utils.SearchVertex;
+import br.com.pearls.utils.GraphVertex;
 import io.github.luizgrp.sectionedrecyclerviewadapter.Section;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionParameters;
 
 public class SearchSection extends Section {
 
     private GraphSearchRated header;
-    private List<SearchVertex> items;
+    private List<GraphVertex> items;
     private ClickListener clickListener;
     private String stringId;
 
     public interface ClickListener {
-        void onItemClick(String stringId, List<SearchVertex> vertices);
+        void onItemClick(String stringId, List<GraphVertex> vertices);
     }
 
     public SearchSection(@NonNull final GraphSearchRated header,
-                         List<SearchVertex> items, ClickListener clickListener) {
+                         List<GraphVertex> items, ClickListener clickListener) {
         super(SectionParameters.builder()
                 .itemResourceId(R.layout.rv_term_search_item)
                 .headerResourceId(R.layout.rv_term_search_item_header)
@@ -53,7 +53,7 @@ public class SearchSection extends Section {
     @Override
     public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
         SearchItemViewHolder searchItemViewHolder = (SearchItemViewHolder) holder;
-        SearchVertex vertex = items.get(position);
+        GraphVertex vertex = items.get(position);
         searchItemViewHolder.tvLanguage.setText(vertex.language);
         searchItemViewHolder.userRating.setRating((float)vertex.user_rank);
         searchItemViewHolder.tvTerm.setText(vertex.term);
@@ -81,7 +81,7 @@ public class SearchSection extends Section {
         headerViewHolder.tvPearlsRating.setText(header.getScorePercent());
     }
 
-    public void setItems(List<SearchVertex> items) {
+    public void setItems(List<GraphVertex> items) {
         this.items = items;
     }
 }
