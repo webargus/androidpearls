@@ -1,12 +1,27 @@
 package br.com.pearls.DB;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "languages")
 public class Language {
+
+    private static final String TAG = "Language";
+
+    public Language() {}
+
+    @Ignore
+    public Language(Language other) {
+        id = other.id;
+        language = other.language;
+        active = other.active;
+        status = other.status;
+    }
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -50,6 +65,14 @@ public class Language {
 
     public int getStatus() {
         return this.status;
+    }
+
+    public void debugDump() {
+        Log.d(TAG, "*************debugDump() called");
+        Log.w(TAG, "debugDump: id=" + id);
+        Log.w(TAG, "debugDump: language=" + language);
+        Log.i(TAG, "debugDump: active=" + active);
+        Log.i(TAG, "debugDump: status=" + status);
     }
 }
 

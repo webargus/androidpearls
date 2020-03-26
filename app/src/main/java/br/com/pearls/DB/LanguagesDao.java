@@ -25,6 +25,9 @@ public interface LanguagesDao {
 
     @Update
     void update(List<Language> languages);
+
+    @Update
+    void update(Language language);
 }
 
 

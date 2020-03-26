@@ -34,8 +34,7 @@ public class LanguagesRepository {
 
     public List<Language> getAllLanguages() { return mLanguagesDao.getAllLanguages(); }
 
-    public void update(List<Language> languages) {
-        mLanguagesDao.update(languages);
-    }
+    public void update(List<Language> languages) { mLanguagesDao.update(languages); }
 
+    public void update(Language language) { mLanguagesDao.update(language); }
 }

@@ -252,9 +252,7 @@ public class CsvReaderMediaFragment extends Fragment {
         }
 
         private String processStreamInput() throws FileNotFoundException {
-            if(languages == null) {
-                fetchLanguages();
-            }
+            fetchLanguages();
             InputStream inputStream;
             inputStream = getContext().getContentResolver().openInputStream(streamUri);
 

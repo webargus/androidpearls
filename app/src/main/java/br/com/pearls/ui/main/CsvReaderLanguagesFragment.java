@@ -1,10 +1,12 @@
 package br.com.pearls.ui.main;
 
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,9 +22,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import br.com.pearls.DB.Language;
+import br.com.pearls.DB.LanguagesDao;
 import br.com.pearls.DB.LanguagesRepository;
 import br.com.pearls.DB.LanguagesViewModel;
+import br.com.pearls.DB.PearlsRoomDatabase;
 import br.com.pearls.R;
+import br.com.pearls.utils.LiveDataUtil;
 
 public class CsvReaderLanguagesFragment extends Fragment {
 
@@ -39,6 +44,25 @@ public class CsvReaderLanguagesFragment extends Fragment {
         languagesRecyclerView = view.findViewById(R.id.csv_languages_recycler_view);
         languagesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         languagesAdapter = new CsvLanguagesAdapter();
+        languagesAdapter.setOnLanguageActiveClick(new CsvLanguagesAdapter.OnLanguageActiveClick() {
+            @Override
+            public void onLanguageActiveClicked(Language language) {
+                new Thread(new Runnable() {
+                    LanguagesRepository repository = new LanguagesRepository(getActivity().getApplication());
+
+                    @Override
+                    public void run() {
+                        repository.update(language);
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onLastActiveLanguageClicked() {
+                Toast.makeText(getContext(),
+                        "You must select at least one language", Toast.LENGTH_SHORT).show();
+            }
+        });
         languagesRecyclerView.setAdapter(languagesAdapter);
 
         languageObserver = new Observer<List<Language>>() {
@@ -48,7 +72,7 @@ public class CsvReaderLanguagesFragment extends Fragment {
             }
         };
         languagesViewModel = new ViewModelProvider(this).get(LanguagesViewModel.class);
-        languagesViewModel.getmAllLanguages().observe(getViewLifecycleOwner(), languageObserver);
+        LiveDataUtil.observeOnce(languagesViewModel.getmAllLanguages(), languageObserver);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(languagesRecyclerView);
@@ -66,11 +90,18 @@ public class CsvReaderLanguagesFragment extends Fragment {
             int fromPosition = viewHolder.getAdapterPosition();
             int toPosition = target.getAdapterPosition();
 
+            // swap statuses
             Language lang1 = languagesAdapter.getLanguage(fromPosition);
+            lang1.setStatus(toPosition + 1);
             Language lang2 = languagesAdapter.getLanguage(toPosition);
-            int status1 = lang1.getStatus();
-            lang1.setStatus(lang2.getStatus());
-            lang2.setStatus(status1);
+            lang2.setStatus(fromPosition + 1);
+            // swap corresponding language objects
+            Language lang = lang2;
+            languagesAdapter.setLanguage(toPosition, lang1);
+            languagesAdapter.setLanguage(fromPosition, lang);
+
+            languagesAdapter.notifyItemMoved(fromPosition, toPosition);
+
             new updateLanguageAsync().execute(lang1, lang2);
 
             return false;

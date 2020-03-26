@@ -44,18 +44,6 @@ public class CsvReaderActivity extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        Intent intent = getIntent();
-        if(intent.hasExtra(CSV_READER_ACTIVITY_URI)) {
-            streamUri = Uri.parse(intent.getStringExtra(CSV_READER_ACTIVITY_URI));
-            streamType = intent.getStringExtra(CSV_READER_ACTIVITY_TYPE);
-        } else {
-            try {
-                getStreamUriAndType();
-            } catch (ClassCastException e) {
-                alertDialog.show();
-                return;
-            }
-        }
 
         alertDialog = new AlertDialog.Builder(this).create();
         alertDialog.setCancelable(false);       // make it modal!
@@ -68,6 +56,18 @@ public class CsvReaderActivity extends AppCompatActivity
                         CsvReaderActivity.this.finish();
                     }
                 });
+        Intent intent = getIntent();
+        if(intent.hasExtra(CSV_READER_ACTIVITY_URI)) {
+            streamUri = Uri.parse(intent.getStringExtra(CSV_READER_ACTIVITY_URI));
+            streamType = intent.getStringExtra(CSV_READER_ACTIVITY_TYPE);
+        } else {
+            try {
+                getStreamUriAndType();
+            } catch (RuntimeException e) {
+                alertDialog.show();
+                return;
+            }
+        }
 
         textViewCaption = findViewById(R.id.csv_reader_caption);
 
@@ -79,11 +79,10 @@ public class CsvReaderActivity extends AppCompatActivity
     }
 
     // get stream type and stream Uri if we're apt to process this stream
-    private void getStreamUriAndType() throws ClassCastException {
+    private void getStreamUriAndType() throws RuntimeException {
         // get intent from parent activity through i-face
         Intent intent = getIntent();
         String action = intent.getAction();
-        Log.v(TAG, "################################ intent action: '" + action + "'");
 
         if (action.equals(Intent.ACTION_SEND)) {
             // save stream type to local member

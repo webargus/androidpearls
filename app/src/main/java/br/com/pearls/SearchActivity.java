@@ -112,7 +112,7 @@ public class SearchActivity extends AppCompatActivity
     private void browseForFile() {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         String [] mimeTypes = {"text/csv", "application/octet-stream"};
-        intent.setType("*/*");
+        intent.setType("text/*");
         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(intent, CSV_FILE_CHOOSER_REQUEST);
