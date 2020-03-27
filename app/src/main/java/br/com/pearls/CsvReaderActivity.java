@@ -143,6 +143,11 @@ public class CsvReaderActivity extends AppCompatActivity
         return selectedDomain;
     }
 
+    @Override
+    public void onCsvMediaFragmentFinished() {
+        finish();
+    }
+
     // preventing 'has leaked window com.android.internal.policy.impl...' exceptions:
     @Override
     protected void onPause() {

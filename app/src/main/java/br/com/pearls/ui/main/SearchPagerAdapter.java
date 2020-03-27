@@ -16,16 +16,17 @@ import br.com.pearls.R;
  */
 public class SearchPagerAdapter extends FragmentPagerAdapter {
 
-    private static final String TAG = SearchPagerAdapter.class.getName();
-
     public static final int PEARLS_SEARCH_TAB_FRAGMENT_POSITION = 0;
     public static final int PEARLS_AREAS_TAB_FRAGMENT_POSITION = PEARLS_SEARCH_TAB_FRAGMENT_POSITION + 1;
+    public static final int PEARLS_LANGUAGES_TAB_FRAGMENT_POSITION = PEARLS_AREAS_TAB_FRAGMENT_POSITION + 1;
     @StringRes
-    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_search,
-                                                      R.string.tab_text_areas};
+    private static final int[] TAB_TITLES = new int[]{R.string.search_tab_caption,
+                                                      R.string.search_tab_caption_areas,
+                                                      R.string.search_tab_caption_languages};
 
     private SearchTabFragment searchTabFragment;
     private AreasDomainsTabFragment areasTabFragment;
+    private CsvReaderLanguagesFragment languagesFragment;
     private final Context mContext;
 
     public SearchPagerAdapter(Context context, FragmentManager fm) {
@@ -33,6 +34,7 @@ public class SearchPagerAdapter extends FragmentPagerAdapter {
         mContext = context;
         searchTabFragment = new SearchTabFragment();
         areasTabFragment = new AreasDomainsTabFragment();
+        languagesFragment = new CsvReaderLanguagesFragment();
     }
 
     @Override
@@ -43,6 +45,8 @@ public class SearchPagerAdapter extends FragmentPagerAdapter {
                 return searchTabFragment;
             case PEARLS_AREAS_TAB_FRAGMENT_POSITION:
                 return areasTabFragment;
+            case PEARLS_LANGUAGES_TAB_FRAGMENT_POSITION:
+                return languagesFragment;
         }
         return null;
     }
@@ -55,7 +59,7 @@ public class SearchPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        // Show 2 total pages.
+        // Show 3 total pages.
         return TAB_TITLES.length;
     }
 

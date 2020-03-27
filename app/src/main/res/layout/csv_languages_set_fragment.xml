@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
-        android:text="Long press on a language, drag and drop it up and down on stack to match them up with listed term columns"
+        android:text="@string/Languages_preferred_order"
         android:layout_gravity="center_vertical"
         android:gravity="center_vertical"
      />

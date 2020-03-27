@@ -59,6 +59,7 @@ public class CsvReaderMediaFragment extends Fragment {
         Uri getStreamUri();
         String getStreamType();
         Domain csvMediaFragmentGetDomain();
+        void onCsvMediaFragmentFinished();
     }
 
     public CsvReaderMediaFragment() {}
@@ -86,7 +87,9 @@ public class CsvReaderMediaFragment extends Fragment {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                CsvReaderMediaFragment.this.getView().setEnabled(false);
                 saveTerms();
+                parentIFace.onCsvMediaFragmentFinished();
             }
         });
 

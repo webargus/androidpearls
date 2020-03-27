@@ -2,19 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_languages"
-        android:icon="@drawable/ic_languages"
-        android:title="Languages"
-        app:showAsAction="ifRoom" />
-    <item
         android:id="@+id/action_csv_files"
         android:icon="@drawable/ic_file"
-        android:title="Open CSV file"
+        android:title="@string/import_csv_file"
         app:showAsAction="ifRoom" />
 
-    <item
-        android:id="@+id/action_settings"
-        android:icon="@drawable/ic_settings"
-        android:title="Settings"
-        app:showAsAction="ifRoom" />
 </menu>

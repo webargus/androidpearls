@@ -3,10 +3,11 @@
     <string name="net_connect_msg">No internet connection</string>
     <string name="menu_refresh_label">Refresh</string>
     <string name="menu_close_label">Close</string>
-    <string name="title_activity_search">.:: Pearls :: Search ::.</string>
-    <string name="title_activity_languages">.:: Pearls :: Set Languages ::.</string>
-    <string name="tab_text_search">Search</string>
-    <string name="tab_text_areas">Knowledge Areas</string>
+    <string name="title_activity_search">Pearls - Search</string>
+    <string name="title_activity_languages">Pearls - Set Languages </string>
+    <string name="search_tab_caption">Search</string>
+    <string name="search_tab_caption_areas">Knowledge Areas</string>
+    <string name="search_tab_caption_languages">Languages</string>
 
     <!-- Term Create/Edit Activity -->
     <string name="tv_term_form_caption">Area > Domain</string>
@@ -77,4 +78,6 @@
     <string name="csv_reader_alert_msg">Perls couldn\'t handle the medium you sent and will abort after you dismiss this dialog</string>
     <string name="oops">Oops!</string>
     <string name="csv_reader_alert_btn">Abort</string>
+    <string name="Languages_preferred_order">Long press on a language, drag and drop it up and down on stack to set your preferred order</string>
+    <string name="import_csv_file">Import CSV file</string>
 </resources>

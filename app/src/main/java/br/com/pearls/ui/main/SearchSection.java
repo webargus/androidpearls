@@ -21,7 +21,7 @@ public class SearchSection extends Section {
     private String stringId;
 
     public interface ClickListener {
-        void onItemClick(String stringId, List<GraphVertex> vertices);
+        void onItemClick(String stringId, GraphSearchRated header, List<GraphVertex> vertices);
     }
 
     public SearchSection(@NonNull final GraphSearchRated header,
@@ -63,7 +63,7 @@ public class SearchSection extends Section {
             @Override
             public void onClick(View v) {
                 if(clickListener != null) {
-                    clickListener.onItemClick(stringId, items);
+                    clickListener.onItemClick(stringId, header, items);
                 }
             }
         });
