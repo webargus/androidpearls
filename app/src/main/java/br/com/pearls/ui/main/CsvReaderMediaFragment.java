@@ -179,8 +179,17 @@ public class CsvReaderMediaFragment extends Fragment {
             return;
         }
 
-        int line1 = Integer.parseInt(initLine.getText().toString());
-        int line2 = Integer.parseInt(endLine.getText().toString());
+        int line1 = 1, line2 = 1;
+        try {
+            line1 = Integer.parseInt(initLine.getText().toString());
+            line2 = Integer.parseInt(endLine.getText().toString());
+        } catch (NumberFormatException e) {
+            Log.d(TAG, "saveTerms: *************************************");
+            Log.d(TAG, "saveTerms: " + e.getMessage());
+            Toast.makeText(getContext(),
+                    "Please, review your initial and end line entries", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if(line1 > line2) {
             int swap = line1;
             line1 = line2;
