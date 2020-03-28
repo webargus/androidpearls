@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,15 +69,20 @@ public class GraphUtil {
             // v.debugDump();                               // debug
             vv.add(new GraphVertex(v));
         }
-        new GraphAsyncTask().execute(vv);
+        new GraphAsyncTask(this).execute(vv);
     }
 
-    private class GraphAsyncTask extends AsyncTask<List<GraphVertex>, Void, Boolean> {
+    private static class GraphAsyncTask extends AsyncTask<List<GraphVertex>, Void, Boolean> {
+
+        WeakReference<GraphUtil> weakReference;
+        GraphAsyncTask(GraphUtil util) {
+            weakReference = new WeakReference<>(util);
+        }
 
         @Override
         protected Boolean doInBackground(List<GraphVertex>... vertices) {
             // Check if domain_ref exists, return false if not
-            if (domainRepository.getDomain(graph.getDomain_ref()).length == 0) {
+            if (weakReference.get().domainRepository.getDomain(weakReference.get().graph.getDomain_ref()).length == 0) {
                 return false;
             }
             Vertex vertex;
@@ -93,12 +99,12 @@ public class GraphUtil {
                 // lang_ref != 0 always, either in insert or edit mode
                 term.setLang_ref(graphVertex.lang_ref);
                 if(graphVertex.term_ref == 0) {    // insert term
-                    term.setId(termRepository.insert(term));
+                    term.setId(weakReference.get().termRepository.insert(term));
                     vertex.setTerm_ref(term.getId());
                 } else {        // update term
                     term.setId(graphVertex.term_ref);
                     vertex.setTerm_ref(graphVertex.term_ref);
-                    termRepository.update(term);
+                    weakReference.get().termRepository.update(term);
                 }
                 // set vertex fields with user inputs
                 vertex.setUser_rank(graphVertex.user_rank);
@@ -106,17 +112,17 @@ public class GraphUtil {
                 if(graphVertex.graph_ref == 0) {       // => we're inserting
                     if(graph_id == 0) {
                         // create graph once and reuse same graph_id for all new vertices
-                        graph_id = graphRepository.insert(graph);
+                        graph_id = weakReference.get().graphRepository.insert(weakReference.get().graph);
                     }
                     vertex.setGraph_ref(graph_id);
                     // Log.v(TAG, "inserting vertex");       // debug
-                    vertex.setId(vertexRepository.insert(vertex));
+                    vertex.setId(weakReference.get().vertexRepository.insert(vertex));
                 } else {                                // => we're updating
                     vertex.setId(graphVertex.vertex_id);
                     vertex.setGraph_ref(graphVertex.graph_ref);
                     vertex.setTerm_ref(graphVertex.term_ref);
                     // Log.v(TAG, "updating vertex id " + vertex.getId());  // debug
-                    vertexRepository.update(vertex);
+                    weakReference.get().vertexRepository.update(vertex);
                 }
 //                vertex.debugDump();                       // debug
 //                term.debugDump();                         // debug
@@ -126,8 +132,8 @@ public class GraphUtil {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            if (graphCreated != null) {
-                graphCreated.onGraphCreated(result);
+            if (weakReference.get().graphCreated != null) {
+                weakReference.get().graphCreated.onGraphCreated(result);
             }
         }
     }
