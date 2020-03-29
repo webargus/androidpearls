@@ -1,5 +1,6 @@
 package br.com.pearls.ui.main;
 
+import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -31,12 +32,17 @@ import java.util.List;
 import java.util.Objects;
 
 import br.com.pearls.DB.Domain;
+import br.com.pearls.DB.Graph;
+import br.com.pearls.DB.GraphRepository;
 import br.com.pearls.DB.Language;
 import br.com.pearls.DB.LanguagesRepository;
+import br.com.pearls.DB.Term;
+import br.com.pearls.DB.TermRepository;
+import br.com.pearls.DB.Vertex;
+import br.com.pearls.DB.VertexRepository;
 import br.com.pearls.R;
-import br.com.pearls.utils.GraphUtil;
-import br.com.pearls.utils.GraphVertex;
 import br.com.pearls.utils.InputFilterIntRange;
+import br.com.pearls.utils.RemoveDiacritics;
 
 public class CsvReaderMediaFragment extends Fragment {
 
@@ -63,6 +69,7 @@ public class CsvReaderMediaFragment extends Fragment {
 
     interface PostProcessAsyncIFace {
         void displayResults(@Nullable AsyncParams asyncParams);
+        void notifySaved(Boolean aBoolean);
     }
 
     public CsvReaderMediaFragment() {}
@@ -98,16 +105,31 @@ public class CsvReaderMediaFragment extends Fragment {
         postProcessIFace = new PostProcessAsyncIFace() {
             @Override
             public void displayResults(@Nullable AsyncParams asyncParams) {
+                if(asyncParams == null) {
+                    parentIFace.onCsvMediaFragmentException();
+                    return;
+                }
                 postProcessParams = asyncParams;
                 displayResultsInUI();
+                saveButton.setEnabled(true);
+            }
+
+            @Override
+            public void notifySaved(Boolean saved) {
+                if(!saved) {
+                    parentIFace.onCsvMediaFragmentException();
+                }
+                Toast.makeText(getContext(), "Terms saved successfully", Toast.LENGTH_SHORT).show();
+                parentIFace.onCsvMediaFragmentFinished();
             }
         };
 
+        saveButton.setEnabled(false);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveTerms();
-                parentIFace.onCsvMediaFragmentFinished();
+                boolean notSaving = saveTerms();
+                saveButton.setEnabled(notSaving);
             }
         });
 
@@ -202,10 +224,6 @@ public class CsvReaderMediaFragment extends Fragment {
     private void displayResultsInUI() {
 
         webView.loadUrl("about:blank");     // clear web view
-        if(postProcessParams == null) {
-            parentIFace.onCsvMediaFragmentException();
-            return;
-        }
         webView.loadData(postProcessParams.html, "text/html;charset=utf-8", "utf-8");
         if(radioOther.isChecked()) {
             sepOtherEdit.setEnabled(true);
@@ -247,23 +265,12 @@ public class CsvReaderMediaFragment extends Fragment {
         }
 
         @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            asyncParams = null;
-            CsvReaderMediaFragment fragment = weakReference.get();
-            if(fragment == null || fragment.isRemoving() || fragment.isDetached()) {
-                return;
-            }
-            fragment.parentIFace.onCsvMediaFragmentException();
-        }
-
-        @Override
         protected Void doInBackground(Void... voids) {
             try {
                 processStreamInput();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
-                cancel(true);
+                asyncParams = null;
             }
             return null;
         }
@@ -271,7 +278,7 @@ public class CsvReaderMediaFragment extends Fragment {
         private void processStreamInput() throws FileNotFoundException {
             CsvReaderMediaFragment fragment = weakReference.get();
             if(fragment == null || fragment.isRemoving() || fragment.isDetached()) {
-                cancel(true);
+                asyncParams = null;
                 return;
             }
             // we must initialize the languages param of the asyncParam member in this thread
@@ -279,7 +286,13 @@ public class CsvReaderMediaFragment extends Fragment {
             LanguagesRepository repository =
                     new LanguagesRepository(Objects.requireNonNull(fragment.getActivity()).getApplication());
             // Set AsyncParams member languages with db languages, which we'll need when saving terms
-            asyncParams.languages = repository.getAllLanguages();
+            try {
+                asyncParams.languages = repository.getAllLanguages();
+            } catch (ClassCastException e) {
+                Log.d(TAG, "processStreamInput: failed fetching languages from DB");
+                asyncParams = null;
+                return;
+            }
 
             // let's try to read from file
             InputStream inputStream;
@@ -302,7 +315,8 @@ public class CsvReaderMediaFragment extends Fragment {
                     asyncParams.html += processLineHTML(lineId, line);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    cancel(true);
+                    asyncParams = null;
+                    return;
                 }
             }
             try {
@@ -375,12 +389,16 @@ public class CsvReaderMediaFragment extends Fragment {
         }
     }
 
-    private void saveTerms() {
+    /*
+        @return true => didn't start thread, abort, but keep save button enabled
+        @return false => enter term save thread, so disable save button
+     */
+    private boolean saveTerms() {
         Domain domain = parentIFace.csvMediaFragmentGetDomain();
         if(domain == null) {
             Toast.makeText(getContext(),
                     "You must select a knowledge area/domain...", Toast.LENGTH_SHORT).show();
-            return;
+            return true;
         }
 
         int line1 = 1, line2 = 1;
@@ -392,7 +410,7 @@ public class CsvReaderMediaFragment extends Fragment {
             Log.d(TAG, "saveTerms: " + e.getMessage());
             Toast.makeText(getContext(),
                     "Please, review your initial and end line entries", Toast.LENGTH_SHORT).show();
-            return;
+            return true;
         }
         if(line1 > line2) {
             int swap = line1;
@@ -401,7 +419,20 @@ public class CsvReaderMediaFragment extends Fragment {
         }
         line1--;
         postProcessParams.rows = postProcessParams.rows.subList(line1, line2);
+        // debug
+        System.out.println("Line1=" + line1 + "; Line2=" + line2);
+        int cnt = 1;
+        for(List<String> row: postProcessParams.rows) {
+            System.out.print("row #" + cnt + ": ");
+            cnt++;
+            for(String cell: row) {
+                System.out.print(cell + "; ");
+            }
+            System.out.println("----------------------------");
+        }
+        //^^^^^^^debug
         new saveAsyncTask(domain.getId(), postProcessParams, this).execute();
+        return false;
     }
 
     private static class saveAsyncTask extends AsyncTask<Void, Void, Boolean> {
@@ -423,24 +454,71 @@ public class CsvReaderMediaFragment extends Fragment {
                 return false;
             }
 
-            GraphUtil graphUtil = new GraphUtil(Objects.requireNonNull(fragment.getActivity()).getApplication());
+            TermRepository termRepository;
+            VertexRepository vertexRepository;
+            GraphRepository graphRepository;
+            try {
+                Application app = Objects.requireNonNull(fragment.getActivity()).getApplication();
+                termRepository = new TermRepository(app);
+                vertexRepository = new VertexRepository(app);
+                graphRepository = new GraphRepository(app);
+            }catch (ClassCastException e) {
+                Log.d(TAG, "doInBackground: failed creating repository objects");
+                return false;
+            }
 
-            List<GraphVertex> vertices = new ArrayList<>();
             for(int iy = 0; iy < saveParams.rows.size(); iy++) {
                 List<String> row = saveParams.rows.get(iy);
-                vertices.clear();
+                Graph graph = new Graph();
+                graph.setDomain_ref(domainId);
+                long graph_id = 0;
                 for(int ix = 0; ix < row.size(); ix++) {
-                    GraphVertex vertex = new GraphVertex();
-                    vertex.term = row.get(ix);
-                    vertex.lang_ref = saveParams.languages.get(ix).getId();
-                    vertex.language = saveParams.languages.get(ix).getLanguage();
-                    vertex.user_rank = 0;
-                    vertex.vertex_context = "";
-                    vertices.add(vertex);
+
+                    // insert term
+                    Term term = new Term();                      // term to insert
+                    term.setTerm(row.get(ix));
+                    term.setTerm_ascii(RemoveDiacritics.removeDiacritics(row.get(ix)).toLowerCase());
+                    term.setLang_ref(saveParams.languages.get(ix).getId());
+                    try {
+                        term.setId(termRepository.insert(term));
+                    } catch (ClassCastException e) {
+                        Log.d(TAG, "***************doInBackground: failed inserting term");
+                        return false;
+                    }
+
+                    // insert vertex
+                    Vertex vertex = new Vertex();                  // vertex to insert
+                    vertex.setTerm_ref(term.getId());
+                    vertex.setUser_rank(0);
+                    vertex.setVertex_context("");
+                    if(graph_id == 0) {
+                        // create graph once and reuse same graph_id for all next vertices of this graph
+                        try {
+                            graph_id = graphRepository.insert(graph);
+                        } catch (ClassCastException e) {
+                            Log.d(TAG, "**************doInBackground: failed inserting graph");
+                            return false;
+                        }
+                    }
+                    vertex.setGraph_ref(graph_id);
+                    try {
+                        vertex.setId(vertexRepository.insert(vertex));
+                    } catch(ClassCastException e) {
+                        Log.d(TAG, "****************doInBackground: failed inserting vertex");
+                        return false;
+                    }
                 }
-                graphUtil.createGraph(domainId, vertices);
             }
             return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean saved) {
+            CsvReaderMediaFragment fragment = weakReference.get();
+            if(fragment == null || fragment.isRemoving() || fragment.isDetached()) {
+                return;
+            }
+            fragment.postProcessIFace.notifySaved(saved);
         }
     }
 

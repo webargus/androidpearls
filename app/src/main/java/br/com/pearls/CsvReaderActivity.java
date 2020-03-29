@@ -145,6 +145,7 @@ public class CsvReaderActivity extends AppCompatActivity
 
     @Override
     public void onCsvMediaFragmentFinished() {
+        System.out.println("*************** finishing CsvReaderActivity***********");
         finish();
     }
 
