@@ -4,8 +4,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import br.com.pearls.DB.LanguagesRepository;
-
 public class CsvWorkHandler extends Handler {
 
     private static final String TAG = "CsvWorkHandler";
