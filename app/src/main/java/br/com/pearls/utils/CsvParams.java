@@ -13,4 +13,5 @@ public class CsvParams {
     public Activity activity;
     public Uri streamUri;
     public List<List<String >> rows;
+    public long domainId;
 }

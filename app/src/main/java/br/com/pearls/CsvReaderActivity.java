@@ -11,18 +11,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
 import br.com.pearls.DB.Domain;
 import br.com.pearls.DB.KnowledgeArea;
 import br.com.pearls.ui.main.AreasDomainsTabFragment;
-import br.com.pearls.ui.main.CsvReaderMediaFragment;
+import br.com.pearls.ui.main.CsvThreadReaderMediaFragment;
 import br.com.pearls.ui.main.CsvReaderViewPagerAdapter;
 
 public class CsvReaderActivity extends AppCompatActivity
         implements AreasDomainsTabFragment.OnDomainSelectedListener,
-                   CsvReaderMediaFragment.CsvMediaParentDataIFace {
+                   CsvThreadReaderMediaFragment.CsvMediaParentDataIFace {
 
     public static final String TAG = CsvReaderActivity.class.getName();
     public static final String CSV_READER_ACTIVITY_URI = "pearls csv reader uri";

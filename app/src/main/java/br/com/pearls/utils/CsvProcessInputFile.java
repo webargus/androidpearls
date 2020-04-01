@@ -57,6 +57,11 @@ public class CsvProcessInputFile {
         params.html = "";
         params.rows = new ArrayList<>();
         while (true) {
+            if(CsvWorkHandler.isStopWork()) {
+                closeReader(reader);
+                params.html = null;
+                return params;
+            }
             try {
                 if ((line=reader.readLine()) == null) {
                     break;
@@ -68,14 +73,18 @@ public class CsvProcessInputFile {
                 return null;
             }
         }
+        closeReader(reader);
+        params.html += "</div>\n";
+        params.html = params.initTable + languagesRow() + params.html;
+        return params;
+    }
+
+    private void closeReader(BufferedReader reader) {
         try {
             reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        params.html += "</div>\n";
-        params.html = params.initTable + languagesRow() + params.html;
-        return params;
     }
 
     private String processLineHTML(int lineId, String line) {

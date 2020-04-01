@@ -2,7 +2,6 @@ package br.com.pearls.utils;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 public class CsvWorkHandler extends Handler {
 
@@ -11,34 +10,46 @@ public class CsvWorkHandler extends Handler {
     public static final int PEARLS_CSV_READ_FILE = 100;
     public static final int PEARLS_CSV_SAVE_TERMS = 101;
 
-    private OnCsvWorkFinished workFinished;
+    private static volatile boolean stopWork;
+
+    private CsvThreadWorkIFace workIFace;
 
     // interface to return thread results
-    public interface OnCsvWorkFinished {
-        void onCsvWorkFinished(int workId, CsvParams result);
+    public interface CsvThreadWorkIFace {
+        void onCsvFileInputWorkFinished(CsvParams result);
+        void onCsvTermSaveWorkFinished(boolean saved);
     }
 
-    public CsvWorkHandler(OnCsvWorkFinished workFinished) {
-        this.workFinished = workFinished;
+    public CsvWorkHandler(CsvThreadWorkIFace workIFace) {
+        this.workIFace = workIFace;
     }
 
     @Override
     public void handleMessage(Message msg) {
+        stopWork = false;
         switch (msg.what) {
             case PEARLS_CSV_READ_FILE:
-                workFinished.onCsvWorkFinished(PEARLS_CSV_READ_FILE, processFile(msg.obj));
+                workIFace.onCsvFileInputWorkFinished(processFile(msg.obj));
                 break;
             case PEARLS_CSV_SAVE_TERMS:
-                workFinished.onCsvWorkFinished(PEARLS_CSV_SAVE_TERMS, saveTerms(msg.obj));
+                workIFace.onCsvTermSaveWorkFinished(saveTerms(msg.obj));
                 break;
         }
+    }
+
+    public void stopProcesses() {
+        stopWork = true;
+    }
+
+    public static boolean isStopWork() {
+        return stopWork;
     }
 
     private CsvParams processFile(Object params) {
         return new CsvProcessInputFile((CsvParams) params).processInputStream();
     }
 
-    private CsvParams saveTerms(Object params) {
-        return null;
+    private boolean saveTerms(Object params) {
+        return new CsvSaveInputTerms((CsvParams) params).saveTerms();
     }
 }

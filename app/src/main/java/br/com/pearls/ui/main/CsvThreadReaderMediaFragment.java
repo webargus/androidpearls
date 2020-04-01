@@ -1,10 +1,8 @@
 package br.com.pearls.ui.main;
 
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +15,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -25,48 +24,34 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
 import java.util.List;
-import java.util.Objects;
 
 import br.com.pearls.DB.Domain;
-import br.com.pearls.DB.Graph;
-import br.com.pearls.DB.GraphRepository;
 import br.com.pearls.DB.Language;
-import br.com.pearls.DB.Term;
-import br.com.pearls.DB.TermRepository;
-import br.com.pearls.DB.Vertex;
-import br.com.pearls.DB.VertexRepository;
 import br.com.pearls.R;
 import br.com.pearls.utils.CsvParams;
 import br.com.pearls.utils.CsvWorkHandler;
 import br.com.pearls.utils.CsvWorkHeaderThread;
 import br.com.pearls.utils.InputFilterIntRange;
-import br.com.pearls.utils.RemoveDiacritics;
 
 import static br.com.pearls.utils.CsvWorkHandler.PEARLS_CSV_READ_FILE;
 import static br.com.pearls.utils.CsvWorkHandler.PEARLS_CSV_SAVE_TERMS;
 
-public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.OnCsvWorkFinished {
+public class CsvThreadReaderMediaFragment extends Fragment implements CsvWorkHandler.CsvThreadWorkIFace {
 
-    public static final String TAG = CsvReaderMediaFragment.class.getName();
+    public static final String TAG = CsvThreadReaderMediaFragment.class.getName();
 
     private RadioButton radioComma, radioTab, radioDoubleQuotes, radioNoQuotes, radioOther;
     private RadioGroup separatorGroup, quotesGroup;
     private EditText sepOtherEdit, initLineEdit, endLineEdit;
     private Button sepOtherBtn, saveButton;
     private WebView webView;
+    private ProgressBar progressBar;
     private Uri streamUri;
     private CsvWorkHeaderThread csvWorkerThread;
 
     private CsvMediaParentDataIFace parentIFace;
-    private PostProcessAsyncIFace postProcessIFace;
-    private AsyncParams postProcessParams;
+    private CsvParams postProcessParams;
 
     public interface CsvMediaParentDataIFace {
         void onCsvMediaFragmentException();
@@ -76,11 +61,7 @@ public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.O
         void onCsvMediaFragmentFinished();
     }
 
-    interface PostProcessAsyncIFace {
-        void notifySaved(Boolean aBoolean);
-    }
-
-    public CsvReaderMediaFragment() {}
+    public CsvThreadReaderMediaFragment() {}
 
     @Nullable
     @Override
@@ -88,8 +69,8 @@ public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.O
                              @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.csv_reader_media_fragment, container, false);
-        webView = view.findViewById(R.id.csv_web_view);
 
+        webView = view.findViewById(R.id.csv_web_view);
         separatorGroup = view.findViewById(R.id.separator_radio_group);
         radioComma = view.findViewById(R.id.radio_button_comma);
         radioTab = view.findViewById(R.id.radio_button_tab);
@@ -102,6 +83,7 @@ public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.O
         initLineEdit = view.findViewById(R.id.csv_init_line);
         endLineEdit = view.findViewById(R.id.csv_end_line);
         saveButton = view.findViewById(R.id.csv_btn_save);
+        progressBar = view.findViewById(R.id.csv_progress_bar);
 
         if((csvWorkerThread == null) || !csvWorkerThread.isAlive()) {
             csvWorkerThread = new CsvWorkHeaderThread(this);
@@ -114,17 +96,6 @@ public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.O
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        postProcessIFace = new PostProcessAsyncIFace() {
-            @Override
-            public void notifySaved(Boolean saved) {
-                if(!saved) {
-                    parentIFace.onCsvMediaFragmentException();
-                }
-                Toast.makeText(getContext(), "Terms saved successfully", Toast.LENGTH_SHORT).show();
-                parentIFace.onCsvMediaFragmentFinished();
-            }
-        };
 
         saveButton.setEnabled(false);
         saveButton.setOnClickListener(new View.OnClickListener() {
@@ -187,17 +158,23 @@ public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.O
     }
 
     private void sendHandlerThreadMessage() {
+        progressBar.setVisibility(View.VISIBLE);
         CsvParams asyncParams = new CsvParams();
         asyncParams.activity = getActivity();
         asyncParams.initTable = getResources().getString(R.string.csv_table_init);
         asyncParams.streamUri = streamUri;
         asyncParams.separator = getSeparatorString(separatorGroup.getCheckedRadioButtonId());
         asyncParams.quotes = getQuoteString(quotesGroup.getCheckedRadioButtonId());
-        Handler handler = csvWorkerThread.getHandler();
+        CsvWorkHandler handler = csvWorkerThread.getHandler();
+        // raise stop flag should cause any running process to stop
+        handler.stopProcesses();
+        // remove all enqueued processes
+        handler.removeCallbacksAndMessages(null);
         Message message = Message.obtain();
         message.what = PEARLS_CSV_READ_FILE;
         message.obj = asyncParams;
-        handler.sendMessage(message);
+        // postpone processing half a sec to allow for running processes to quit
+        handler.sendMessageDelayed(message, 500);
     }
 
     private String getSeparatorString(int checkedId) {
@@ -231,16 +208,16 @@ public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.O
     }
 
     private void updateWebView(CsvParams params) {
+        progressBar.setVisibility(View.INVISIBLE);
         webView.loadUrl("about:blank");     // clear web view
         if(params == null) {        // some exception occurred while processing input stream
             parentIFace.onCsvMediaFragmentException();
             return;
+        } else if(params.html == null) { // work interrupted via CsvWorkHandler.stopProcesses()
+            return;
         }
         webView.loadData(params.html, "text/html;charset=utf-8", "utf-8");
-        if(radioOther.isChecked()) {
-            sepOtherEdit.setEnabled(true);
-            sepOtherBtn.setEnabled(true);
-        }
+
         initLineEdit.setText(1 + "");
         int maxLine = params.rows.size();
         endLineEdit.setText(maxLine + "");
@@ -249,6 +226,9 @@ public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.O
         initLineEdit.setOnFocusChangeListener(filter);
         endLineEdit.setFilters(new InputFilter[]{filter});
         endLineEdit.setOnFocusChangeListener(filter);
+
+        postProcessParams = params;
+        saveButton.setEnabled(true);
     }
 
         /*
@@ -262,6 +242,7 @@ public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.O
                     "You must select a knowledge area/domain...", Toast.LENGTH_SHORT).show();
             return true;
         }
+        postProcessParams.domainId = domain.getId();
 
         int line1 = 1, line2 = 1;
         try {
@@ -281,107 +262,12 @@ public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.O
         }
         line1--;
         postProcessParams.rows = postProcessParams.rows.subList(line1, line2);
-        // debug
-        System.out.println("Line1=" + line1 + "; Line2=" + line2);
-        int cnt = 1;
-        for(List<String> row: postProcessParams.rows) {
-            System.out.print("row #" + cnt + ": ");
-            cnt++;
-            for(String cell: row) {
-                System.out.print(cell + "; ");
-            }
-            System.out.println("----------------------------");
-        }
-        //^^^^^^^debug
-        new saveAsyncTask(domain.getId(), postProcessParams, this).execute();
-        return false;
-    }
-
-    private static class saveAsyncTask extends AsyncTask<Void, Void, Boolean> {
-
-        private WeakReference<CsvReaderMediaFragment> weakReference;
-        private long domainId;
-        private AsyncParams saveParams;
-
-        saveAsyncTask(long domainId, AsyncParams saveParams, CsvReaderMediaFragment fragment) {
-            weakReference = new WeakReference<>(fragment);
-            this.domainId = domainId;
-            this.saveParams = saveParams;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            CsvReaderMediaFragment fragment = weakReference.get();
-            if(fragment == null || fragment.isRemoving() || fragment.isDetached()) {
-                return false;
-            }
-
-            TermRepository termRepository;
-            VertexRepository vertexRepository;
-            GraphRepository graphRepository;
-            try {
-                Application app = Objects.requireNonNull(fragment.getActivity()).getApplication();
-                termRepository = new TermRepository(app);
-                vertexRepository = new VertexRepository(app);
-                graphRepository = new GraphRepository(app);
-            }catch (ClassCastException e) {
-                Log.d(TAG, "doInBackground: failed creating repository objects");
-                return false;
-            }
-
-            for(int iy = 0; iy < saveParams.rows.size(); iy++) {
-                List<String> row = saveParams.rows.get(iy);
-                Graph graph = new Graph();
-                graph.setDomain_ref(domainId);
-                long graph_id = 0;
-                for(int ix = 0; ix < row.size(); ix++) {
-
-                    // insert term
-                    Term term = new Term();                      // term to insert
-                    term.setTerm(row.get(ix));
-                    term.setTerm_ascii(RemoveDiacritics.removeDiacritics(row.get(ix)).toLowerCase());
-                    term.setLang_ref(saveParams.languages.get(ix).getId());
-                    try {
-                        term.setId(termRepository.insert(term));
-                    } catch (ClassCastException e) {
-                        Log.d(TAG, "***************doInBackground: failed inserting term");
-                        return false;
-                    }
-
-                    // insert vertex
-                    Vertex vertex = new Vertex();                  // vertex to insert
-                    vertex.setTerm_ref(term.getId());
-                    vertex.setUser_rank(0);
-                    vertex.setVertex_context("");
-                    if(graph_id == 0) {
-                        // create graph once and reuse same graph_id for all next vertices of this graph
-                        try {
-                            graph_id = graphRepository.insert(graph);
-                        } catch (ClassCastException e) {
-                            Log.d(TAG, "**************doInBackground: failed inserting graph");
-                            return false;
-                        }
-                    }
-                    vertex.setGraph_ref(graph_id);
-                    try {
-                        vertex.setId(vertexRepository.insert(vertex));
-                    } catch(ClassCastException e) {
-                        Log.d(TAG, "****************doInBackground: failed inserting vertex");
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean saved) {
-            CsvReaderMediaFragment fragment = weakReference.get();
-            if(fragment == null || fragment.isRemoving() || fragment.isDetached()) {
-                return;
-            }
-            fragment.postProcessIFace.notifySaved(saved);
-        }
+        Message message = Message.obtain();
+        message.what = PEARLS_CSV_SAVE_TERMS;
+        message.obj = postProcessParams;
+        csvWorkerThread.getHandler().sendMessage(message);
+        progressBar.setVisibility(View.VISIBLE);
+        return false;       // -> thread called
     }
 
     @Override
@@ -395,23 +281,54 @@ public class CsvReaderMediaFragment extends Fragment implements CsvWorkHandler.O
     }
 
     @Override
-    public void onCsvWorkFinished(int workId, CsvParams result) {
+    public void onCsvFileInputWorkFinished(CsvParams result) {
 
-        switch (workId) {
-            case PEARLS_CSV_READ_FILE:
-                try {
-                    getActivity().runOnUiThread(() -> {
-                        updateWebView(result);
-                    });
-                } catch (Exception e) {
-                    Log.v(TAG, "******************* onCsvWorkFinished: " + e.getMessage());
+        try {
+            Handler threadHandler = new Handler(Looper.getMainLooper());
+            threadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    updateWebView(result);
                 }
-                break;
-            case PEARLS_CSV_SAVE_TERMS:
-                // save terms to DB
-                break;
+            });
+//                    Objects.requireNonNull(getActivity()).runOnUiThread(() -> {
+//                        updateWebView(result);
+//                    });
+        } catch (Exception e) {
+            Log.v(TAG, "******************* onCsvFileInputWorkFinished: " + e.getMessage());
         }
     }
+
+    @Override
+    public void onCsvTermSaveWorkFinished(boolean saved) {
+        progressBar.post(new Runnable() {
+            @Override
+            public void run() {
+                progressBar.setVisibility(View.INVISIBLE);
+                csvWorkerThread.quit();
+                if(!saved) {
+                    parentIFace.onCsvMediaFragmentException();
+                }
+                Toast.makeText(getContext(), "Terms saved successfully", Toast.LENGTH_SHORT).show();
+                parentIFace.onCsvMediaFragmentFinished();
+            }
+        });
+    }
+
+    /*
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(csvWorkerThread == null) {
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            csvWorkerThread.quitSafely();
+        } else {
+            csvWorkerThread.quit();
+        }
+    }
+     */
 }
 
 

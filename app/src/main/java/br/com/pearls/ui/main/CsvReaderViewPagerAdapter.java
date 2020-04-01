@@ -24,7 +24,7 @@ public class CsvReaderViewPagerAdapter extends FragmentPagerAdapter {
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.csv_tab_media, R.string.csv_tab_areas, R.string.csv_tab_languages};
 
-    private CsvReaderMediaFragment readerFragment;
+    private CsvThreadReaderMediaFragment readerFragment;
     private AreasDomainsTabFragment areasTabFragment;
     private CsvReaderLanguagesFragment languagesFragment;
     private final Context mContext;
@@ -33,7 +33,8 @@ public class CsvReaderViewPagerAdapter extends FragmentPagerAdapter {
     public CsvReaderViewPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
-        readerFragment = new CsvReaderMediaFragment();
+        readerFragment = new CsvThreadReaderMediaFragment();
+        readerFragment.setRetainInstance(true);
         areasTabFragment = new AreasDomainsTabFragment();
         languagesFragment = new CsvReaderLanguagesFragment();
     }
