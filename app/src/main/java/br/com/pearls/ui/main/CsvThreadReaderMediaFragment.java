@@ -116,13 +116,14 @@ public class CsvThreadReaderMediaFragment extends Fragment implements CsvWorkHan
         separatorGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-               if(checkedId == R.id.radio_button_other) {
+                if(checkedId == R.id.radio_button_other) {
+                    saveButton.setEnabled(false);
                     sepOtherBtn.setEnabled(true);
                     sepOtherEdit.setEnabled(true);
                 } else {
-                   sepOtherBtn.setEnabled(false);
-                   sepOtherEdit.setEnabled(false);
-                   sendHandlerThreadMessage();
+                    sepOtherEdit.setEnabled(false);
+                    sepOtherBtn.setEnabled(false);
+                    sendHandlerThreadMessage();
                 }
             }
         });
@@ -158,6 +159,7 @@ public class CsvThreadReaderMediaFragment extends Fragment implements CsvWorkHan
     }
 
     private void sendHandlerThreadMessage() {
+        saveButton.setEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
         CsvParams asyncParams = new CsvParams();
         asyncParams.activity = getActivity();
@@ -201,14 +203,12 @@ public class CsvThreadReaderMediaFragment extends Fragment implements CsvWorkHan
         return "";
     }
 
-    private class AsyncParams {
-        List<List<String>> rows;            // raw row values to save
-        List<Language> languages;           // fresh db lang list (user may have changed them)
-        String quotes, separator, html;     //
-    }
-
     private void updateWebView(CsvParams params) {
         progressBar.setVisibility(View.INVISIBLE);
+        if(separatorGroup.getCheckedRadioButtonId() == R.id.radio_button_other) {
+            sepOtherEdit.setEnabled(true);
+            sepOtherBtn.setEnabled(true);
+        }
         webView.loadUrl("about:blank");     // clear web view
         if(params == null) {        // some exception occurred while processing input stream
             parentIFace.onCsvMediaFragmentException();
@@ -262,6 +262,7 @@ public class CsvThreadReaderMediaFragment extends Fragment implements CsvWorkHan
         }
         line1--;
         postProcessParams.rows = postProcessParams.rows.subList(line1, line2);
+        csvWorkerThread.getHandler().stopProcesses();
         Message message = Message.obtain();
         message.what = PEARLS_CSV_SAVE_TERMS;
         message.obj = postProcessParams;

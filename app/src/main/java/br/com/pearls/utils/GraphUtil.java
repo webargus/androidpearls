@@ -56,12 +56,6 @@ public class GraphUtil {
                 List<GraphVertex> vv = vertices;
             does is just tagging a shallow copy of vertices to vv; hence, when vertices changes,
             vv changes too!
-            Another potential issue that may arise here concerns what would happen if we flood
-            this method with too many vertices at once; Since each method call creates a new
-            asynchronous task, we may end up too many threads running simultaneously, which
-            may overcome some thread limit, as to how many background threads we're allowed
-            to run at the same time in parallel. We shall test it when importing very long
-            lists into the db, though.
          */
         List<GraphVertex> vv = new ArrayList<>();
         // Log.v(TAG, "******************1st dump");        // debug

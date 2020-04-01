@@ -33,14 +33,6 @@
                 android:value="br.com.pearls.SearchActivity" />
         </activity>
         <activity
-            android:name=".ui.main.LanguagesActivity"
-            android:label="@string/title_activity_languages"
-            android:parentActivityName=".SearchActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="br.com.pearls.SearchActivity" />
-        </activity>
-        <activity
             android:name=".Settings.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".SearchActivity">
@@ -63,10 +55,6 @@
          configChanges="orientation|screenSize" -> this keeps web view content from
              reloading upon screen rotation (portrait/landscape)
         -->
-        <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:launchMode="singleTop"></activity>
     </application>
 
 </manifest>

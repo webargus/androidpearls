@@ -8,154 +8,169 @@
     android:orientation="vertical"
     >
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/label_separator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/csv_field_separator_label"
-        android:paddingTop="8dp"
-        android:paddingLeft="8dp"
-        />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <RadioGroup
-            android:id="@+id/separator_radio_group"
+        <LinearLayout
+            android:id="@+id/top_bar_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_vertical">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <RadioButton
-                android:id="@+id/radio_button_comma"
-                android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/label_separator"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/radio_button_comma" />
+                android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:text="@string/csv_field_separator_label" />
 
-            <RadioButton
-                android:id="@+id/radio_button_semicolon"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/radio_button_semicolon" />
+                android:orientation="vertical">
 
-            <RadioButton
-                android:id="@+id/radio_button_tab"
-                android:layout_width="wrap_content"
+                <RadioGroup
+                    android:id="@+id/separator_radio_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radio_button_comma"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/radio_button_comma" />
+
+                    <RadioButton
+                        android:id="@+id/radio_button_semicolon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/radio_button_semicolon" />
+
+                    <RadioButton
+                        android:id="@+id/radio_button_tab"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/radio_button_tab" />
+
+                    <RadioButton
+                        android:id="@+id/radio_button_other"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/radio_button_other" />
+                </RadioGroup>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/edit_other_separator"
+                        android:layout_width="56dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="36dp"
+                        android:enabled="false"
+                        android:inputType="text" />
+
+                    <Button
+                        android:id="@+id/btn_separator_other"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:enabled="false"
+                        android:text="go" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/label_quotes"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/radio_button_tab" />
+                android:paddingLeft="8dp"
+                android:paddingTop="8dp"
+                android:text="@string/csv_label_quotes" />
 
-            <RadioButton
-                android:id="@+id/radio_button_other"
-                android:layout_width="wrap_content"
+            <RadioGroup
+                android:id="@+id/quote_radio_group"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/radio_button_other" />
-        </RadioGroup>
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/edit_other_separator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="1dp"
-            android:enabled="false"
-            android:inputType="text"
-            android:layout_gravity="center_vertical"
-            />
+                <RadioButton
+                    android:id="@+id/radio_double_quotes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text='Double quotes (")' />
 
-        <Button
-            android:id="@+id/btn_separator_other"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:text="go"
-            />
+                <RadioButton
+                    android:id="@+id/radio_single_quotes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Single quotes (')" />
 
-    </LinearLayout>
-    <TextView
-        android:id="@+id/label_quotes"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/csv_label_quotes"
-        android:paddingTop="8dp"
-        android:paddingLeft="8dp"
-        />
+                <RadioButton
+                    android:id="@+id/radio_no_quotes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No quotes " />
+            </RadioGroup>
 
-    <RadioGroup
-        android:id="@+id/quote_radio_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
 
-        <RadioButton
-            android:id="@+id/radio_double_quotes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text='Double quotes (")' />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:text="Save rows from: " />
 
-        <RadioButton
-            android:id="@+id/radio_single_quotes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Single quotes (')" />
+                <EditText
+                    android:id="@+id/csv_init_line"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:inputType="number" />
 
-        <RadioButton
-            android:id="@+id/radio_no_quotes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="No quotes " />
-    </RadioGroup>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:text="to: " />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+                <EditText
+                    android:id="@+id/csv_end_line"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="32dp"
+                    android:inputType="number" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:text="Save rows from: "
-            />
-        <EditText
-            android:id="@+id/csv_init_line"
-            android:layout_width="48dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:text="to: "
-            />
-        <EditText
-            android:id="@+id/csv_end_line"
-            android:layout_width="48dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:layout_marginRight="32dp"
-            />
-        <Button
-            android:id="@+id/csv_btn_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Save"
-            />
-    </LinearLayout>
+                <Button
+                    android:id="@+id/csv_btn_save"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Save" />
+            </LinearLayout>
 
     <WebView
         android:id="@+id/csv_web_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-         />
+        app:layout_constraintTop_toBottomOf="@+id/scrollView" />
+
 </LinearLayout>
+    </ScrollView>
     <ProgressBar
         android:id="@+id/csv_progress_bar"
         android:layout_width="wrap_content"
